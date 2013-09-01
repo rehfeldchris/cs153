@@ -12,7 +12,7 @@
  My latest attempt to correct this is to have the add function return a pointer
  to the same node that was passed in, which hopefully gets updated. Still isn't working.
  It somehow inserts the node before making the branching comparison because it outputs
-	"Took left path: 7 > 7" even though 7 hadn't been inserted yet. wtf
+    "Took left path: 7 > 7" even though 7 hadn't been inserted yet. wtf
  
  This is the worst programming language I have ever used. Also Lazarus sucks. I've 
  resorted to using fpc.exe on the command line. 
@@ -28,56 +28,56 @@ type
     EmployeePtr = ^Employee;
     Employee = Record
                  number : integer;
-		         lastName : string[8];
-		         initials : string[2];
-		         birthday : string[8];
-		         department : string[4];
-		         sex : SexType;
+                 lastName : string[8];
+                 initials : string[2];
+                 birthday : string[8];
+                 department : string[4];
+                 sex : SexType;
                  jobClass : JobClassType;
-	        end;
+            end;
 
     NodePtr = ^Node;
     Node = Record
              data : EmployeePtr;
-	         left, right : NodePtr;
+             left, right : NodePtr;
            end;
 
 (* Recursively add employee e to the tree pointed to by node 
    Return an updated pointer to node with any modifications *)
 function add(var e : EmployeePtr; node : NodePtr) : NodePtr;
 begin
-	writeln('add procedure');
-	(* if (node = NIL) then  -- compiler bitches about this? *)
-	(* I tried basing it off http://stackoverflow.com/questions/13787895/binary-tree-pascal-vs-c *)
+    writeln('add procedure');
+    (* if (node = NIL) then  -- compiler bitches about this? *)
+    (* I tried basing it off http://stackoverflow.com/questions/13787895/binary-tree-pascal-vs-c *)
     if (node^.data = NIL) then
-        begin	
-		write('node has no data, writing:');
-		writeln(e^.number);
-		
-		New(node); (* this doesn't seem to make a difference either way *)
+        begin   
+        write('node has no data, writing:');
+        writeln(e^.number);
+        
+        New(node); (* this doesn't seem to make a difference either way *)
         node^.data := e;
         node^.left := NIL;
         node^.right := NIL;
-		add := node;
+        add := node;
         end
     else if (e^.number < node^.data^.number) then
-		begin
-		write('Took left path: ');
-		write(e^.number);
-		write(' < ');
-		writeln(node^.data^.number);
-		
+        begin
+        write('Took left path: ');
+        write(e^.number);
+        write(' < ');
+        writeln(node^.data^.number);
+        
         add := add(e, node^.left);
-		end
+        end
     else
-		begin
-		write('Took left path: ');
-		write(e^.number);
-		write(' > ');
-		writeln(node^.data^.number);
-		
+        begin
+        write('Took left path: ');
+        write(e^.number);
+        write(' > ');
+        writeln(node^.data^.number);
+        
         add := add(e, node^.right)
-		end
+        end
 end;
 
 (* Print binary tree in sorted order (inorder traversal) *)
@@ -86,7 +86,7 @@ begin
     if node <> NIL then
     begin
     (* This is where you would do the tabular output stuff *)
-	(* crashes since node is nil when it gets passed for some reason *)
+    (* crashes since node is nil when it gets passed for some reason *)
         printTree(node^.left);
         write(node^.data^.number);
         printTree(node^.right);
@@ -100,23 +100,23 @@ begin
     if node^.data <> NIL then
     begin
          if (number < node^.data^.number) then
-	    find := find(number, node^.left)
-	 else if (number > node^.data^.number) then
-	    find := find(number, node^.right)
-	 else
-	    find := node (* found the right record *)
+        find := find(number, node^.left)
+     else if (number > node^.data^.number) then
+        find := find(number, node^.right)
+     else
+        find := node (* found the right record *)
     end
     else 
-	    find := NIL (* Return NIL if not found *)
+        find := NIL (* Return NIL if not found *)
 end;
 
 (* Variables for main procedure *)
 var
-	(* Binary search tree comprised of nodes that have a data field of type Employee *)
+    (* Binary search tree comprised of nodes that have a data field of type Employee *)
     employeesPtr : NodePtr;
     employees : Node;(*(data : NIL; left: NIL; right: NIL);*)
-	
-	(* Placeholder employee -- overwrite this data *)
+    
+    (* Placeholder employee -- overwrite this data *)
     tempEmployeePtr : EmployeePtr;
     tempEmployee : Employee =  (number : 0; lastName : 'Argh'; initials : 'AR';
                birthday : '20130101'; department : 'LM52'; sex : M; jobClass : Factory);
@@ -127,24 +127,24 @@ begin
  (* this seems to be the only way to get a pointer to pass to add() *)
     employeesPtr := getmem(100);
     employeesPtr^ := employees;
-	
+    
     tempEmployeePtr := getmem(100);
 
-	(* Attempt to test the binary search tree *)
+    (* Attempt to test the binary search tree *)
     for i := 6 to 10 do
     begin
         writeln();
-		write('trying to add ');
+        write('trying to add ');
         writeln(i);
         tempEmployee.number := i;
         tempEmployeePtr^ := tempEmployee;
         employeesPtr := add(tempEmployeePtr, employeesPtr);
     end;    
-	
-	for i := 1 to 5 do
+    
+    for i := 1 to 5 do
     begin
-		writeln();
-		write('trying to add ');
+        writeln();
+        write('trying to add ');
         writeln(i);
         tempEmployee.number := i;
         tempEmployeePtr^ := tempEmployee;
@@ -152,6 +152,6 @@ begin
     end;
 
     (* Should give employees 1 2 3 4 5 6 7 8 9 10 if tree works correctly *)
-	writeln('attempting to print tree');
+    writeln('attempting to print tree');
     printTree(employeesPtr);
 end.
