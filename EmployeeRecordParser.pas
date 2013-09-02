@@ -3,7 +3,8 @@ The purpose of this code is to parse the lines in a txt file,
 and use the data to create Employee records.
 
 
-I copied some of the type declarations from Michaels file and used them here.
+I copied some of the type declarations from Michaels file and used them here, but the Employee 
+Record type had to be modified to use a LongInt for the number field.
 
 The code works with the exception that I'm having trouble parsing a string into an integer, 
 so all employee numbers are "0" for now. I'll fix that soon, but in the meantime other 
@@ -26,7 +27,7 @@ type
     SexType = (M, F);
     JobClassType = (Factory, Office, Supervisor, VP, President);
     Employee = Record
-                 number : integer;
+                 number : LongInt;
                  lastName : string[8];
                  initials : string[2];
                  birthday : string[8];
@@ -50,10 +51,9 @@ and might get deallocated after the func returns, but it seems to work lol.}
 var
 empl : Employee;
 JobTypeStr : String;
-
+err : LongInt;
 begin
-	//empl.number		:= StrToInt(copy(line, 1, 8));
-	empl.number		:= 0;
+	Val(copy(line, 1, 7), empl.number, err);
 	empl.lastName   := copy(line, 9, 8);
 	empl.initials   := copy(line, 17, 2);
 	empl.birthday   := copy(line, 20, 8);
