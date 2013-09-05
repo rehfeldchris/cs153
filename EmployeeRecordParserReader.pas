@@ -157,6 +157,16 @@ begin
     end;
 end;
 
+{deallocates the memory used by the binary tree}
+procedure CleanUp (var TreeNode : WorkerPointer);
+begin
+  if (TreeNode <> nil) then
+    begin
+      CleanUp (TreeNode^.Left);
+      CleanUp (TreeNode^.Right);
+      dispose (TreeNode);
+    end;
+end;
 
 {begin main. this is only to demo usage.}
 Begin
@@ -168,7 +178,7 @@ Begin
           Insert (Employees[i], TreeRoot);
 
         Traverse (TreeRoot);
-        dispose (TreeRoot);
+        CleanUp (TreeRoot);
 
 	{readln is a hack to keep the console window from closing automatically}
 	readln;
