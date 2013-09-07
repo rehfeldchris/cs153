@@ -6,7 +6,7 @@ import wci.intermediate.*;
 import wci.backend.*;
 import wci.message.*;
 
-import static wci.frontend.pascal.PascalTokenType.STRING;
+import static wci.frontend.java.JavaTokenType.STRING;
 import static wci.message.MessageType.*;
 
 /**
