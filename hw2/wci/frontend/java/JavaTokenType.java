@@ -9,34 +9,121 @@ import wci.frontend.TokenType;
  * <h1>JavaTokenType</h1>
  *
  * <p>Java token types.</p>
+ * 
+ * <p>These were copied from the lists in the assignment pdf.
+ * The ones in the "misc category" im not sure if its correct - chris
+ * </p>
+ * 
  *
  * <p>Copyright (c) 2009 by Ronald Mak</p>
  * <p>For instructional purposes only.  No warranties.</p>
+ * 
+ * @author chris rehfeld
  */
 public enum JavaTokenType implements TokenType
 {
     // Reserved words.
-    AND, ARRAY, BEGIN, CASE, CONST, DIV, DO, DOWNTO, ELSE, END,
-    FILE, FOR, FUNCTION, GOTO, IF, IN, LABEL, MOD, NIL, NOT,
-    OF, OR, PACKED, PROCEDURE, PROGRAM, RECORD, REPEAT, SET,
-    THEN, TO, TYPE, UNTIL, VAR, WHILE, WITH,
+	DOUBLE("double"),
+	INT("int"),
+	LONG("long"),
+	BREAK("break"),
+	ELSE("else"),
+	SWITCH("switch"),
+	CASE("case"),
+	ENUM("enum"),
+	NATIVE("native"),
+	SUPER("super"),
+	CHAR("char"),
+	EXTENDS("extends"),
+	RETURN("return"),
+	THIS("this"),
+	CLASS("class"),
+	FLOAT("float"),
+	SHORT("short"),
+	THROW("throw"),
+	CONST("const"),
+	FOR("for"),
+	PACKAGE("package"),
+	VOID("void"),
+	CONTINUE("continue"),
+	GOTO("goto"),
+	PROTECTED("protected"),
+	VOLATILE("volatile"),
+	DO("do"),
+	IF("if"),
+	STATIC("static"),
+	WHILE("while"),
+    
 
     // Special symbols.
-    PLUS("+"), MINUS("-"), STAR("*"), SLASH("/"), COLON_EQUALS(":="),
-    DOT("."), COMMA(","), SEMICOLON(";"), COLON(":"), QUOTE("'"),
-    EQUALS("="), NOT_EQUALS("<>"), LESS_THAN("<"), LESS_EQUALS("<="),
-    GREATER_EQUALS(">="), GREATER_THAN(">"), LEFT_PAREN("("), RIGHT_PAREN(")"),
-    LEFT_BRACKET("["), RIGHT_BRACKET("]"), LEFT_BRACE("{"), RIGHT_BRACE("}"),
-    UP_ARROW("^"), DOT_DOT(".."),
+	TILDE("~"),
+	BANG("!"),
+	AT_SYMBOL("@"),
+	PERCENT("%"),
+	UP_ARROW("^"),
+	AMPERSAND("&"),
+	STAR("*"), 
+    MINUS("-"), 
+    PLUS("+"),
+    EQUALS("="),
+    PIPE("|"),
+    FORWARD_SLASH("/"),
+    COLON(":"),
+    SEMICOLON(";"),
+    QUESTION_MARK("?"),
+    LESS_THAN("<"),
+    GREATER_THAN(">"), 
+    DOT("."),
+    BACKTICK("`"),
+    SINGLE_QUOTE("'"),
+    DOUBLE_QUOTE("\""),
+    LEFT_PAREN("("), 
+    RIGHT_PAREN(")"),
+    LEFT_BRACKET("["), 
+    RIGHT_BRACKET("]"), 
+    LEFT_BRACE("{"), 
+    RIGHT_BRACE("}"),
+    PLUS_PLUS("++"),
+    MINUS_MINUS("--"),
+    DBL_LEFT_ARROW("<<"),
+    DBL_RIGHT_ARROW(">>"),
+    LESS_EQUALS("<="),
+    GREATER_EQUALS(">="), 
+    PLUS_EQUALS("+="),
+    MINUS_EQUALS("-="),
+    STAR_EQUALS("*="),
+    SLASH_EQUALS("/="),
+    DBL_EQUALS("=="),
+    PIPE_EQUALS("|="),
+    PERCENT_EQUALS("%="),
+    AMPERSAND_EQUALS("&="),
+    UP_ARROW_EQUALS("^="),
+    BANG_EQUALS("!="),
+    DBL_LEFT_ARROW_EQUALS("<<="),
+    DBL_RIGHT_ARROW_EQUALS(">>="),
+    DBL_PIPE("||"),
+    DBL_AMPERSAND("&&"),
+    SINGLE_LINE_COMMENT_START("//"),
+    MULTI_LINE_COMMENT_START("/*"),
+    MULTI_LINE_COMMENT_END("*/"),
 
-    IDENTIFIER, INTEGER, REAL, STRING,
-    ERROR, END_OF_FILE;
 
-    private static final int FIRST_RESERVED_INDEX = AND.ordinal();
-    private static final int LAST_RESERVED_INDEX  = WITH.ordinal();
+    //misc category
+    IDENTIFIER,
+    CHARACTER,
+    STRING,
+    INTEGER, 
+    REAL,
+    COMMENT,
+    ERROR, 
+    END_OF_FILE
+    ;
 
-    private static final int FIRST_SPECIAL_INDEX = PLUS.ordinal();
-    private static final int LAST_SPECIAL_INDEX  = DOT_DOT.ordinal();
+    private static final int FIRST_RESERVED_INDEX = DOUBLE.ordinal();
+    private static final int LAST_RESERVED_INDEX  = WHILE.ordinal();
+
+    private static final int FIRST_SPECIAL_INDEX = TILDE.ordinal();
+    private static final int LAST_SPECIAL_INDEX  = MULTI_LINE_COMMENT_END.ordinal();
 
     private String text;  // token text
 
@@ -71,7 +158,7 @@ public enum JavaTokenType implements TokenType
     static {
         JavaTokenType values[] = JavaTokenType.values();
         for (int i = FIRST_RESERVED_INDEX; i <= LAST_RESERVED_INDEX; ++i) {
-            RESERVED_WORDS.add(values[i].getText().toLowerCase());
+            RESERVED_WORDS.add(values[i].getText());
         }
     }
 
