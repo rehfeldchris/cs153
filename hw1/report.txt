@@ -1,0 +1,29 @@
+Both the assignment operator (:=) and string literals being enclosed in single quotes 
+kept tripping me up.  I am too used to using an equals sign (=) for assignment and 
+double quotes for strings, because that is the way it is done in both Java and C/C++.
+
+We take so much for granted with the Java language.  For example, garbage collection.
+With Pascal, we have to make sure we deallocate any memory that we allocate in the 
+program.  This is responsible programming.  Java almost encourages us to be irresponsible 
+with memory management.  However, there are no pointers in Java, so it is certainly not
+as much of an issue like it is in Pascal or C/C++.
+  
+We didn't like how runtime errors seemed to silently crash the program. It would be nicer if it 
+at the very least output the line number where it failed.
+
+It is very interesting how Pascal handles passing by value versus passing by reference. 
+ If the var that comes before the pointer is taken out of the binary tree insert 
+ procedure's parameter list, then the program does not work.  So, the pointer has to be
+ passed by reference (a pointer to a pointer?).
+
+The really cool thing about Pascal is that you can create pointers to the types that 
+you create.  It's very powerful to know that when the New procedure is called that 
+enough memory is allocated for the type that you define.
+
+
+One thing we did that was kinda tricky was how we counted the department name frequencies. We made
+two parallel arrays, one to hold the dept name, and the other to hold the corresponding count. We 
+wanted a hashmap to do the counting, but had difficulty finding example code that was understandable,
+so instead we just used parallel arrays. Everytime we read a department name, we linear search 
+the array to try to find the index. If it didnt exist, we add it, otherwise we use the index to access
+the count and increment it. It worked well, although its not the most efficient design.
