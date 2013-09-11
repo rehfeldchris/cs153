@@ -70,7 +70,24 @@ public enum JavaErrorCode
 
     // Fatal errors.
     IO_ERROR(-101, "Object I/O error"),
-    TOO_MANY_ERRORS(-102, "Too many syntax errors");
+    TOO_MANY_ERRORS(-102, "Too many syntax errors"),
+    
+    
+    
+    
+    //java codes added by chris
+    
+    //happens when something like char c = 'aa';
+    INVALID_CHARACTER_CONSTANT("Invalid character constant"),
+    //happens when something like char c = '\a';
+    ILLEGAL_ESCAPE_SEQUENCE("Illegal escape sequence"),
+    
+    INVALID_UNICODE("Invalid Unicode"),
+    
+    
+    
+    ;
+    
 
     private int status;      // exit status
     private String message;  // error message
