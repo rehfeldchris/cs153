@@ -30,7 +30,7 @@ public class JavaNumberToken extends JavaToken
     }
 
     /**
-     * Extract a Pascal number token from the source.
+     * Extract a Java number token from the source.
      * @throws Exception if an error occurred.
      */
     protected void extract()
@@ -42,7 +42,7 @@ public class JavaNumberToken extends JavaToken
     }
 
     /**
-     * Extract a Pascal number token from the source.
+     * Extract a Java number token from the source.
      * @param textBuffer the buffer to append the token's characters.
      * @throws Exception if an error occurred.
      */
