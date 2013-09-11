@@ -26,7 +26,7 @@ public class Java
     private Backend backend;  // backend
 
     /**
-     * Compile or interpret a Pascal source program.
+     * Compile or interpret a Java source program.
      * @param operation either "compile" or "execute".
      * @param filePath the source file path.
      * @param flags the command line flags.
@@ -40,7 +40,7 @@ public class Java
             source = new Source(new BufferedReader(new FileReader(filePath)));
             source.addMessageListener(new SourceMessageListener());
 
-            parser = FrontendFactory.createParser("Pascal", "top-down", source);
+            parser = FrontendFactory.createParser("Java", "top-down", source);
             parser.addMessageListener(new ParserMessageListener());
 
             backend = BackendFactory.createBackend(operation);
@@ -62,7 +62,7 @@ public class Java
 
     private static final String FLAGS = "[-ix]";
     private static final String USAGE =
-        "Usage: Pascal execute|compile " + FLAGS + " <source file path>";
+        "Usage: Java execute|compile " + FLAGS + " <source file path>";
 
     /**
      * The main method.

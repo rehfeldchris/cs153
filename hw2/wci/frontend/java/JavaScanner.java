@@ -4,6 +4,7 @@ import wci.frontend.*;
 import wci.frontend.java.tokens.*;
 
 import static wci.frontend.Source.EOF;
+import static wci.frontend.Source.EOL;
 import static wci.frontend.java.JavaTokenType.*;
 import static wci.frontend.java.JavaErrorCode.*;
 
@@ -74,21 +75,39 @@ public class JavaScanner extends Scanner
         throws Exception
     {
         char currentChar = currentChar();
+        boolean foundAsterisk = false; // flag to detect closing */ in comments
 
-        while (Character.isWhitespace(currentChar) || (currentChar == '{')) {
-
-            // Start of a comment?
-            if (currentChar == '{') {
-                do {
-                    currentChar = nextChar();  // consume comment characters
-                } while ((currentChar != '}') && (currentChar != EOF));
-
-                // Found closing '}'?
-                if (currentChar == '}') {
-                    currentChar = nextChar();  // consume the '}'
+        while (Character.isWhitespace(currentChar) || (currentChar == '/')) 
+        {   // Start of a comment?
+            if (currentChar == '/')
+            {
+                currentChar = nextChar();
+                
+                // Consume comments with '//'
+                if (currentChar == '/')
+                {
+                    do currentChar = nextChar();
+                    while (currentChar != EOL && currentChar != EOF);
+                    
+                    if (currentChar == EOL)
+                        currentChar = nextChar();
+                }
+                // Consume comments with '/* */'
+                else if (currentChar == '*')
+                {
+                    do 
+                    { 
+                        currentChar = nextChar();
+                        if (foundAsterisk && currentChar == '/')
+                            break;
+                        else 
+                            foundAsterisk = currentChar == '*';
+                    } while (currentChar != EOF);
+                    
+                    if (currentChar == '/')
+                        currentChar = nextChar();
                 }
             }
-
             // Not a comment.
             else {
                 currentChar = nextChar();  // consume whitespace character
