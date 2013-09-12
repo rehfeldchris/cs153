@@ -78,16 +78,17 @@ public class JavaScanner extends Scanner
         throws Exception
     {
         char currentChar = currentChar();
+        char next;
         boolean foundAsterisk = false; // flag to detect closing */ in comments
 
         while (Character.isWhitespace(currentChar) || (currentChar == '/')) 
         {   // Start of a comment?
             if (currentChar == '/')
             {
-                currentChar = nextChar();
+                next = source.peekChar();
                 
                 // Consume comments with '//'
-                if (currentChar == '/')
+                if (next == '/')
                 {
                     do currentChar = nextChar();
                     while (currentChar != EOL && currentChar != EOF);
@@ -96,8 +97,9 @@ public class JavaScanner extends Scanner
                         currentChar = nextChar();
                 }
                 // Consume comments with '/* */'
-                else if (currentChar == '*')
+                else if (next == '*')
                 {
+                    currentChar = nextChar(); // Consume '/'
                     do 
                     { 
                         currentChar = nextChar();
@@ -110,10 +112,12 @@ public class JavaScanner extends Scanner
                     if (currentChar == '/')
                         currentChar = nextChar();
                 }
+                else
+                   break;
             }
             // Not a comment.
             else {
-                currentChar = nextChar();  // consume whitespace character
+                  currentChar = nextChar();  // consume whitespace character
             }
         }
     }
