@@ -52,6 +52,9 @@ public class JavaScanner extends Scanner
             token = new JavaNumberToken(source);
         }
         else if (currentChar == '\'') {
+            token = new JavaCharToken(source);
+        }
+        else if (currentChar == '"') {
             token = new JavaStringToken(source);
         }
         else if (JavaTokenType.SPECIAL_SYMBOLS
