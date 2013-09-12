@@ -29,7 +29,7 @@ public class JavaParserTD extends Parser
     }
 
     /**
-     * Parse a Pascal source program and generate the symbol table
+     * Parse a Java source program and generate the symbol table
      * and the intermediate code.
      */
     public void parse()
