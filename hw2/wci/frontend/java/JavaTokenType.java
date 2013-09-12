@@ -154,7 +154,7 @@ public enum JavaTokenType implements TokenType
         return text;
     }
 
-    // Set of lower-cased Pascal reserved word text strings.
+    // Set of Java reserved word text strings.
     public static HashSet<String> RESERVED_WORDS = new HashSet<String>();
     static {
         JavaTokenType values[] = JavaTokenType.values();
@@ -163,8 +163,8 @@ public enum JavaTokenType implements TokenType
         }
     }
 
-    // Hash table of Pascal special symbols.  Each special symbol's text
-    // is the key to its Pascal token type.
+    // Hash table of Java special symbols.  Each special symbol's text
+    // is the key to its Java token type.
     public static Hashtable<String, JavaTokenType> SPECIAL_SYMBOLS =
         new Hashtable<String, JavaTokenType>();
     static {

@@ -28,7 +28,7 @@ public class JavaScanner extends Scanner
     }
 
     /**
-     * Extract and return the next Pascal token from the source.
+     * Extract and return the next Java token from the source.
      * @return the next token.
      * @throws Exception if an error occurred.
      */
