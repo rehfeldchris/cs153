@@ -47,7 +47,7 @@ public class JavaWordToken extends JavaToken
 
         // Is it a reserved word or an identifier?
         type = (RESERVED_WORDS.contains(text))
-               ? JavaTokenType.valueOf(text.toUpperCase())  // reserved word
+               ? JavaTokenType.valueOf(JavaTokenType.class, text.toUpperCase())  // reserved word
                : IDENTIFIER;                                  // identifier
     }
 }
