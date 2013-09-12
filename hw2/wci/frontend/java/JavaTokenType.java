@@ -23,6 +23,7 @@ import wci.frontend.TokenType;
 public enum JavaTokenType implements TokenType
 {
     // Reserved words.
+   ABSTRACT("abstract"),
 	DOUBLE("double"),
 	INT("int"),
 	LONG("long"),
@@ -74,7 +75,7 @@ public enum JavaTokenType implements TokenType
     LESS_THAN("<"),
     GREATER_THAN(">"), 
     DOT("."),
-    BACKTICK("`"),
+    COMMA(","),
     SINGLE_QUOTE("'"),
     DOUBLE_QUOTE("\""),
     LEFT_PAREN("("), 
@@ -119,7 +120,7 @@ public enum JavaTokenType implements TokenType
     END_OF_FILE
     ;
 
-    private static final int FIRST_RESERVED_INDEX = DOUBLE.ordinal();
+    private static final int FIRST_RESERVED_INDEX = ABSTRACT.ordinal();
     private static final int LAST_RESERVED_INDEX  = WHILE.ordinal();
 
     private static final int FIRST_SPECIAL_INDEX = TILDE.ordinal();
