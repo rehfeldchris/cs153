@@ -106,10 +106,6 @@ public class ExpressionParser extends StatementParser
         return rootNode;
     }
     
-    // Set of set operators
-    private static final EnumSet<PascalTokenType> SET_OPS = 
-            EnumSet.of(LEFT_BRACKET, RIGHT_BRACKET, DOT_DOT, COMMA); 
-
     /**
      * Parse a set expression.
      * @param token the initial token.
@@ -135,75 +131,75 @@ public class ExpressionParser extends StatementParser
         {
             if (EXPR_START_SET.contains(tokenType))
             {   // get the first, or perhaps only value in this part of the set
+                // and make sure it is a VARIABLE or INTEGER_CONSTANT
                 ICodeNode firstValueNode = parseSimpleExpression(token);
-                
-                // convert VARIABLE to INTEGER_CONSTANT
-                switch ((ICodeNodeTypeImpl) firstValueNode.getType())
-                {   // look up the variable in the symbol table and use that value
-                    // TODO: Handle this conversion in the Executor because symTab 
-                    // does not have values, only keys at this point
-                    case VARIABLE:
-                        SymTabEntry entry = (SymTabEntry) firstValueNode.getAttribute(ID);             
-                        ICodeNode tempNode = new ICodeNodeImpl(INTEGER_CONSTANT);
-                        tempNode.setAttribute(VALUE, entry.getAttribute(SymTabKeyImpl.DATA_VALUE));
-                        firstValueNode = tempNode;
-                        break;
-                    case INTEGER_CONSTANT: // no change needed
-                        break;
-                    default:
-                        errorHandler.flag(token, UNEXPECTED_TOKEN, this);
-                        break;
-                }                
+                ICodeNodeType firstValueType = firstValueNode.getType();
+                if (!(EXPR_START_SET.contains(tokenType) || tokenType == STAR || tokenType == DIV))
+                {
+                    errorHandler.flag(token, UNEXPECTED_TOKEN, this);
+                    break;
+                }      
                 // update the current token and check whether it is , or .. 
                 token = currentToken();
                 tokenType = token.getType();
                 
-                // just one value; add to the jump table and the root node
-                if (tokenType == COMMA)
-                {
-                    valuesSet.add(firstValueNode);
-                    rootNode.addChild(firstValueNode);
-                }
-                // range of values
-                else if (tokenType == DOT_DOT)
-                {
-                    // get the second value in the range
-                    token = nextToken();
-                    tokenType = token.getType();                    
-                    ICodeNode secondValueNode = parseSimpleExpression(token);
-                    
-                    Integer firstValue = (Integer) firstValueNode.getAttribute(VALUE);
-                    Integer secondValue = -1;
-                    
-                    // extract the value from secondValueNode for the upper bound
-                    switch((ICodeNodeTypeImpl) secondValueNode.getType())
-                    {
-                        case VARIABLE:                
-                            SymTabEntry entry = (SymTabEntry) secondValueNode.getAttribute(ID);
-                            secondValue = (Integer) entry.getAttribute(SymTabKeyImpl.DATA_VALUE);
-                            break;
-                        case INTEGER_CONSTANT:
-                            secondValue = (Integer) secondValueNode.getAttribute(VALUE);
-                            break;
-                        default:
+                switch ((PascalTokenType) tokenType)
+                {   // just one value; add to the jump table and the root node
+                    case COMMA:
+                        valuesSet.add(firstValueNode);
+                        rootNode.addChild(firstValueNode);
+                        break;
+                    // range of values
+                    case DOT_DOT:
+                        // get the second value in the range, make sure it is valid
+                        token = nextToken();
+                        tokenType = token.getType();                    
+                        ICodeNode secondValueNode = parseSimpleExpression(token);
+                        ICodeNodeType secondValueType = secondValueNode.getType();
+                        
+                        if (!(secondValueType == VARIABLE || secondValueType == INTEGER_CONSTANT))
+                        {
                             errorHandler.flag(token, UNEXPECTED_TOKEN, this);
                             break;
-                    }
-                    // Add a node to the hash table and the root node for every member of the range
-                    for (Integer i = firstValue; i < secondValue; ++i)
-                    {
-                        ICodeNode rangeValueNode = new ICodeNodeImpl(INTEGER_CONSTANT);
-                        rangeValueNode.setAttribute(VALUE, i);
-                        rootNode.addChild(rangeValueNode);
-                        valuesSet.add(rangeValueNode);
-                    }
-                }
-                else if (tokenType == RIGHT_BRACKET)
-                    break;
-                else // expected .. or ,
-                {
-                    errorHandler.flag(token, UNEXPECTED_TOKEN, this);
-                    break;
+                        }
+                        
+                        // Both are integers so we can evaluate the range now
+                        // or maybe just create a range node?? Either way should work
+                        if (firstValueType == INTEGER_CONSTANT && secondValueType == INTEGER_CONSTANT)
+                        {
+                            Integer firstValue =  (Integer) firstValueNode.getAttribute(VALUE);
+                            Integer secondValue = (Integer) firstValueNode.getAttribute(VALUE);
+                            for (Integer i = firstValue; i < secondValue; ++i)
+                            {
+                                ICodeNode rangeValueNode = ICodeFactory.createICodeNode(INTEGER_CONSTANT);
+                                if (!valuesSet.contains(rangeValueNode))
+                                {
+                                    rangeValueNode.setAttribute(VALUE, i);
+                                    rootNode.addChild(rangeValueNode);
+                                    valuesSet.add(rangeValueNode);
+                                }
+                                else
+                                { // flag this as a duplicate value
+                                    //errorHandler.flag(token, )
+                                    break;
+                                }
+                            }             
+                        }
+                        // one is a variable, so make a range node to evaluate later
+                        // TODO: Figure out how to flag duplicates in unevaluated ranges
+                        // maybe this has to be determined at runtime also?
+                        else 
+                        {
+                            ICodeNode rangeNode = ICodeFactory.createICodeNode(RANGE);
+                            rangeNode.addChild(firstValueNode);
+                            rangeNode.addChild(secondValueNode);
+                            rootNode.addChild(rangeNode);
+                        }
+                        break;
+                    case RIGHT_BRACKET:
+                        break;
+                    default:
+                        errorHandler.flag(token, UNEXPECTED_TOKEN, this);
                 }
             }
             else if (tokenType == RIGHT_BRACKET || tokenType == SEMICOLON)
