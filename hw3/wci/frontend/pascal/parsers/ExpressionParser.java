@@ -82,34 +82,25 @@ public class ExpressionParser extends StatementParser
         // the root node unless it is a set expression
         token = currentToken();
         TokenType tokenType = token.getType();
-        ICodeNode rootNode;
+        ICodeNode rootNode = parseSimpleExpression(token);
         
-        if (tokenType == LEFT_BRACKET)
-        {
-            rootNode = parseSetExpression(token);
-        }
-        else
-        {
-            rootNode = parseSimpleExpression(token);
-        
-            // Look for a relational operator.
-            if (REL_OPS.contains(tokenType)) {
+        // Look for a relational operator.
+        if (REL_OPS.contains(tokenType)) {
 
-                // Create a new operator node and adopt the current tree
-                // as its first child.
-                ICodeNodeType nodeType = REL_OPS_MAP.get(tokenType);
-                ICodeNode opNode = ICodeFactory.createICodeNode(nodeType);
-                opNode.addChild(rootNode);
+            // Create a new operator node and adopt the current tree
+            // as its first child.
+            ICodeNodeType nodeType = REL_OPS_MAP.get(tokenType);
+            ICodeNode opNode = ICodeFactory.createICodeNode(nodeType);
+            opNode.addChild(rootNode);
 
-                token = nextToken();  // consume the operator
+            token = nextToken();  // consume the operator
 
-                // Parse the second simple expression.  The operator node adopts
-                // the simple expression's tree as its second child.
-                opNode.addChild(parseSimpleExpression(token));
+            // Parse the second simple expression.  The operator node adopts
+            // the simple expression's tree as its second child.
+            opNode.addChild(parseSimpleExpression(token));
 
-                // The operator node becomes the new root node.
-                rootNode = opNode;
-            }
+            // The operator node becomes the new root node.
+            rootNode = opNode;
         }
 
         return rootNode;
@@ -135,14 +126,10 @@ public class ExpressionParser extends StatementParser
         
         // Create a SET node and adopt the SET_VALUES node containing the HashSet
         ICodeNode rootNode = ICodeFactory.createICodeNode(ICodeNodeTypeImpl.SET);
-        rootNode.addChild(valuesNode);
+        rootNode.addChild(valuesNode);        
+        // ^^^ TODO: rootNode is not getting the children correctly
         
-        // ^^^ TODO: rootNode is not getting the child correctly
-        
-        // skip the [
-        token = nextToken();
         TokenType tokenType = token.getType();
-        
         // Continue until we reach a closing bracket
         while (true)
         {
@@ -210,24 +197,16 @@ public class ExpressionParser extends StatementParser
                         rootNode.addChild(rangeValueNode);
                         valuesSet.add(rangeValueNode);
                     }
-                } // deal with RIGHT_BRACKET here so we don't duplicate code elsewhere
-                else if (tokenType == RIGHT_BRACKET)
-                {
-                    nextToken();
-                    break;
                 }
+                else if (tokenType == RIGHT_BRACKET)
+                    break;
                 else // expected .. or ,
                 {
                     errorHandler.flag(token, UNEXPECTED_TOKEN, this);
                     break;
                 }
             }
-            else if (tokenType == RIGHT_BRACKET)
-            {
-                nextToken();
-                break;
-            }
-            else if (tokenType == SEMICOLON) // let the parser handle this
+            else if (tokenType == RIGHT_BRACKET || tokenType == SEMICOLON)
                 break;
             else // expected an expression
             {
@@ -462,7 +441,18 @@ public class ExpressionParser extends StatementParser
             }
                 
             case LEFT_BRACKET: {
+                token = nextToken(); // consume the [
+                
+                // parse the set expression and make its node the root node
                 rootNode = parseSetExpression(token);
+                
+                // look for matching ] token
+                token = currentToken();
+                if (token.getType() == RIGHT_BRACKET) 
+                    token = nextToken(); // consume the ]
+                else if (token.getType() != SEMICOLON) // let scanner handle ;
+                    errorHandler.flag(token, MISSING_RIGHT_BRACKET, this);
+                break;
             }
 
             default: {
