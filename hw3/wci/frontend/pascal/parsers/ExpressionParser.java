@@ -2,11 +2,13 @@ package wci.frontend.pascal.parsers;
 
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import wci.frontend.*;
 import wci.frontend.pascal.*;
 import wci.intermediate.*;
 import wci.intermediate.icodeimpl.*;
+import wci.intermediate.symtabimpl.SymTabKeyImpl;
 
 import static wci.frontend.pascal.PascalTokenType.*;
 import static wci.frontend.pascal.PascalTokenType.NOT;
@@ -66,7 +68,7 @@ public class ExpressionParser extends StatementParser
         REL_OPS_MAP.put(GREATER_THAN, GT);
         REL_OPS_MAP.put(GREATER_EQUALS, GE);
     };
-
+    
     /**
      * Parse an expression.
      * @param token the initial token.
@@ -77,34 +79,169 @@ public class ExpressionParser extends StatementParser
         throws Exception
     {
         // Parse a simple expression and make the root of its tree
-        // the root node.
-        ICodeNode rootNode = parseSimpleExpression(token);
-
+        // the root node unless it is a set expression
         token = currentToken();
         TokenType tokenType = token.getType();
+        ICodeNode rootNode;
+        
+        if (tokenType == LEFT_BRACKET)
+        {
+            rootNode = parseSetExpression(token);
+        }
+        else
+        {
+            rootNode = parseSimpleExpression(token);
+        
+            // Look for a relational operator.
+            if (REL_OPS.contains(tokenType)) {
 
-        // Look for a relational operator.
-        if (REL_OPS.contains(tokenType)) {
+                // Create a new operator node and adopt the current tree
+                // as its first child.
+                ICodeNodeType nodeType = REL_OPS_MAP.get(tokenType);
+                ICodeNode opNode = ICodeFactory.createICodeNode(nodeType);
+                opNode.addChild(rootNode);
 
-            // Create a new operator node and adopt the current tree
-            // as its first child.
-            ICodeNodeType nodeType = REL_OPS_MAP.get(tokenType);
-            ICodeNode opNode = ICodeFactory.createICodeNode(nodeType);
-            opNode.addChild(rootNode);
+                token = nextToken();  // consume the operator
 
-            token = nextToken();  // consume the operator
+                // Parse the second simple expression.  The operator node adopts
+                // the simple expression's tree as its second child.
+                opNode.addChild(parseSimpleExpression(token));
 
-            // Parse the second simple expression.  The operator node adopts
-            // the simple expression's tree as its second child.
-            opNode.addChild(parseSimpleExpression(token));
-
-            // The operator node becomes the new root node.
-            rootNode = opNode;
+                // The operator node becomes the new root node.
+                rootNode = opNode;
+            }
         }
 
         return rootNode;
     }
+    
+    // Set of set operators
+    private static final EnumSet<PascalTokenType> SET_OPS = 
+            EnumSet.of(LEFT_BRACKET, RIGHT_BRACKET, DOT_DOT, COMMA); 
 
+    /**
+     * Parse a set expression.
+     * @param token the initial token.
+     * @return the root of the generated parse subtree
+     * @throws Exception if an error occurred
+     */
+    private ICodeNode parseSetExpression(Token token) throws Exception
+    {        
+        // Create a SET_VALUES node and assign it a HashSet of INTEGER_CONSTANT ICodeNodes
+        // The ICodeNodes will also be added to the tree, but the Set acts as a Jump Table
+        ICodeNode valuesNode = ICodeFactory.createICodeNode(ICodeNodeTypeImpl.SET_VALUES);
+        HashSet<ICodeNode> valuesSet = new HashSet<>();
+        valuesNode.setAttribute(VALUE, valuesSet);
+        
+        // Create a SET node and adopt the SET_VALUES node containing the HashSet
+        ICodeNode rootNode = ICodeFactory.createICodeNode(ICodeNodeTypeImpl.SET);
+        rootNode.addChild(valuesNode);
+        
+        // ^^^ TODO: rootNode is not getting the child correctly
+        
+        // skip the [
+        token = nextToken();
+        TokenType tokenType = token.getType();
+        
+        // Continue until we reach a closing bracket
+        while (true)
+        {
+            if (EXPR_START_SET.contains(tokenType))
+            {   // get the first, or perhaps only value in this part of the set
+                ICodeNode firstValueNode = parseSimpleExpression(token);
+                
+                // convert VARIABLE to INTEGER_CONSTANT
+                switch ((ICodeNodeTypeImpl) firstValueNode.getType())
+                {   // look up the variable in the symbol table and use that value
+                    // TODO: Handle this conversion in the Executor because symTab 
+                    // does not have values, only keys at this point
+                    case VARIABLE:
+                        SymTabEntry entry = (SymTabEntry) firstValueNode.getAttribute(ID);             
+                        ICodeNode tempNode = new ICodeNodeImpl(INTEGER_CONSTANT);
+                        tempNode.setAttribute(VALUE, entry.getAttribute(SymTabKeyImpl.DATA_VALUE));
+                        firstValueNode = tempNode;
+                        break;
+                    case INTEGER_CONSTANT: // no change needed
+                        break;
+                    default:
+                        errorHandler.flag(token, UNEXPECTED_TOKEN, this);
+                        break;
+                }                
+                // update the current token and check whether it is , or .. 
+                token = currentToken();
+                tokenType = token.getType();
+                
+                // just one value; add to the jump table and the root node
+                if (tokenType == COMMA)
+                {
+                    valuesSet.add(firstValueNode);
+                    rootNode.addChild(firstValueNode);
+                }
+                // range of values
+                else if (tokenType == DOT_DOT)
+                {
+                    // get the second value in the range
+                    token = nextToken();
+                    tokenType = token.getType();                    
+                    ICodeNode secondValueNode = parseSimpleExpression(token);
+                    
+                    Integer firstValue = (Integer) firstValueNode.getAttribute(VALUE);
+                    Integer secondValue = -1;
+                    
+                    // extract the value from secondValueNode for the upper bound
+                    switch((ICodeNodeTypeImpl) secondValueNode.getType())
+                    {
+                        case VARIABLE:                
+                            SymTabEntry entry = (SymTabEntry) secondValueNode.getAttribute(ID);
+                            secondValue = (Integer) entry.getAttribute(SymTabKeyImpl.DATA_VALUE);
+                            break;
+                        case INTEGER_CONSTANT:
+                            secondValue = (Integer) secondValueNode.getAttribute(VALUE);
+                            break;
+                        default:
+                            errorHandler.flag(token, UNEXPECTED_TOKEN, this);
+                            break;
+                    }
+                    // Add a node to the hash table and the root node for every member of the range
+                    for (Integer i = firstValue; i < secondValue; ++i)
+                    {
+                        ICodeNode rangeValueNode = new ICodeNodeImpl(INTEGER_CONSTANT);
+                        rangeValueNode.setAttribute(VALUE, i);
+                        rootNode.addChild(rangeValueNode);
+                        valuesSet.add(rangeValueNode);
+                    }
+                } // deal with RIGHT_BRACKET here so we don't duplicate code elsewhere
+                else if (tokenType == RIGHT_BRACKET)
+                {
+                    nextToken();
+                    break;
+                }
+                else // expected .. or ,
+                {
+                    errorHandler.flag(token, UNEXPECTED_TOKEN, this);
+                    break;
+                }
+            }
+            else if (tokenType == RIGHT_BRACKET)
+            {
+                nextToken();
+                break;
+            }
+            else if (tokenType == SEMICOLON) // let the parser handle this
+                break;
+            else // expected an expression
+            {
+                errorHandler.flag(token, UNEXPECTED_TOKEN, this);
+                break;
+            }
+            // go to the next token
+            token = nextToken();
+            tokenType = token.getType();
+        }        
+        
+        return rootNode;
+    }
+    
     // Set of additive operators.
     private static final EnumSet<PascalTokenType> ADD_OPS =
         EnumSet.of(PLUS, MINUS, PascalTokenType.OR);
@@ -117,7 +254,7 @@ public class ExpressionParser extends StatementParser
         ADD_OPS_OPS_MAP.put(MINUS, SUBTRACT);
         ADD_OPS_OPS_MAP.put(PascalTokenType.OR, ICodeNodeTypeImpl.OR);
     };
-
+    
     /**
      * Parse a simple expression.
      * @param token the initial token.
@@ -322,6 +459,10 @@ public class ExpressionParser extends StatementParser
                 }
 
                 break;
+            }
+                
+            case LEFT_BRACKET: {
+                rootNode = parseSetExpression(token);
             }
 
             default: {
