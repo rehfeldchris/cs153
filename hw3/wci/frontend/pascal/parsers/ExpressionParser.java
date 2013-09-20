@@ -8,7 +8,6 @@ import wci.frontend.*;
 import wci.frontend.pascal.*;
 import wci.intermediate.*;
 import wci.intermediate.icodeimpl.*;
-import wci.intermediate.symtabimpl.SymTabKeyImpl;
 
 import static wci.frontend.pascal.PascalTokenType.*;
 import static wci.frontend.pascal.PascalTokenType.NOT;
@@ -113,41 +112,38 @@ public class ExpressionParser extends StatementParser
      * @throws Exception if an error occurred
      */
     private ICodeNode parseSetExpression(Token token) throws Exception
-    {        
-        // Create a SET_VALUES node and assign it a HashSet of INTEGER_CONSTANT ICodeNodes
-        // The ICodeNodes will also be added to the tree, but the Set acts as a Jump Table
-        ICodeNode valuesNode = ICodeFactory.createICodeNode(ICodeNodeTypeImpl.SET_VALUES);
-        HashSet<ICodeNode> valuesSet = new HashSet<>();
-        valuesNode.setAttribute(VALUE, valuesSet);
-        
-        // Create a SET node and adopt the SET_VALUES node containing the HashSet
+    {   // Create the rootNode with type SET, and adopt a blank SET_VALUES node
         ICodeNode rootNode = ICodeFactory.createICodeNode(ICodeNodeTypeImpl.SET);
-        rootNode.addChild(valuesNode);        
-        // ^^^ TODO: rootNode is not getting the children correctly
         
-        TokenType tokenType = token.getType();
+        // Create a SET_VALUES node which maps Integers in the Set to ICodeNodes
+        // in the parse tree. Add INTEGER_CONSTANTS now, but wait til runtime
+        // to add VARIABLEs
+        ICodeNode valuesNode = ICodeFactory.createICodeNode(ICodeNodeTypeImpl.SET_VALUES);
+        HashSet<Integer> valuesSet = new HashSet<>();
+        valuesNode.setAttribute(VALUE, valuesSet);
+        rootNode.addChild(valuesNode);
+        
         // Continue until we reach a closing bracket
+        TokenType tokenType = token.getType();
         while (true)
         {
             if (EXPR_START_SET.contains(tokenType))
             {   // get the first, or perhaps only value in this part of the set
-                // and make sure it is a VARIABLE or INTEGER_CONSTANT
+                // and make sure it is a valid SimpleExpression
                 ICodeNode firstValueNode = parseSimpleExpression(token);
-                ICodeNodeType firstValueType = firstValueNode.getType();
-                if (!(EXPR_START_SET.contains(tokenType) || tokenType == STAR || tokenType == DIV))
-                {
-                    errorHandler.flag(token, UNEXPECTED_TOKEN, this);
-                    break;
-                }      
-                // update the current token and check whether it is , or .. 
+                ICodeNodeType firstValueType = firstValueNode.getType();                
+                
+                // update the current token and check whether it is , .. or ]
                 token = currentToken();
                 tokenType = token.getType();
                 
                 switch ((PascalTokenType) tokenType)
                 {   // just one value; add to the jump table and the root node
-                    case COMMA:
-                        valuesSet.add(firstValueNode);
-                        rootNode.addChild(firstValueNode);
+                    case COMMA: case RIGHT_BRACKET:
+                        if (firstValueNode.getType() == INTEGER_CONSTANT)
+                            valuesSet.add((Integer) firstValueNode.getAttribute(VALUE));
+                        else
+                            rootNode.addChild(firstValueNode);                            
                         break;
                     // range of values
                     case DOT_DOT:
@@ -157,37 +153,23 @@ public class ExpressionParser extends StatementParser
                         ICodeNode secondValueNode = parseSimpleExpression(token);
                         ICodeNodeType secondValueType = secondValueNode.getType();
                         
-                        if (!(secondValueType == VARIABLE || secondValueType == INTEGER_CONSTANT))
-                        {
-                            errorHandler.flag(token, UNEXPECTED_TOKEN, this);
-                            break;
-                        }
-                        
                         // Both are integers so we can evaluate the range now
-                        // or maybe just create a range node?? Either way should work
                         if (firstValueType == INTEGER_CONSTANT && secondValueType == INTEGER_CONSTANT)
                         {
                             Integer firstValue =  (Integer) firstValueNode.getAttribute(VALUE);
-                            Integer secondValue = (Integer) firstValueNode.getAttribute(VALUE);
-                            for (Integer i = firstValue; i < secondValue; ++i)
+                            Integer secondValue = (Integer) secondValueNode.getAttribute(VALUE);
+                            for (Integer i = firstValue; i <= secondValue; ++i)
                             {
-                                ICodeNode rangeValueNode = ICodeFactory.createICodeNode(INTEGER_CONSTANT);
-                                if (!valuesSet.contains(rangeValueNode))
-                                {
-                                    rangeValueNode.setAttribute(VALUE, i);
-                                    rootNode.addChild(rangeValueNode);
-                                    valuesSet.add(rangeValueNode);
-                                }
+                                if (!valuesSet.contains(i))
+                                    valuesSet.add(i);
                                 else
                                 { // flag this as a duplicate value
-                                    //errorHandler.flag(token, )
+                                    errorHandler.flag(token, DUPLICATE_SET_VALUE, this);
                                     break;
                                 }
                             }             
                         }
                         // one is a variable, so make a range node to evaluate later
-                        // TODO: Figure out how to flag duplicates in unevaluated ranges
-                        // maybe this has to be determined at runtime also?
                         else 
                         {
                             ICodeNode rangeNode = ICodeFactory.createICodeNode(RANGE);
@@ -196,9 +178,7 @@ public class ExpressionParser extends StatementParser
                             rootNode.addChild(rangeNode);
                         }
                         break;
-                    case RIGHT_BRACKET:
-                        break;
-                    default:
+                    default: // expected .. or ,
                         errorHandler.flag(token, UNEXPECTED_TOKEN, this);
                 }
             }
@@ -209,7 +189,6 @@ public class ExpressionParser extends StatementParser
                 errorHandler.flag(token, UNEXPECTED_TOKEN, this);
                 break;
             }
-            // go to the next token
             token = nextToken();
             tokenType = token.getType();
         }        
