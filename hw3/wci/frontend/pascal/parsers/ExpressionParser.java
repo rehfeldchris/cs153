@@ -80,7 +80,6 @@ public class ExpressionParser extends StatementParser
     {
         // Parse a simple expression and make the root of its tree
         // the root node unless it is a set expression
-        token = currentToken();
         ICodeNode rootNode = parseSimpleExpression(token);
         
         token = currentToken();
