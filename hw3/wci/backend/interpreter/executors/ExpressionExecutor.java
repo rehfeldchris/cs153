@@ -2,6 +2,8 @@ package wci.backend.interpreter.executors;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.TreeSet;
 
 import wci.intermediate.*;
 import wci.intermediate.icodeimpl.*;
@@ -93,6 +95,56 @@ public class ExpressionExecutor extends StatementExecutor
                 boolean value = (Boolean) execute(expressionNode);
                 return !value;
             }
+            
+            case SET: {
+               
+               ArrayList<ICodeNode> setChildren = node.getChildren();
+               TreeSet<Integer> values = new TreeSet<Integer>();
+               
+               for (ICodeNode i : setChildren) {
+                  ICodeNodeTypeImpl setNodeType = (ICodeNodeTypeImpl) i.getType();
+                  
+                  switch (setNodeType) {
+                  
+                     case SET_VALUES: {
+                        
+                        // Add integer constants and integer constant ranges to values
+                        values.addAll((HashSet<Integer>) i.getAttribute(VALUE));
+                        break;
+                     }
+                     
+                     case VARIABLE: {
+                        
+                        // Get the variable's symbol table entry and add its value to values
+                        SymTabEntry entry = (SymTabEntry) i.getAttribute(ID);
+                        Object dataValue = entry.getAttribute(DATA_VALUE);
+                        
+                        if (dataValue instanceof Integer) {
+                           values.add((Integer) dataValue);
+                        }
+                        break;
+                     }
+                     
+                     case RANGE: {
+                        
+                        Object rangeValues = executeBinaryOperator(i, RANGE);
+                        values.addAll((HashSet<Integer>) rangeValues);
+                        break;
+                     }
+                     
+                     // Must be an expression
+                     default: {
+                        
+                        Object expressionValue = execute(i);
+                        if (expressionValue instanceof Integer) {
+                           values.add((Integer) expressionValue);
+                        }
+                        break;
+                     }                    
+                  }
+               }
+               return values;
+            }
 
             // Must be a binary operator.
             default: return executeBinaryOperator(node, nodeType);
@@ -123,6 +175,8 @@ public class ExpressionExecutor extends StatementExecutor
 
         boolean integerMode = (operand1 instanceof Integer) &&
                               (operand2 instanceof Integer);
+        boolean setMode = (operand1 instanceof TreeSet<?>) &&
+                          (operand2 instanceof TreeSet<?>);
 
         // ====================
         // Arithmetic operators
@@ -176,6 +230,31 @@ public class ExpressionExecutor extends StatementExecutor
                     }
                 }
             }
+            else if (setMode) {
+               TreeSet<Integer> value1 = ((TreeSet<Integer>) operand1);
+               TreeSet<Integer> value2 = ((TreeSet<Integer>) operand2);
+               TreeSet<Integer> result = new TreeSet<Integer>(value1);
+               
+               // set operations
+               switch (nodeType) {
+                  // set intersection
+                  case MULTIPLY: { 
+                     result.retainAll(value2);
+                     break;
+                  }
+                  // set union
+                  case ADD: {
+                     result.addAll(value2);
+                     break;
+                  }
+                  // set asymmetric difference
+                  case SUBTRACT: {
+                     result.removeAll(value2);
+                     break;
+                  }
+               }
+               return result;
+            }
             else {
                 float value1 = operand1 instanceof Integer
                                    ? (Integer) operand1 : (Float) operand1;
@@ -217,6 +296,24 @@ public class ExpressionExecutor extends StatementExecutor
             }
         }
 
+        // ==============
+        // Range operator
+        // ==============
+        
+        else if (nodeType == RANGE) {
+           if (integerMode) {              
+              int value1 = (Integer) operand1;
+              int value2 = (Integer) operand2;
+              HashSet<Integer> rangeValues = new HashSet<Integer>();
+              
+              for (int i = value1; i <= value2; i++)
+              {
+                 rangeValues.add(i);
+              }
+              
+              return rangeValues;
+           }
+        }
         // ====================
         // Relational operators
         // ====================
@@ -234,6 +331,18 @@ public class ExpressionExecutor extends StatementExecutor
                 case GT: return value1 >  value2;
                 case GE: return value1 >= value2;
             }
+        }
+        else if (setMode) {
+           TreeSet<Integer> value1 = ((TreeSet<Integer>) operand1);
+           TreeSet<Integer> value2 = ((TreeSet<Integer>) operand2);
+           
+           switch (nodeType) {
+              case EQ: return value1.equals(value2);
+              case NE: return !value1.equals(value2);
+              case LE: return value2.containsAll(value2);
+              case GE: return value1.containsAll(value2);
+           }
+           
         }
         else {
             float value1 = operand1 instanceof Integer
