@@ -118,9 +118,8 @@ public class ExpressionParser extends StatementParser
     {   // Create the rootNode with type SET, and adopt a blank SET_VALUES node
         ICodeNode rootNode = ICodeFactory.createICodeNode(ICodeNodeTypeImpl.SET);
         
-        // Create a SET_VALUES node which maps Integers in the Set to ICodeNodes
-        // in the parse tree. Add INTEGER_CONSTANTS now, but wait til runtime
-        // to add VARIABLEs
+        // Create a SET_VALUES node which contains INTEGER_CONSTANTS that can be
+        //  evaluated at compile time
         ICodeNode valuesNode = ICodeFactory.createICodeNode(ICodeNodeTypeImpl.SET_VALUES);
         HashSet<Integer> valuesSet = new HashSet<>();
         valuesNode.setAttribute(VALUE, valuesSet);
@@ -185,13 +184,8 @@ public class ExpressionParser extends StatementParser
                         errorHandler.flag(token, UNEXPECTED_TOKEN, this);
                 }
             }
-            else if (tokenType == RIGHT_BRACKET || tokenType == SEMICOLON)
+            else
                 break;
-            else // expected an expression
-            {
-                errorHandler.flag(token, UNEXPECTED_TOKEN, this);
-                break;
-            }
             token = nextToken();
             tokenType = token.getType();
         }        
@@ -428,8 +422,6 @@ public class ExpressionParser extends StatementParser
                 token = currentToken();
                 if (token.getType() == RIGHT_BRACKET) 
                     token = nextToken(); // consume the ]
-                else if (token.getType() != SEMICOLON) // let scanner handle ;
-                    errorHandler.flag(token, MISSING_RIGHT_BRACKET, this);
                 break;
             }
 
