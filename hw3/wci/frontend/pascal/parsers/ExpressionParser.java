@@ -80,8 +80,11 @@ public class ExpressionParser extends StatementParser
         // Parse a simple expression and make the root of its tree
         // the root node unless it is a set expression
         token = currentToken();
-        TokenType tokenType = token.getType();
         ICodeNode rootNode = parseSimpleExpression(token);
+        
+        token = currentToken();
+        TokenType tokenType = token.getType();
+        
         
         // Look for a relational operator.
         if (REL_OPS.contains(tokenType)) {
