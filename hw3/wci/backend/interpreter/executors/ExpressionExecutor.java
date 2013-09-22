@@ -175,9 +175,9 @@ public class ExpressionExecutor extends StatementExecutor
 
         boolean integerMode = (operand1 instanceof Integer) &&
                               (operand2 instanceof Integer);
-        boolean setMode = (operand1 instanceof TreeSet<?>) &&
+        boolean setMode = (operand1 instanceof TreeSet<?>) ||
                           (operand2 instanceof TreeSet<?>);
-
+        
         // ====================
         // Arithmetic operators
         // ====================
@@ -230,13 +230,39 @@ public class ExpressionExecutor extends StatementExecutor
                     }
                 }
             }
-            else if (setMode) {
-               TreeSet<Integer> value1 = ((TreeSet<Integer>) operand1);
-               TreeSet<Integer> value2 = ((TreeSet<Integer>) operand2);
-               TreeSet<Integer> result = new TreeSet<Integer>(value1);
-               
+            else if (setMode) 
+            {
+                // If one operand is an integer convert to a 1 element Set
+                TreeSet<Integer> result, value1, value2;
+                if (operand1 instanceof Integer)
+                {                    
+                    TreeSet<Integer> temp = new TreeSet<>();
+                    temp.add((Integer) operand1);
+                    value1 = temp;
+                    value2 = (TreeSet<Integer>) operand2;
+                }
+                else if (operand2 instanceof Integer)
+                {                    
+                    TreeSet<Integer> temp = new TreeSet<>();
+                    temp.add((Integer) operand2);
+                    value1 = (TreeSet<Integer>) operand1;
+                    value2 = temp;
+                }
+                else if (operand1 instanceof TreeSet<?> && operand2 instanceof TreeSet<?>)
+                {
+                    value1 = (TreeSet<Integer>) operand1;
+                    value2 = (TreeSet<Integer>) operand2;
+                }
+                else
+                {
+                    errorHandler.flag(node, NONINTEGER_SET_OPERATION, this);
+                    return 0;
+                }
+               result = value1;
+                
                // set operations
-               switch (nodeType) {
+               switch (nodeType) 
+               {
                   // set intersection
                   case MULTIPLY: { 
                      result.retainAll(value2);
@@ -333,14 +359,32 @@ public class ExpressionExecutor extends StatementExecutor
             }
         }
         else if (setMode) {
-           TreeSet<Integer> value1 = ((TreeSet<Integer>) operand1);
-           TreeSet<Integer> value2 = ((TreeSet<Integer>) operand2);
-           
-           switch (nodeType) {
-              case EQ: return value1.equals(value2);
-              case NE: return !value1.equals(value2);
-              case LE: return value2.containsAll(value2);
-              case GE: return value1.containsAll(value2);
+            // IN is only valid for INTEGER_CONSTANT IN SET. fpc says 
+            // "Operator not overloaded" if this is tried between 2 sets for example
+            if (nodeType == IN_SET)
+            {
+                if (operand1 instanceof Integer)
+                    return ((TreeSet<Integer>) operand2).contains((Integer) operand1);
+                errorHandler.flag(node, INVALID_OPERATOR, this);
+                return 0;
+            }
+            //  cannot  perform relational operator unless both sets. TYPE_MISMATCH is
+            // the error code that fpc uses
+            if (!(operand1 instanceof TreeSet<?>) || !(operand2 instanceof TreeSet<?>))
+            {
+                errorHandler.flag(node, TYPE_MISMATCH, this);
+                return 0;
+            }
+                
+            TreeSet<Integer> value1 = (TreeSet<Integer>) operand1;
+            TreeSet<Integer> value2 = (TreeSet<Integer>) operand2;
+                        
+           switch (nodeType) 
+           {
+                case EQ: return value1.equals(value2);
+                case NE: return !value1.equals(value2);
+                case LE: return value2.containsAll(value2);
+                case GE: return value1.containsAll(value2);
            }
            
         }
