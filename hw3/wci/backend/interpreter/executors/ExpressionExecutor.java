@@ -258,7 +258,7 @@ public class ExpressionExecutor extends StatementExecutor
                     errorHandler.flag(node, NONINTEGER_SET_OPERATION, this);
                     return 0;
                 }
-               result = value1;
+               result = new TreeSet<Integer>(value1);
                 
                // set operations
                switch (nodeType) 
