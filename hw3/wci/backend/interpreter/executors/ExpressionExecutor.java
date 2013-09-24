@@ -1,14 +1,15 @@
 package wci.backend.interpreter.executors;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.TreeSet;
 
 import wci.intermediate.*;
 import wci.intermediate.icodeimpl.*;
 import wci.backend.interpreter.*;
-
 import static wci.intermediate.symtabimpl.SymTabKeyImpl.*;
 import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.*;
 import static wci.intermediate.icodeimpl.ICodeKeyImpl.*;
@@ -106,10 +107,26 @@ public class ExpressionExecutor extends StatementExecutor
                   
                   switch (setNodeType) {
                   
+                  /**
+                   * HW assignment says throw runtime errors when not between 0-50
+                   */
                      case SET_VALUES: {
-                        
                         // Add integer constants and integer constant ranges to values
-                        values.addAll((HashSet<Integer>) i.getAttribute(VALUE));
+                    	 if (i.getAttribute(VALUE) instanceof HashSet<?>) {
+                        	 HashSet<?> vals = (HashSet<?>) i.getAttribute(VALUE);
+                        	 for (Object o : vals) {
+                        		 if (o instanceof Integer) {
+                        			 Integer val = (Integer) o;
+                            		 if (val < 0 || val > 50) {
+                            			 //flag
+                            		 } else {
+                            			 values.add(val);
+                            		 }
+                        		 }
+
+                        	 }
+                    	 }
+
                         break;
                      }
                      
@@ -120,7 +137,12 @@ public class ExpressionExecutor extends StatementExecutor
                         Object dataValue = entry.getAttribute(DATA_VALUE);
                         
                         if (dataValue instanceof Integer) {
-                           values.add((Integer) dataValue);
+                        	 Integer val = (Integer) dataValue;
+		               		 if (val < 0 || val > 50) {
+		               			errorHandler.flag(node, VALUE_RANGE, this);
+		            		 } else {
+		            			 values.add(val);
+		            		 }
                         }
                         break;
                      }
@@ -128,7 +150,21 @@ public class ExpressionExecutor extends StatementExecutor
                      case RANGE: {
                         
                         Object rangeValues = executeBinaryOperator(i, RANGE);
-                        values.addAll((HashSet<Integer>) rangeValues);
+                        
+			           	 if (rangeValues instanceof HashSet<?>) {
+			            	 HashSet<?> vals = (HashSet<?>) rangeValues;
+			            	 for (Object o : vals) {
+			            		 if (o instanceof Integer) {
+			            			 Integer val = (Integer) o;
+			                		 if (val < 0 || val > 50) {
+			                			 errorHandler.flag(node, VALUE_RANGE, this);
+			                		 } else {
+			                			 values.add(val);
+			                		 }
+			            		 }
+			
+			            	 }
+			        	 }
                         break;
                      }
                      
@@ -137,7 +173,12 @@ public class ExpressionExecutor extends StatementExecutor
                         
                         Object expressionValue = execute(i);
                         if (expressionValue instanceof Integer) {
-                           values.add((Integer) expressionValue);
+                        	 Integer val = (Integer) expressionValue;
+	                		 if (val < 0 || val > 50) {
+	                			 errorHandler.flag(node, VALUE_RANGE, this);
+	                		 } else {
+	                			 values.add(val);
+	                		 }
                         }
                         break;
                      }                    
@@ -150,6 +191,7 @@ public class ExpressionExecutor extends StatementExecutor
             default: return executeBinaryOperator(node, nodeType);
         }
     }
+    
 
     // Set of arithmetic operator node types.
     private static final EnumSet<ICodeNodeTypeImpl> ARITH_OPS =
@@ -331,7 +373,7 @@ public class ExpressionExecutor extends StatementExecutor
               int value1 = (Integer) operand1;
               int value2 = (Integer) operand2;
               HashSet<Integer> rangeValues = new HashSet<Integer>();
-              
+
               for (int i = value1; i <= value2; i++)
               {
                  rangeValues.add(i);
@@ -366,7 +408,7 @@ public class ExpressionExecutor extends StatementExecutor
                 if (operand1 instanceof Integer)
                     return ((TreeSet<Integer>) operand2).contains((Integer) operand1);
                 errorHandler.flag(node, INVALID_OPERATOR, this);
-                return 0;
+                return 0; 
             }
             //  cannot  perform relational operator unless both sets. TYPE_MISMATCH is
             // the error code that fpc uses
