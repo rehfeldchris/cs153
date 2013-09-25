@@ -1,10 +1,8 @@
 package wci.backend.interpreter.executors;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.TreeSet;
 
 import wci.intermediate.*;
@@ -129,49 +127,11 @@ public class ExpressionExecutor extends StatementExecutor
 
                         break;
                      }
-                     
-                     case VARIABLE: {
-                        
-                        // Get the variable's symbol table entry and add its value to values
-                        SymTabEntry entry = (SymTabEntry) i.getAttribute(ID);
-                        Object dataValue = entry.getAttribute(DATA_VALUE);
-                        
-                        if (dataValue instanceof Integer) {
-                        	 Integer val = (Integer) dataValue;
-		               		 if (val < 0 || val > 50) {
-		               			errorHandler.flag(node, VALUE_RANGE, this);
-		            		 } else {
-		            			 values.add(val);
-		            		 }
-                        }
-                        break;
-                     }
-                     
-                     case RANGE: {
-                        
-                        Object rangeValues = executeBinaryOperator(i, RANGE);
-                        
-			           	 if (rangeValues instanceof HashSet<?>) {
-			            	 HashSet<?> vals = (HashSet<?>) rangeValues;
-			            	 for (Object o : vals) {
-			            		 if (o instanceof Integer) {
-			            			 Integer val = (Integer) o;
-			                		 if (val < 0 || val > 50) {
-			                			 errorHandler.flag(node, VALUE_RANGE, this);
-			                		 } else {
-			                			 values.add(val);
-			                		 }
-			            		 }
-			
-			            	 }
-			        	 }
-                        break;
-                     }
-                     
-                     // Must be an expression
+                     // Expression, variable, or range
                      default: {
                         
                         Object expressionValue = execute(i);
+                        // Expression or variable
                         if (expressionValue instanceof Integer) {
                         	 Integer val = (Integer) expressionValue;
 	                		 if (val < 0 || val > 50) {
@@ -179,6 +139,20 @@ public class ExpressionExecutor extends StatementExecutor
 	                		 } else {
 	                			 values.add(val);
 	                		 }
+                        }
+                        // Range
+                        else if (expressionValue instanceof HashSet<?>) {
+                           HashSet<?> vals = (HashSet<?>) expressionValue;
+                           for (Object o : vals) {
+                              if (o instanceof Integer) {
+                                 Integer val = (Integer) o;
+                                 if (val < 0 || val > 50) {
+                                    errorHandler.flag(node, VALUE_RANGE, this);
+                                 } else {
+                                    values.add(val);
+                                 }
+                              }
+                           }
                         }
                         break;
                      }                    
@@ -274,23 +248,10 @@ public class ExpressionExecutor extends StatementExecutor
             }
             else if (setMode) 
             {
-                // If one operand is an integer convert to a 1 element Set
                 TreeSet<Integer> result, value1, value2;
-                if (operand1 instanceof Integer)
-                {                    
-                    TreeSet<Integer> temp = new TreeSet<>();
-                    temp.add((Integer) operand1);
-                    value1 = temp;
-                    value2 = (TreeSet<Integer>) operand2;
-                }
-                else if (operand2 instanceof Integer)
-                {                    
-                    TreeSet<Integer> temp = new TreeSet<>();
-                    temp.add((Integer) operand2);
-                    value1 = (TreeSet<Integer>) operand1;
-                    value2 = temp;
-                }
-                else if (operand1 instanceof TreeSet<?> && operand2 instanceof TreeSet<?>)
+
+                // Make sure both operands are sets
+                if (operand1 instanceof TreeSet<?> && operand2 instanceof TreeSet<?>)
                 {
                     value1 = (TreeSet<Integer>) operand1;
                     value2 = (TreeSet<Integer>) operand2;
@@ -300,6 +261,7 @@ public class ExpressionExecutor extends StatementExecutor
                     errorHandler.flag(node, NONINTEGER_SET_OPERATION, this);
                     return 0;
                 }
+                
                result = new TreeSet<Integer>(value1);
                 
                // set operations
@@ -425,7 +387,7 @@ public class ExpressionExecutor extends StatementExecutor
            {
                 case EQ: return value1.equals(value2);
                 case NE: return !value1.equals(value2);
-                case LE: return value2.containsAll(value2);
+                case LE: return value2.containsAll(value1);
                 case GE: return value1.containsAll(value2);
            }
            
