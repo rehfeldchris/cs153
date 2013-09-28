@@ -12,7 +12,7 @@ public enum PascalErrorCode
 {
     ALREADY_FORWARDED("Already specified in FORWARD"),
     CASE_CONSTANT_REUSED("CASE constant reused"),
-    DUPLICATE_SET_VALUE("Value is already in the set"),
+    DUPLICATE_SET_VALUE("Non-unique set member(s)"),
     IDENTIFIER_REDEFINED("Redefined identifier"),
     IDENTIFIER_UNDEFINED("Undefined identifier"),
     INCOMPATIBLE_ASSIGNMENT("Incompatible assignment"),
@@ -27,6 +27,7 @@ public enum PascalErrorCode
     INVALID_IDENTIFIER_USAGE("Invalid identifier usage"),
     INVALID_INDEX_TYPE("Invalid index type"),
     INVALID_NUMBER("Invalid number"),
+    INVALID_OPERATOR("Invalid operator"),
     INVALID_STATEMENT("Invalid statement"),
     INVALID_SUBRANGE_TYPE("Invalid subrange type"),
     INVALID_TARGET("Invalid assignment target"),

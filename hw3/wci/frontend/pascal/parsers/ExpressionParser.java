@@ -95,14 +95,18 @@ public class ExpressionParser extends StatementParser
             ICodeNode opNode = ICodeFactory.createICodeNode(nodeType);
             opNode.addChild(rootNode);
 
+            Token errorToken = token; // Get correct position if there's an error
             token = nextToken();  // consume the operator
 
             // Parse the second simple expression.  The operator node adopts
             // the simple expression's tree as its second child.
-            opNode.addChild(parseSimpleExpression(token));
-
+            ICodeNode simpExpr = parseSimpleExpression(token);
+            opNode.addChild(simpExpr);
+            
             // The operator node becomes the new root node.
             rootNode = opNode;
+            if (rootNode.getType() == IN_SET && simpExpr.getType() == INTEGER_CONSTANT)
+                errorHandler.flag(errorToken, INVALID_OPERATOR, this);
         }
 
         return rootNode;
@@ -125,71 +129,111 @@ public class ExpressionParser extends StatementParser
         valuesNode.setAttribute(VALUE, valuesSet);
         rootNode.addChild(valuesNode);
         
-        // Continue until we reach a closing bracket
+        // Continue until we reach a closing bracket or some sort of error occurs
         TokenType tokenType = token.getType();
-        while (true)
-        {
-            if (EXPR_START_SET.contains(tokenType))
-            {   // get the first, or perhaps only value in this part of the set
-                // and make sure it is a valid SimpleExpression
-                ICodeNode firstValueNode = parseSimpleExpression(token);
-                ICodeNodeType firstValueType = firstValueNode.getType();                
+        boolean unrecoverableError = false;
                 
-                // update the current token and check whether it is , .. or ]
-                token = currentToken();
-                tokenType = token.getType();
-                
-                switch ((PascalTokenType) tokenType)
-                {   // just one value; add to the jump table and the root node
-                    case COMMA: case RIGHT_BRACKET:
-                        if (firstValueNode.getType() == INTEGER_CONSTANT)
-                            valuesSet.add((Integer) firstValueNode.getAttribute(VALUE));
-                        else
-                            rootNode.addChild(firstValueNode);                            
-                        break;
-                    // range of values
-                    case DOT_DOT:
-                        // get the second value in the range, make sure it is valid
-                        token = nextToken();
-                        tokenType = token.getType();                    
-                        ICodeNode secondValueNode = parseSimpleExpression(token);
-                        ICodeNodeType secondValueType = secondValueNode.getType();
-                        
-                        // Both are integers so we can evaluate the range now
-                        if (firstValueType == INTEGER_CONSTANT && secondValueType == INTEGER_CONSTANT)
+        while (EXPR_START_SET.contains(tokenType))
+        {   
+            // This is used to give the correct error position for , or ] 
+            Token errorHandlingToken = currentToken();
+            
+            // get the first, or perhaps only value in this part of the set
+            ICodeNode firstValueNode = parseSimpleExpression(token);
+            ICodeNodeType firstValueType = firstValueNode.getType();                
+
+            token = currentToken();
+            tokenType = token.getType();
+
+            switch ((PascalTokenType) tokenType)
+            {   // just one value
+                case COMMA: case RIGHT_BRACKET:
+                    if (firstValueNode.getType() == INTEGER_CONSTANT)
+                    {
+                        Integer val = (Integer) firstValueNode.getAttribute(VALUE);
+                        if (val >  50 || val < 0)
                         {
-                            Integer firstValue =  (Integer) firstValueNode.getAttribute(VALUE);
-                            Integer secondValue = (Integer) secondValueNode.getAttribute(VALUE);
-                            for (Integer i = firstValue; i <= secondValue; ++i)
+                            errorHandler.flag(errorHandlingToken, RANGE_INTEGER, this);
+                            break;
+                        }
+                        if (valuesSet.contains(val))
+                        {                                
+                            errorHandler.flag(errorHandlingToken, DUPLICATE_SET_VALUE, this);
+                            break;
+                        }
+                        // add integers to valuesSet
+                        valuesSet.add(val);                 
+                    }
+                    else // add variables to be evaluated at runtime
+                        rootNode.addChild(firstValueNode);                            
+                    break;
+                // range of values
+                case DOT_DOT:
+                    // get the second value in the range, make sure it is valid
+                    token = nextToken();
+                    tokenType = token.getType();     
+                    if (!EXPR_START_SET.contains(tokenType))
+                    {                            
+                        errorHandler.flag(token, MISSING_CONSTANT, this); 
+                        break;
+                    }
+                    ICodeNode secondValueNode = parseSimpleExpression(token);
+                    ICodeNodeType secondValueType = secondValueNode.getType();
+
+                    // Both are integers so we can evaluate the range now
+                    if (firstValueType == INTEGER_CONSTANT && secondValueType == INTEGER_CONSTANT)
+                    {
+                        Integer firstValue =  (Integer) firstValueNode.getAttribute(VALUE);
+                        Integer secondValue = (Integer) secondValueNode.getAttribute(VALUE);
+                        for (Integer i = firstValue; i <= secondValue; ++i)
+                        {
+                            if (i > 50 || i < 0)
                             {
-                                if (!valuesSet.contains(i))
-                                    valuesSet.add(i);
-                                else
-                                { // flag this as a duplicate value
-                                    errorHandler.flag(token, DUPLICATE_SET_VALUE, this);
-                                    break;
-                                }
-                            }             
-                        }
-                        // one is a variable, so make a range node to evaluate later
-                        else 
-                        {
-                            ICodeNode rangeNode = ICodeFactory.createICodeNode(RANGE);
-                            rangeNode.addChild(firstValueNode);
-                            rangeNode.addChild(secondValueNode);
-                            rootNode.addChild(rangeNode);
-                        }
-                        break;
-                    default: // expected .. or ,
-                        errorHandler.flag(token, UNEXPECTED_TOKEN, this);
-                }
+                                errorHandler.flag(token, RANGE_INTEGER, this);
+                                break;
+                            }
+                            if (valuesSet.contains(i))
+                            {
+                                errorHandler.flag(token, DUPLICATE_SET_VALUE, this);
+                                break;
+                            }
+                            valuesSet.add(i);
+                        }             
+                    }
+                    // one is a variable or expression, so make a range node to evaluate later
+                    else 
+                    {
+                        ICodeNode rangeNode = ICodeFactory.createICodeNode(RANGE);
+                        rangeNode.addChild(firstValueNode);
+                        rangeNode.addChild(secondValueNode);
+                        rootNode.addChild(rangeNode);
+                    }                 
+                    break;
+                case VAR: case INTEGER:
+                    errorHandler.flag(token, MISSING_COMMA, this); 
+                    continue;
+                case SEMICOLON:
+                    errorHandler.flag(token, MISSING_RIGHT_BRACKET, this);
+                    unrecoverableError = true;
+                    break;
+                default: // something really weird is here
+                    errorHandler.flag(token, UNEXPECTED_TOKEN, this);
+                    continue;
             }
-            else
+            if (unrecoverableError)
                 break;
             token = nextToken();
             tokenType = token.getType();
+            // there are a lot of cases for this, but it is pointless to keep
+            // checking for errors if the code is that garbled.. this catches
+            // ONE extra comma or misplaced square bracket
+            if (tokenType == COMMA || tokenType == RIGHT_BRACKET)
+            {
+                errorHandler.flag(token, UNEXPECTED_TOKEN, this);
+                token = nextToken();
+                tokenType = token.getType();
+            }
         }        
-        
         return rootNode;
     }
     
@@ -204,8 +248,12 @@ public class ExpressionParser extends StatementParser
         ADD_OPS_OPS_MAP.put(PLUS, ADD);
         ADD_OPS_OPS_MAP.put(MINUS, SUBTRACT);
         ADD_OPS_OPS_MAP.put(PascalTokenType.OR, ICodeNodeTypeImpl.OR);
-    };
+    };    
     
+    // Operations that cannot be performed with a set as the first operand
+    private static final EnumSet<PascalTokenType> DISALLOWED_SET_OPS = 
+            EnumSet.of(STAR, SLASH, PascalTokenType.OR, PascalTokenType.AND, 
+            LESS_THAN, GREATER_THAN, IN);
     /**
      * Parse a simple expression.
      * @param token the initial token.
@@ -290,11 +338,16 @@ public class ExpressionParser extends StatementParser
         throws Exception
     {
         // Parse a factor and make its node the root node.
-        ICodeNode rootNode = parseFactor(token);
+        ICodeNode rootNode = parseFactor(token);        
 
         token = currentToken();
         TokenType tokenType = token.getType();
-
+        
+        // Flag invalid set operations
+        if ((rootNode.getType() == ICodeNodeTypeImpl.SET && 
+                DISALLOWED_SET_OPS.contains(tokenType)))
+            errorHandler.flag(token, INVALID_OPERATOR, this);
+        
         // Loop over multiplicative operators.
         while (MULT_OPS.contains(tokenType)) {
 
@@ -420,7 +473,7 @@ public class ExpressionParser extends StatementParser
                 
                 // look for matching ] token
                 token = currentToken();
-                if (token.getType() == RIGHT_BRACKET) 
+                if (token.getType() == RIGHT_BRACKET)
                     token = nextToken(); // consume the ]
                 break;
             }
@@ -430,7 +483,6 @@ public class ExpressionParser extends StatementParser
                 break;
             }
         }
-
         return rootNode;
     }
 }

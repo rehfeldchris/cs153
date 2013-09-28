@@ -1,0 +1,83 @@
+001 BEGIN
+002     low := 15;
+003     mid := 45;
+004     high := 50;
+005 
+006     evens  := [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20];
+007     odds   := [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21];
+008     primes := [2, 3, 5, 7, 11, 13, 17, 19, 23, 29];
+009     teens  := [13..19];
+010 
+011     s1 := evens*odds;
+012     s2 := evens - teens + [high, mid..47, 2*low];
+013     s3 := evens*primes + teens;
+014     s4 := s3 - odds;
+015     s5 := evens + odds + primes + teens;
+016     s6 := (primes - teens)*odds;
+017 
+018     b1 := odds - primes = [15, 9, 21, 1];
+019     b2 := teens <= evens + odds;
+020     b3 := primes >= teens;
+021     b4 := odds - teens*primes <> [21, 7, 9, 1, 11, 5, 15, 3];
+022     b5 := 15 IN teens - primes;
+023 
+024     s7 := [];
+025     i := 1;
+026 
+027     WHILE i <= 50 DO BEGIN
+028         s7 := s7 + [i];
+029         i := 2*i;
+030 
+031         IF 8 IN s7 THEN s7 := s7 + [10]
+032                    ELSE s7 := s7 - [4]
+033     END
+034 END.
+
+                  34 source lines.
+                   0 syntax errors.
+                0.01 seconds total parsing time.
+
+===== OUTPUT =====
+
+>>> LINE 002: low = 15
+>>> LINE 003: mid = 45
+>>> LINE 004: high = 50
+>>> LINE 006: evens = [0, 16, 2, 18, 4, 20, 6, 8, 10, 12, 14]
+>>> LINE 007: odds = [17, 1, 19, 3, 21, 5, 7, 9, 11, 13, 15]
+>>> LINE 008: primes = [17, 2, 19, 3, 5, 23, 7, 11, 29, 13]
+>>> LINE 009: teens = [17, 16, 19, 18, 13, 14, 15]
+>>> LINE 011: s1 = []
+>>> LINE 012: s2 = [0, 2, 4, 6, 8, 10, 12, 46, 47, 45, 50, 20, 30]
+>>> LINE 013: s3 = [17, 16, 19, 2, 18, 13, 14, 15]
+>>> LINE 014: s4 = [16, 2, 18, 14]
+>>> LINE 015: s5 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 16, 19, 18, 21, 20, 23, 29]
+>>> LINE 016: s6 = [3, 5, 7, 11]
+>>> LINE 018: b1 = true
+>>> LINE 019: b2 = true
+>>> LINE 020: b3 = false
+>>> LINE 021: b4 = false
+>>> LINE 022: b5 = true
+>>> LINE 024: s7 = []
+>>> LINE 025: i = 1
+>>> LINE 028: s7 = [1]
+>>> LINE 029: i = 2
+>>> LINE 032: s7 = [1]
+>>> LINE 028: s7 = [1, 2]
+>>> LINE 029: i = 4
+>>> LINE 032: s7 = [1, 2]
+>>> LINE 028: s7 = [1, 2, 4]
+>>> LINE 029: i = 8
+>>> LINE 032: s7 = [1, 2]
+>>> LINE 028: s7 = [1, 2, 8]
+>>> LINE 029: i = 16
+>>> LINE 031: s7 = [1, 2, 8, 10]
+>>> LINE 028: s7 = [16, 1, 2, 8, 10]
+>>> LINE 029: i = 32
+>>> LINE 031: s7 = [1, 16, 2, 8, 10]
+>>> LINE 028: s7 = [16, 1, 32, 2, 8, 10]
+>>> LINE 029: i = 64
+>>> LINE 031: s7 = [1, 16, 2, 32, 8, 10]
+
+                  51 statements executed.
+                   0 runtime errors.
+                0.01 seconds total execution time.
