@@ -18,7 +18,7 @@ public enum RuntimeErrorCode
     INVALID_INPUT("Invalid input"),
     STACK_OVERFLOW("Runtime stack overflow"),
     UNIMPLEMENTED_FEATURE("Unimplemented runtime feature"),
-    NONINTEGER_SET_OPERATION("Cannot perform set operations on non-integers"),
+    NONINTEGER_SET_MEMBER("Sets cannot contain non-integer values"),
     TYPE_MISMATCH("Type mismatch"),
     INVALID_OPERATOR("Operator not overloaded");
 

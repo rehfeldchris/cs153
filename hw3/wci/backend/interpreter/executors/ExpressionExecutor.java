@@ -3,7 +3,6 @@ package wci.backend.interpreter.executors;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashSet;
-import java.util.TreeSet;
 
 import wci.intermediate.*;
 import wci.intermediate.icodeimpl.*;
@@ -98,7 +97,7 @@ public class ExpressionExecutor extends StatementExecutor
             case SET: {
                
                ArrayList<ICodeNode> setChildren = node.getChildren();
-               TreeSet<Integer> values = new TreeSet<Integer>();
+               HashSet<Integer> values = new HashSet<Integer>();
                
                for (ICodeNode i : setChildren) {
                   ICodeNodeTypeImpl setNodeType = (ICodeNodeTypeImpl) i.getType();
@@ -106,39 +105,24 @@ public class ExpressionExecutor extends StatementExecutor
                   switch (setNodeType) {
                   
                   /**
-                   * HW assignment says throw runtime errors when not between 0-50
+                   * SET_VALUES POSTCONDITION = HashSet<Integer> with range [0,50]
+                   * so just adopt the values into our runtime set
                    */
-                     case SET_VALUES: {
-                        // Add integer constants and integer constant ranges to values
-                    	 if (i.getAttribute(VALUE) instanceof HashSet<?>) {
-                        	 HashSet<?> vals = (HashSet<?>) i.getAttribute(VALUE);
-                        	 for (Object o : vals) {
-                        		 if (o instanceof Integer) {
-                        			 Integer val = (Integer) o;
-                            		 if (val < 0 || val > 50) {
-                            			 //flag
-                            		 } else {
-                            			 values.add(val);
-                            		 }
-                        		 }
-
-                        	 }
-                    	 }
-
+                     case SET_VALUES: {                        
+                        values = new HashSet<>((HashSet<Integer>) i.getAttribute(VALUE));
                         break;
                      }
                      // Expression, variable, or range
-                     default: {
-                        
+                     default: {                        
                         Object expressionValue = execute(i);
                         // Expression or variable
                         if (expressionValue instanceof Integer) {
-                        	 Integer val = (Integer) expressionValue;
-	                		 if (val < 0 || val > 50) {
-	                			 errorHandler.flag(node, VALUE_RANGE, this);
-	                		 } else {
-	                			 values.add(val);
-	                		 }
+                             Integer val = (Integer) expressionValue;
+                             if (val < 0 || val > 50) {
+                                     errorHandler.flag(node, VALUE_RANGE, this);
+                             } else {
+                                     values.add(val);
+                             }
                         }
                         // Range
                         else if (expressionValue instanceof HashSet<?>) {
@@ -152,8 +136,13 @@ public class ExpressionExecutor extends StatementExecutor
                                     values.add(val);
                                  }
                               }
+                              else
+                                  errorHandler.flag(node, NONINTEGER_SET_MEMBER, this);
+                              
                            }
                         }
+                        else
+                            errorHandler.flag(node, NONINTEGER_SET_MEMBER, this);
                         break;
                      }                    
                   }
@@ -191,8 +180,8 @@ public class ExpressionExecutor extends StatementExecutor
 
         boolean integerMode = (operand1 instanceof Integer) &&
                               (operand2 instanceof Integer);
-        boolean setMode = (operand1 instanceof TreeSet<?>) ||
-                          (operand2 instanceof TreeSet<?>);
+        boolean setMode = (operand1 instanceof HashSet<?>) ||
+                          (operand2 instanceof HashSet<?>);
         
         // ====================
         // Arithmetic operators
@@ -248,21 +237,20 @@ public class ExpressionExecutor extends StatementExecutor
             }
             else if (setMode) 
             {
-                TreeSet<Integer> result, value1, value2;
+                HashSet<Integer> result, value1, value2;
 
                 // Make sure both operands are sets
-                if (operand1 instanceof TreeSet<?> && operand2 instanceof TreeSet<?>)
+                if (operand1 instanceof HashSet<?> && operand2 instanceof HashSet<?>)
                 {
-                    value1 = (TreeSet<Integer>) operand1;
-                    value2 = (TreeSet<Integer>) operand2;
+                    value1 = (HashSet<Integer>) operand1;
+                    value2 = (HashSet<Integer>) operand2;
                 }
                 else
                 {
-                    errorHandler.flag(node, NONINTEGER_SET_OPERATION, this);
+                    errorHandler.flag(node, TYPE_MISMATCH, this);
                     return 0;
-                }
-                
-               result = new TreeSet<Integer>(value1);
+                }                
+               result = new HashSet<>(value1);
                 
                // set operations
                switch (nodeType) 
@@ -334,12 +322,10 @@ public class ExpressionExecutor extends StatementExecutor
            if (integerMode) {              
               int value1 = (Integer) operand1;
               int value2 = (Integer) operand2;
-              HashSet<Integer> rangeValues = new HashSet<Integer>();
+              HashSet<Integer> rangeValues = new HashSet<>();
 
               for (int i = value1; i <= value2; i++)
-              {
                  rangeValues.add(i);
-              }
               
               return rangeValues;
            }
@@ -368,20 +354,20 @@ public class ExpressionExecutor extends StatementExecutor
             if (nodeType == IN_SET)
             {
                 if (operand1 instanceof Integer)
-                    return ((TreeSet<Integer>) operand2).contains((Integer) operand1);
+                    return ((HashSet<Integer>) operand2).contains((Integer) operand1);
                 errorHandler.flag(node, INVALID_OPERATOR, this);
                 return 0; 
             }
             //  cannot  perform relational operator unless both sets. TYPE_MISMATCH is
             // the error code that fpc uses
-            if (!(operand1 instanceof TreeSet<?>) || !(operand2 instanceof TreeSet<?>))
+            if (!(operand1 instanceof HashSet<?>) || !(operand2 instanceof HashSet<?>))
             {
                 errorHandler.flag(node, TYPE_MISMATCH, this);
                 return 0;
             }
                 
-            TreeSet<Integer> value1 = (TreeSet<Integer>) operand1;
-            TreeSet<Integer> value2 = (TreeSet<Integer>) operand2;
+            HashSet<Integer> value1 = (HashSet<Integer>) operand1;
+            HashSet<Integer> value2 = (HashSet<Integer>) operand2;
                         
            switch (nodeType) 
            {
