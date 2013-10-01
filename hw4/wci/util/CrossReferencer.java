@@ -246,6 +246,21 @@ public class CrossReferencer
                 break;
             }
 
+            case SET: {
+                TypeSpec elementType = 
+                    (TypeSpec) type.getAttribute(SET_ELEMENT_TYPE);
+                
+                System.out.println(INDENT + "--- ELEMENT TYPE ---");
+                printType(elementType);
+
+                // Print the element type details only if the type is unnamed.
+                if (elementType.getIdentifier() == null) {
+                    printTypeDetail(elementType, recordTypes);
+                }
+
+                break;
+            }
+            
             case ARRAY: {
                 TypeSpec indexType =
                     (TypeSpec) type.getAttribute(ARRAY_INDEX_TYPE);
