@@ -30,6 +30,7 @@ public enum PascalErrorCode
     INVALID_SUBRANGE_TYPE("Invalid subrange type"),
     INVALID_TARGET("Invalid assignment target"),
     INVALID_TYPE("Invalid type"),
+    INVALID_SET_ELEMENT_TYPE("Invalid set element type"),
     INVALID_VAR_PARM("Invalid VAR parameter"),
     MIN_GT_MAX("Min limit greater than max limit"),
     MISSING_BEGIN("Missing BEGIN"),
