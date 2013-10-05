@@ -2,6 +2,7 @@ package wci.frontend.pascal.parsers;
 
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import wci.frontend.*;
 import wci.frontend.pascal.*;
@@ -9,13 +10,16 @@ import wci.intermediate.symtabimpl.*;
 import wci.intermediate.*;
 import wci.intermediate.icodeimpl.*;
 import wci.intermediate.typeimpl.*;
-
 import static wci.frontend.pascal.PascalTokenType.*;
 import static wci.frontend.pascal.PascalErrorCode.*;
 import static wci.intermediate.symtabimpl.SymTabKeyImpl.*;
 import static wci.intermediate.symtabimpl.DefinitionImpl.*;
+import static wci.intermediate.typeimpl.TypeFormImpl.ENUMERATION;
+import static wci.intermediate.typeimpl.TypeFormImpl.SUBRANGE;
+import static wci.intermediate.typeimpl.TypeKeyImpl.*;
 import static wci.intermediate.icodeimpl.ICodeNodeTypeImpl.*;
 import static wci.intermediate.icodeimpl.ICodeKeyImpl.*;
+
 
 /**
  * <h1>ExpressionParser</h1>
@@ -69,6 +73,22 @@ public class ExpressionParser extends StatementParser
         REL_OPS_MAP.put(GREATER_THAN, GT);
         REL_OPS_MAP.put(GREATER_EQUALS, GE);
     };
+    
+    
+    private static final HashSet<TypeSpec> VALID_SET_ELEMENT_TYPES = new HashSet<>();
+    static {
+        VALID_SET_ELEMENT_TYPES.add(Predefined.booleanType);
+        VALID_SET_ELEMENT_TYPES.add(Predefined.integerType);
+        VALID_SET_ELEMENT_TYPES.add(Predefined.charType);
+    }
+
+    
+    
+    
+    
+    
+    
+    
 
     /**
      * Parse an expression.
@@ -118,14 +138,206 @@ public class ExpressionParser extends StatementParser
                 errorHandler.flag(token, INCOMPATIBLE_TYPES, this);
                 resultType = Predefined.undefinedType;
             }
-        }
-
-        if (rootNode != null) {
+            
             rootNode.setTypeSpec(resultType);
         }
+        
+        
+        else if (tokenType == DOT_DOT) {
+        	rootNode = parseRestOfSubrange(token, rootNode);
+        }
+        
+
+
 
         return rootNode;
     }
+    
+    
+    /**
+     * Check a value of a type specification.
+     * @param token the current token.
+     * @param value the value.
+     * @param type the type specifiction.
+     * @return the value.
+     */
+    private Object checkValueAndType(Token token, ICodeNode subrangeOperand)
+    {
+    	TypeSpec type = subrangeOperand.getTypeSpec();
+    	Object value = subrangeOperand.getAttribute(VALUE);
+    	
+    	if (type == null) {
+            return value;
+        }
+    	else if (type == Predefined.integerType) {
+            return value;
+        }
+        else if (type == Predefined.booleanType) {
+        	return value;
+        }
+        else if (type == Predefined.charType) {
+            char ch = ((String) value).charAt(0);
+            return Character.getNumericValue(ch);
+        }
+        else if (type.getForm() == ENUMERATION) {
+            return value;
+        }
+        else {
+            errorHandler.flag(token, INVALID_SUBRANGE_TYPE, this);
+            return value;
+        }
+    }
+    
+
+    private ICodeNode parseRestOfSubrange(Token firstTokenOfMinValueNode, ICodeNode minValueNode)
+            throws Exception
+    {
+    	TypeSpec minType = minValueNode.getTypeSpec();
+    	Object minValue = checkValueAndType(firstTokenOfMinValueNode, minValueNode);
+    	
+    	
+    	Token firstTokenOfMaxValueNode = nextToken(); //consume the ..
+    	ICodeNode maxValueNode = parseSimpleExpression(firstTokenOfMaxValueNode);
+    	TypeSpec maxType = maxValueNode.getTypeSpec();
+    	Object maxValue = checkValueAndType(firstTokenOfMaxValueNode, maxValueNode);
+    	
+    	//assume undefined type(assume an error condition) for the moment
+    	TypeSpec subrangeBaseType = Predefined.undefinedType;
+    	
+        // Are the min and max value types valid?
+        if ((minType == null) || (maxType == null)) {
+            errorHandler.flag(firstTokenOfMinValueNode, INCOMPATIBLE_TYPES, this);
+        }
+
+        // Are the min and max value types the same?
+        else if (minType != maxType) {
+            errorHandler.flag(firstTokenOfMaxValueNode, INVALID_SUBRANGE_TYPE, this);
+        }
+
+        // Min value > max value?
+        else if ((minType != Predefined.booleanType) &&
+        		 (minValue != null) && (maxValue != null) &&
+                 ((Integer) minValue >= (Integer) maxValue)) {
+            errorHandler.flag(firstTokenOfMaxValueNode, MIN_GT_MAX, this);
+        } 
+        else {
+        	//both types are the same and both valid, so adopt one of their types
+        	subrangeBaseType = minType;
+        }
+        
+        
+        TypeSpec subrangeTypeSpec = TypeFactory.createType(SUBRANGE);
+        subrangeTypeSpec.setAttribute(SUBRANGE_BASE_TYPE, subrangeBaseType);
+        subrangeTypeSpec.setAttribute(SUBRANGE_MIN_VALUE, minValue);
+        subrangeTypeSpec.setAttribute(SUBRANGE_MAX_VALUE, maxValue);
+
+        ICodeNode rangeNode = ICodeFactory.createICodeNode(RANGE);
+        rangeNode.addChild(minValueNode);
+        rangeNode.addChild(maxValueNode);
+        rangeNode.setTypeSpec(subrangeTypeSpec);
+        
+
+    	return rangeNode;
+    	
+    }
+    
+    /**
+     * Parse a set expression.
+     * @param token the initial token.
+     * @return the root of the generated parse subtree
+     * @throws Exception if an error occurred
+     */
+    private ICodeNode parseSetExpression(Token token) throws Exception
+    {   
+    	// Create the rootNode with type SET, and adopt a blank SET_VALUES node
+        ICodeNode rootNode = ICodeFactory.createICodeNode(ICodeNodeTypeImpl.SET);
+        ICodeNode valuesNode = ICodeFactory.createICodeNode(ICodeNodeTypeImpl.SET_VALUES);
+        HashSet<ICodeNode> valuesSet = new HashSet<>();
+        valuesNode.setAttribute(VALUE, valuesSet);
+        rootNode.addChild(valuesNode);
+        
+        
+        /**
+         * The strategy is to assume the comma separated elements in a set literal like [2+4, myvar, 4+5..50, 4<6]
+         * are full blown expressions because lazarus seems to allow it. So, we will just loop and defer the chunks of
+         * work to parseExpression().
+         * 
+         * Any undefined types encountered will be flagged, and wont participate in the set.
+         * 
+         * We will assume the first non undefinedType value in the set determines the type of values in the entire set, 
+         * although we will check subsequent values, skipping non matching types. So, [5, 'a', true] 
+         * would throw errors, and produce [5].
+         * 
+         * We also try to inline the values of a subrange, so we can do range checking. We do this by 
+         * transforming them into individual elements. 
+         * 
+         * 
+         */
+        
+        HashSet<TypeSpec> setLiterals = new HashSet<>();
+        setLiterals.add(Predefined.booleanType);
+        setLiterals.add(Predefined.integerType);
+        setLiterals.add(Predefined.charType);
+
+        TypeSpec setElementTypeSpec = Predefined.undefinedType;
+        boolean setTypeEstablished = false;
+        while (EXPR_START_SET.contains(token.getType()))
+        {
+            ICodeNode setValueNode = parseExpression(token);
+            TypeSpec t = setValueNode.getTypeSpec();
+            TypeSpec baseType = t.baseType();
+            
+            //try to establish the set type, if needed
+            boolean validElementType = setLiterals.contains(t) 
+            		                || (t.getForm() == SUBRANGE && setLiterals.contains(t.baseType()));
+        	
+            if (validElementType) {
+        		if (!setTypeEstablished) {
+        			setElementTypeSpec = t.baseType();
+        		}
+
+        		if (t.getForm() == SUBRANGE) {
+        			//todo: expand the range and chek for dups
+        			valuesSet.add(setValueNode);
+        		}
+        		else {
+        			valuesSet.add(setValueNode);
+        		}
+        		
+            } else {
+            	//err
+            }
+        	
+
+        	setElementTypeSpec = setValueNode.getTypeSpec();
+        	valuesSet.add(setValueNode);
+            token = nextToken();
+        }
+        
+        TypeSpec typeSpec = TypeFactory.createType(TypeFormImpl.SET);
+        typeSpec.setAttribute(SET_ELEMENT_TYPE, setElementTypeSpec);
+        rootNode.setTypeSpec(typeSpec);
+          
+
+        return rootNode;
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     // Set of additive operators.
     private static final EnumSet<PascalTokenType> ADD_OPS =
@@ -478,6 +690,19 @@ public class ExpressionParser extends StatementParser
                 }
 
                 rootNode.setTypeSpec(resultType);
+                break;
+            }
+            
+            case LEFT_BRACKET: {
+                token = nextToken(); // consume the [
+                
+                // parse the set expression and make its node the root node
+                rootNode = parseSetExpression(token);
+                
+                // look for matching ] token
+                token = currentToken();
+                if (token.getType() == RIGHT_BRACKET)
+                    token = nextToken(); // consume the ]
                 break;
             }
 

@@ -129,6 +129,14 @@ public class TypeChecker
         else if (isReal(targetType) && isInteger(valueType)) {
             compatible = true;
         }
+        
+        else if (targetType.getForm() == SET && valueType.getForm() == SET) {
+        	if (targetType.baseType() == targetType.baseType()) {
+            	//todo: this needs more detailed checking for ranges
+                compatible = true;
+        	}
+
+        }
 
         // string := string
         else {

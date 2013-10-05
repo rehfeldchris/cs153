@@ -34,5 +34,8 @@ public enum ICodeNodeTypeImpl implements ICodeNodeType
     STRING_CONSTANT, BOOLEAN_CONSTANT,
 
     // WRITE parameter
-    WRITE_PARM,
+    WRITE_PARM, 
+    
+    //set
+    SET, SET_VALUES, RANGE
 }
