@@ -172,9 +172,6 @@ public class ExpressionParser extends StatementParser
     	else if (type == Predefined.integerType) {
             return value;
         }
-        else if (type == Predefined.booleanType) {
-        	return value;
-        }
         else if (type == Predefined.charType) {
             char ch = ((String) value).charAt(0);
             return Character.getNumericValue(ch);
@@ -205,8 +202,12 @@ public class ExpressionParser extends StatementParser
     	TypeSpec subrangeBaseType = Predefined.undefinedType;
     	
         // Are the min and max value types valid?
-        if ((minType == null) || (maxType == null)) {
+        if (minType == null) {
             errorHandler.flag(firstTokenOfMinValueNode, INCOMPATIBLE_TYPES, this);
+        }
+        
+        else if (maxType == null) {
+            errorHandler.flag(firstTokenOfMaxValueNode, INCOMPATIBLE_TYPES, this);
         }
 
         // Are the min and max value types the same?
@@ -214,12 +215,17 @@ public class ExpressionParser extends StatementParser
             errorHandler.flag(firstTokenOfMaxValueNode, INVALID_SUBRANGE_TYPE, this);
         }
 
-        // Min value > max value?
-        else if ((minType != Predefined.booleanType) &&
-        		 (minValue != null) && (maxValue != null) &&
+        // anything but false..true is invalid
+        else if (minType == Predefined.booleanType && !(!(Boolean) minValue && (Boolean) maxValue)) {
+            errorHandler.flag(firstTokenOfMaxValueNode, MIN_GT_MAX, this);
+        }
+        
+        // Min value > max value? this should cover ints, enum values, and chars 
+        else if ((minValue != null) && (maxValue != null) &&
                  ((Integer) minValue >= (Integer) maxValue)) {
             errorHandler.flag(firstTokenOfMaxValueNode, MIN_GT_MAX, this);
-        } 
+        }
+        
         else {
         	//both types are the same and both valid, so adopt one of their types
         	subrangeBaseType = minType;
@@ -252,6 +258,8 @@ public class ExpressionParser extends StatementParser
     	// Create the rootNode with type SET, and adopt a blank SET_VALUES node
         ICodeNode rootNode = ICodeFactory.createICodeNode(ICodeNodeTypeImpl.SET);
         ICodeNode valuesNode = ICodeFactory.createICodeNode(ICodeNodeTypeImpl.SET_VALUES);
+        
+        //the VALUE node of the set needs to be a list of ICodeNodes because there could be variables that can only be evaluated at runtime.
         HashSet<ICodeNode> valuesSet = new HashSet<>();
         valuesNode.setAttribute(VALUE, valuesSet);
         rootNode.addChild(valuesNode);
@@ -268,10 +276,6 @@ public class ExpressionParser extends StatementParser
          * although we will check subsequent values, skipping non matching types. So, [5, 'a', true] 
          * would throw errors, and produce [5].
          * 
-         * We also try to inline the values of a subrange, so we can do range checking. We do this by 
-         * transforming them into individual elements. 
-         * 
-         * 
          */
         
         HashSet<TypeSpec> setLiterals = new HashSet<>();
@@ -287,31 +291,36 @@ public class ExpressionParser extends StatementParser
             TypeSpec t = setValueNode.getTypeSpec();
             TypeSpec baseType = t.baseType();
             
-            //try to establish the set type, if needed
-            boolean validElementType = setLiterals.contains(t) 
+            //if the type COULD be a set element in some pascal set. 
+            //eg an int is valid, although our set may be char. well do the homogenous check later.
+            boolean validSetElementType = setLiterals.contains(t) 
             		                || (t.getForm() == SUBRANGE && setLiterals.contains(t.baseType()));
         	
-            if (validElementType) {
+            
+            if (validSetElementType) {
         		if (!setTypeEstablished) {
         			setElementTypeSpec = t.baseType();
-        		}
-
-        		if (t.getForm() == SUBRANGE) {
-        			//todo: expand the range and chek for dups
-        			valuesSet.add(setValueNode);
-        		}
-        		else {
-        			valuesSet.add(setValueNode);
+        			setTypeEstablished = true;
         		}
         		
+        		//make sure this element is homogenous with the rest of the set
+        		if (setElementTypeSpec == t.baseType()) {
+        			addToValuesUnlessCompileTimeDuplicate(setValueNode, valuesSet);
+        		} else {
+        			//this was a valid type of set element, but just isnt homogenous with the other set members.
+                	errorHandler.flag(token, INVALID_SET_ELEMENT_TYPE, this);
+        		}
             } else {
-            	//err
+            	///this type can never be in any kind of pascal set
+            	errorHandler.flag(token, INVALID_SET_ELEMENT_TYPE, this);
             }
         	
 
-        	setElementTypeSpec = setValueNode.getTypeSpec();
-        	valuesSet.add(setValueNode);
-            token = nextToken();
+            token = currentToken();
+        	if (token.getType() == COMMA) {
+        		token = nextToken();
+        	}
+            
         }
         
         TypeSpec typeSpec = TypeFactory.createType(TypeFormImpl.SET);
@@ -322,6 +331,23 @@ public class ExpressionParser extends StatementParser
         return rootNode;
     }
     
+    private void addToValuesUnlessCompileTimeDuplicate(ICodeNode setValueNode, HashSet<ICodeNode> valuesSet) {
+    	TypeForm form = setValueNode.getTypeSpec().getForm();
+    	switch ((TypeFormImpl) form) {
+    	
+    	case SCALAR:
+    		/*intentional fallthrough*/
+    	case ENUMERATION:
+    		
+    		
+    		break;
+    		
+    	case SUBRANGE:
+    		break;
+
+    	}
+
+    }
     
     
     
