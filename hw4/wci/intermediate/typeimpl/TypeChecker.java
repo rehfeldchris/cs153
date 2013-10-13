@@ -3,7 +3,6 @@ package wci.intermediate.typeimpl;
 import wci.intermediate.*;
 import wci.intermediate.symtabimpl.*;
 import wci.intermediate.typeimpl.*;
-
 import static wci.intermediate.typeimpl.TypeFormImpl.*;
 import static wci.intermediate.typeimpl.TypeKeyImpl.*;
 
@@ -131,11 +130,7 @@ public class TypeChecker
         }
         
         else if (targetType.getForm() == SET && valueType.getForm() == SET) {
-        	if (targetType.baseType() == targetType.baseType()) {
-            	//todo: this needs more detailed checking for ranges
-                compatible = true;
-        	}
-
+        	compatible = targetType.getAttribute(SET_ELEMENT_TYPE) == valueType.getAttribute(SET_ELEMENT_TYPE);
         }
 
         // string := string
