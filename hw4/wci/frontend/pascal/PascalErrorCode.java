@@ -69,6 +69,7 @@ public enum PascalErrorCode
     UNRECOGNIZABLE("Unrecognizable input"),
     WRONG_NUMBER_OF_PARMS("Wrong number of actual parameters"),
     DUPLICATE_SET_VALUE("Duplicate set value"),
+    NON_HOMOGENOUS_SET_ELEMENT_TYPE("Non homogenous set element type."),
 
     // Fatal errors.
     IO_ERROR(-101, "Object I/O error"),
