@@ -422,6 +422,11 @@ public class ExpressionParser extends StatementParser
         token = currentToken();
         tokenType = token.getType();
 
+        // tokenType should be in ADD_OPS, MULT_OPS or .. , ; ] )
+        // so assume there was supposed to be a comma here in the likely case of a set
+        if (tokenType == INTEGER)
+            errorHandler.flag(token, MISSING_COMMA, this);
+        
         // Loop over additive operators.
         while (ADD_OPS.contains(tokenType)) {
             TokenType operator = tokenType;
@@ -518,10 +523,10 @@ public class ExpressionParser extends StatementParser
         ICodeNode rootNode = parseFactor(token);
         TypeSpec resultType = rootNode != null ? rootNode.getTypeSpec()
                                                : Predefined.undefinedType;
-
+        
         token = currentToken();
         TokenType tokenType = token.getType();
-
+        
         // Loop over multiplicative operators.
         while (MULT_OPS.contains(tokenType)) {
             TokenType operator = tokenType;
