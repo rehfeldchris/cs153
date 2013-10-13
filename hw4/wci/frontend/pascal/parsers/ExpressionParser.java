@@ -3,6 +3,7 @@ package wci.frontend.pascal.parsers;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import wci.frontend.*;
 import wci.frontend.pascal.*;
@@ -247,6 +248,17 @@ public class ExpressionParser extends StatementParser
     	
     }
     
+    
+    private static final HashSet<TypeSpec> setLiterals = new HashSet<>();
+    static {
+	    setLiterals.add(Predefined.booleanType);
+	    setLiterals.add(Predefined.integerType);
+	    setLiterals.add(Predefined.charType);
+    }
+    
+    
+    
+    
     /**
      * Parse a set expression.
      * @param token the initial token.
@@ -264,6 +276,9 @@ public class ExpressionParser extends StatementParser
         valuesNode.setAttribute(VALUE, valuesSet);
         rootNode.addChild(valuesNode);
         
+        //for checking duplicate set vals, well just materialize the values into a set, so we can use contains()
+        HashSet<Integer> duplicateCheckingSet = new HashSet<>();
+        
         
         /**
          * The strategy is to assume the comma separated elements in a set literal like [2+4, myvar, 4+5..50, 4<6]
@@ -277,38 +292,37 @@ public class ExpressionParser extends StatementParser
          * would throw errors, and produce [5].
          * 
          */
-        
-        HashSet<TypeSpec> setLiterals = new HashSet<>();
-        setLiterals.add(Predefined.booleanType);
-        setLiterals.add(Predefined.integerType);
-        setLiterals.add(Predefined.charType);
-
         TypeSpec setElementTypeSpec = Predefined.undefinedType;
         boolean setTypeEstablished = false;
         while (EXPR_START_SET.contains(token.getType()))
         {
             ICodeNode setValueNode = parseExpression(token);
-            TypeSpec t = setValueNode.getTypeSpec();
-            TypeSpec baseType = t.baseType();
+            TypeSpec typeSpec = setValueNode.getTypeSpec();
+            TypeSpec baseType = typeSpec.baseType();
             
             //if the type COULD be a set element in some pascal set. 
             //eg an int is valid, although our set may be char. well do the homogenous check later.
-            boolean validSetElementType = setLiterals.contains(t) 
-            		                || (t.getForm() == SUBRANGE && setLiterals.contains(t.baseType()));
+            boolean validSetElementType =  typeSpec == Predefined.integerType
+            							|| typeSpec == Predefined.charType
+            							|| typeSpec.getForm() == SUBRANGE 
+        								|| typeSpec.getForm() == ENUMERATION;
         	
             
             if (validSetElementType) {
         		if (!setTypeEstablished) {
-        			setElementTypeSpec = t.baseType();
+        			setElementTypeSpec = baseType;
         			setTypeEstablished = true;
         		}
         		
         		//make sure this element is homogenous with the rest of the set
-        		if (setElementTypeSpec == t.baseType()) {
-        			addToValuesUnlessCompileTimeDuplicate(setValueNode, valuesSet);
+        		if (setElementTypeSpec == baseType) {
+        			valuesSet.add(setValueNode);
+        			if (isCompileTimeDuplicate(setValueNode, valuesSet, duplicateCheckingSet)) {
+        				errorHandler.flag(token, DUPLICATE_SET_VALUE, this);
+        			}
         		} else {
         			//this was a valid type of set element, but just isnt homogenous with the other set members.
-                	errorHandler.flag(token, INVALID_SET_ELEMENT_TYPE, this);
+                	errorHandler.flag(token, NON_HOMOGENOUS_SET_ELEMENT_TYPE, this);
         		}
             } else {
             	///this type can never be in any kind of pascal set
@@ -331,27 +345,47 @@ public class ExpressionParser extends StatementParser
         return rootNode;
     }
     
-    private void addToValuesUnlessCompileTimeDuplicate(ICodeNode setValueNode, HashSet<ICodeNode> valuesSet) {
-    	TypeForm form = setValueNode.getTypeSpec().getForm();
+    private boolean isCompileTimeDuplicate(ICodeNode setValueNode, HashSet<ICodeNode> valuesSet, HashSet<Integer> duplicateCheckingSet) {
+    	TypeSpec typeSpec = setValueNode.getTypeSpec();
+    	TypeForm form = typeSpec.getForm();
+    	boolean foundDupe = false;
     	switch ((TypeFormImpl) form) {
     	
     	case SCALAR:
     		/*intentional fallthrough*/
     	case ENUMERATION:
-    		
-    		
+    		//we convert chars into their numeric equivalents when putting them into the duplicateCheckingSet
+    		//this is convenient because subranges store chars the same way, and ints and enums are also stored as ints.
+    		Object val = setValueNode.getAttribute(VALUE);
+    		if (val instanceof String) {
+	            char ch = ((String) val).charAt(0);
+	            val = Character.getNumericValue(ch);
+    		}
+    		foundDupe = duplicateCheckingSet.contains(val);
+			duplicateCheckingSet.add((Integer) val);
     		break;
     		
     	case SUBRANGE:
+    		Object min = typeSpec.getAttribute(SUBRANGE_MIN_VALUE);
+    		Object max = typeSpec.getAttribute(SUBRANGE_MAX_VALUE);
+    		//cant do compile time checking if one bound is null(because its a variable)
+    		if (min != null && max != null) {
+    			//loop through the range, adding ALL the elements to the checking set
+    			// we dont stop on a dupe, because we need to add all
+    			for (int i = (Integer) min; i < (Integer) max; i++) {
+    				if (duplicateCheckingSet.contains(i)) {
+    					foundDupe = true;
+    				}
+    				duplicateCheckingSet.add(i);
+    			}
+    		}
     		break;
-
+    		
     	}
 
+		return foundDupe;
     }
-    
-    
-    
-    
+
     
     
     
