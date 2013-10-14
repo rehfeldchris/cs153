@@ -21,7 +21,9 @@ import static wci.intermediate.symtabimpl.Predefined.charType;
 
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import wci.frontend.Token;
 import wci.frontend.pascal.PascalParserTD;
@@ -29,6 +31,7 @@ import wci.frontend.pascal.PascalTokenType;
 import wci.intermediate.TypeFactory;
 import wci.intermediate.TypeForm;
 import wci.intermediate.TypeSpec;
+import wci.intermediate.symtabimpl.Predefined;
 import wci.intermediate.typeimpl.TypeFormImpl;
 import wci.intermediate.typeimpl.TypeSpecImpl;
 
@@ -59,11 +62,7 @@ class SetTypeParser extends TypeSpecificationParser
        OF_SET.add(SEMICOLON);
    }
    
-   
-   // Synchronization set for OF.
-   private static final List<TypeSpec> VALID_SET_ELEMENT_TYPES =
-		   Arrays.asList(integerType, booleanType, charType);
-   
+
 
    /**
     * Parse a Pascal set type specification.
@@ -99,7 +98,8 @@ class SetTypeParser extends TypeSpecificationParser
     	   //only certain scalars are legal. eg, "set of real" isnt allowed, but real is a scalar.
     	   //we check the baseType() because "set of 1..5" is legal, and we need to check the type of the subrange.
     	   //we always use the baseType because baseType() of a scalar is itself.
-           if (!VALID_SET_ELEMENT_TYPES.contains(typeSpec.baseType())) {
+    	   TypeSpec baseType = typeSpec.baseType();
+           if (baseType != Predefined.charType && baseType != Predefined.integerType) {
         	   errorHandler.flag(token, INVALID_SET_ELEMENT_TYPE, this);
            }
            break;
