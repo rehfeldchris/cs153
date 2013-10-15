@@ -1,0 +1,90 @@
+001 CONST
+002     low  = 15;
+003     mid  = 45;
+004     high = 50;
+005 
+006 TYPE
+007     LowNums  = 0..high;
+008     NumSet   = SET OF LowNums;
+009     RSet     = SET OF real;
+                          ^
+*** Invalid set element type [at "real"]
+010     Giant    = (fee, fie, foe, fum);
+011     GSet     = SET OF SET OF Giant;
+                          ^
+*** Unexpected token [at "SET"]
+012     Rec      = RECORD 
+013                    x, y : real;
+014                END;
+015 
+016 VAR
+017     i  : LowNums;
+018     g  : Giant;
+019     gs : GSet;
+020 
+021     evens, odds, primes, teens : NumSet;
+022     s1, s2, s3 : NumSet;
+023     rs: SET OF Rec;
+                   ^
+*** Invalid set element type [at "Rec"]
+024 
+025 BEGIN
+026     i     := 1;
+027     odds  := [fie];
+                 ^
+*** Incompatible types [at "["]
+028     evens := -odds + [fum, i, foe];
+                 ^
+*** Incompatible types [at "-"]
+                               ^
+*** Non homogenous set element type. [at "i"]
+                         ^
+*** Incompatible types [at "["]
+029     teens := gs + s1;
+                      ^
+*** Incompatible types [at "s1"]
+                 ^
+*** Incompatible types [at "gs"]
+030 
+031     gs     := [fum..fie] - i*[foe];
+                        ^
+*** Min limit greater than max limit [at "fie"]
+                                 ^
+*** Incompatible types [at "["]
+                               ^
+*** Incompatible types [at "i"]
+                  ^
+*** Incompatible types [at "["]
+032     primes := [2, fum, 5 7, 11.5, 13, b4..foo 53];
+                      ^
+*** Non homogenous set element type. [at "fum"]
+                             ^
+*** Missing , [at "7"]
+                                ^
+*** Invalid set element type [at "11.5"]
+                                          ^
+*** Undefined identifier [at "b4"]
+                                          ^
+*** Invalid identifier usage [at "b4"]
+                                            ^
+*** Invalid subrange type [at ".."]
+                                              ^
+*** Undefined identifier [at "foo"]
+                                              ^
+*** Invalid identifier usage [at "foo"]
+                                                  ^
+*** Missing , [at "53"]
+                                              ^
+*** Invalid subrange type [at "foo"]
+                                          ^
+*** Non homogenous set element type. [at "b4"]
+                  ^
+*** Incompatible types [at "["]
+033     s1     := s2/s3;
+                     ^
+*** Incompatible types [at "s3"]
+034 END.
+
+                  34 source lines.
+                  26 syntax errors.
+                0.05 seconds total parsing time.
