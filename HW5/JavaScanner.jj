@@ -1,0 +1,106 @@
+options {
+    BUILD_PARSER=false;
+    IGNORE_CASE=false;
+}
+
+PARSER_BEGIN(JavaScanner)
+    public class JavaScanner {}
+PARSER_END(JavaScanner)
+
+TOKEN_MGR_DECLS : {
+    public static void main(String[] args) throws java.io.FileNotFoundException
+    {
+      	java.io.FileReader inputFile = new java.io.FileReader(args[0]);
+      	SimpleCharStream scs = new SimpleCharStream(inputFile);
+        JavaScannerTokenManager mgr = new JavaScannerTokenManager(scs);
+
+        while (mgr.getNextToken().kind != EOF) {}
+    }
+}
+
+SKIP : {
+  <WHITESPACE : [" ", "\t"]>
+|  <NEWLINE : ["\r", "\n"] >
+|  <SINGLECOMMENT : ("/"){2} (~["\r", "\n"])*>
+|  <MULTICOMMENT : "/*" (~["/"])* "*/" >
+}
+
+TOKEN : /* OPERATORS */
+{
+  < PLUS : "+" >
+| < PLUS_EQL : "+=" >
+| < MINUS : "-" >
+| < MINUS_EQL : "-=" >
+| < MULTIPLY : "*" >
+| < MULT_EQL : "*=" > 
+| < DIVIDE : "/" >
+| < DIV_EQL : "/=" >
+| < MODULO : "%" >
+| < MOD_EQL : "%=" >
+| < GREATER_OR_EQL : ">=" >
+| < GREATER_THAN : ">" >
+| < SHIFT_RIGHT : ">>" >
+| < LESS_OR_EQL : "<=" >
+| < LESS_THAN : "<" >
+| < SHIFT_LEFT : "<<" > 
+| < XOR : "^" >
+| < XOR_EQUALS : "^=" >
+| < BITWISE_AND : "&" >
+| < AND_EQUALS : "&=" >
+| < LOGICAL_AND : "&&" >
+| < BITWISE_OR : "|" >
+| < OR_EQUALS : "|=" >
+| < LOGICAL_OR : "||" >
+| < INCREMENT: ("+"){2} >
+| < DECREMENT: ("-"){2} >
+| < ASSIGNMENT: "=" >
+| < EQUAL: ("="){2} >
+| < BITWISE_NOT :  "~" >
+| < LOGICAL_NOT : "!" >
+| < NOT_EQUAL: "!=" >
+| < TERNARY_TRUE : "?" >
+| < TERNARY_FALSE : ":" >
+}
+
+TOKEN : /* Scope tokens */
+{
+  < OPEN_PARENS : "(" >
+  | < CLOSE_PARENS : ")" >
+  | < OPEN_BRACKET : "[" >
+  | < CLOSE_BRACKET : "]" >
+  | < OPEN_BRACE : "{" >
+  | < CLOSE_BRACE : "}" >
+  | < EOL : ";" >
+  | < QUOTE: "'" >
+  | < DBL_QUOTE: "\"" >}
+TOKEN : /* Reserved words */{	< ABSTRACT : "abstract" >
+  | < ASSERT: "assert" >
+  | < BOOLEAN:"boolean" >
+  | < BREAK:"break" >
+  | < BYTE:"byte" >
+  | < CASE:"case" >
+  | < CATCH:"catch" >
+  | < CHAR:"char" >
+  | < CLASS:"class" >
+  | < CONST:"const" >
+  | < CONTINUE:"continue" >
+  | < DEFAULT_CASE:"default" >
+  | < DO:"do" >
+  | < DOUBLE:"double" >
+   }
+
+TOKEN : {
+    <IDENTIFIER : <LETTER> (<LETTER> | <DIGIT> | "_")*>
+      { debugStream.println("IDENTIFIER token: " + matchedToken.image); }
+  | < CHARACTER: "'" ~["'"] "'" >
+  | <#DIGIT  : ["0"-"9"]>
+  | <#LETTER : ["a"-"z", "A"-"Z"]>
+}
+
+
+TOKEN : /* Other stuff */
+{
+  < ANNOTATION: "@" >
+  |	< PERIOD : "." >
+  | < COMMA : "," >
+}
