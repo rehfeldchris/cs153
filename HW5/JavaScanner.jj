@@ -1,6 +1,7 @@
 options {
     BUILD_PARSER=false;
     IGNORE_CASE=false;
+    DEBUG_PARSER=true;
 }
 
 PARSER_BEGIN(JavaScanner)
@@ -10,19 +11,22 @@ PARSER_END(JavaScanner)
 TOKEN_MGR_DECLS : {
     public static void main(String[] args) throws java.io.FileNotFoundException
     {
-      	java.io.FileReader inputFile = new java.io.FileReader(args[0]);
-      	SimpleCharStream scs = new SimpleCharStream(inputFile);
+        java.io.FileReader inputFile = new java.io.FileReader(args[0]);
+        SimpleCharStream scs = new SimpleCharStream(inputFile);
         JavaScannerTokenManager mgr = new JavaScannerTokenManager(scs);
-
+        
         while (mgr.getNextToken().kind != EOF) {}
+//        for (Token t = mgr.getNextToken(); t.kind != EOF; t = mgr.getNextToken()) {
+//            debugStream.println("Found token: " + t.image);
+//        }
     }
 }
 
 SKIP : {
   <WHITESPACE : [" ", "\t"]>
-|  <NEWLINE : ["\r", "\n"] >
-|  <SINGLECOMMENT : ("/"){2} (~["\r", "\n"])*>
-|  <MULTICOMMENT : "/*" (~["/"])* "*/" >
+| <NEWLINE : ["\r", "\n"] >
+| <SINGLECOMMENT : ("/"){2} (~["\r", "\n"])* ("\r" | "\n" | "\r\n")>
+| <MULTICOMMENT : "/*" (~[])* "*/" >
 }
 
 TOKEN : /* OPERATORS */
@@ -32,7 +36,7 @@ TOKEN : /* OPERATORS */
 | < MINUS : "-" >
 | < MINUS_EQL : "-=" >
 | < MULTIPLY : "*" >
-| < MULT_EQL : "*=" > 
+| < MULT_EQL : "*=" >
 | < DIVIDE : "/" >
 | < DIV_EQL : "/=" >
 | < MODULO : "%" >
@@ -42,7 +46,7 @@ TOKEN : /* OPERATORS */
 | < SHIFT_RIGHT : ">>" >
 | < LESS_OR_EQL : "<=" >
 | < LESS_THAN : "<" >
-| < SHIFT_LEFT : "<<" > 
+| < SHIFT_LEFT : "<<" >
 | < XOR : "^" >
 | < XOR_EQUALS : "^=" >
 | < BITWISE_AND : "&" >
@@ -55,11 +59,12 @@ TOKEN : /* OPERATORS */
 | < DECREMENT: ("-"){2} >
 | < ASSIGNMENT: "=" >
 | < EQUAL: ("="){2} >
-| < BITWISE_NOT :  "~" >
+| < BITWISE_NOT : "~" >
 | < LOGICAL_NOT : "!" >
 | < NOT_EQUAL: "!=" >
 | < TERNARY_TRUE : "?" >
-| < TERNARY_FALSE : ":" >
+| < TERNARY_FALSE : ":" >
+
 }
 
 TOKEN : /* Scope tokens */
@@ -71,9 +76,13 @@ TOKEN : /* Scope tokens */
   | < OPEN_BRACE : "{" >
   | < CLOSE_BRACE : "}" >
   | < EOL : ";" >
-  | < QUOTE: "'" >
-  | < DBL_QUOTE: "\"" >}
-TOKEN : /* Reserved words */{	< ABSTRACT : "abstract" >
+  | < QUOTE: "\'" >
+  | < DBL_QUOTE: "\"" >
+}
+
+TOKEN : /* Reserved words */
+{
+    < ABSTRACT : "abstract" >
   | < ASSERT: "assert" >
   | < BOOLEAN:"boolean" >
   | < BREAK:"break" >
@@ -87,20 +96,63 @@ TOKEN : /* Scope tokens */
   | < DEFAULT_CASE:"default" >
   | < DO:"do" >
   | < DOUBLE:"double" >
-   }
-
-TOKEN : {
-    <IDENTIFIER : <LETTER> (<LETTER> | <DIGIT> | "_")*>
-      { debugStream.println("IDENTIFIER token: " + matchedToken.image); }
-  | < CHARACTER: "'" ~["'"] "'" >
-  | <#DIGIT  : ["0"-"9"]>
-  | <#LETTER : ["a"-"z", "A"-"Z"]>
+  | < ELSE:"else">
+  | < ENUM:"enum">
+  |<EXTENDS:"extends">
+  |<FALSE:"false">
+  |<FINAL:"final">
+  |<FINALLY:"finally">
+  |<FLOAT:"float">
+  |<FOR:"for">
+  |<GOTO:"goto">
+  |<IF:"if">
+  |<IMPLEMENTS:"implements">
+  |<IMPORT:"import">
+  |<INSTANCEOF:"instanceof">
+  |<INT:"int">
+  |<INTERFACE:"interface">
+  |<LONG:"long">
+  |<NATIVE:"native">
+  |<NEW:"new">
+  |<NULL:"null">
+  |<PACKAGE:"package">
+  |<PRIVATE:"private">
+  |<PROTECTED:"protected">
+  |<PUBLIC:"public">
+  |<RETURN:"return">
+  |<SHORT:"short">
+  |<STATIC:"static">
+  |<STRICTFP:"strictfp">
+  |<SUPER:"super">
+  |<SWITCH:"switch">
+  |<SYNCHRONIZED:"synchronized">
+  |<THIS:"this">
+  |<THROW:"throw">
+  |<THROWS:"throws">
+  |<TRANSIENT:"transient">
+  |<TRUE:"true">
+  |<TRY:"try">
+  |<VOID:"void">
+  |<VOLATILE:"volatile">
+  |<WHILE:"while">
 }
 
+TOKEN : { /* Types like IDENTIFIER, CHAR, NUMBER */
+    <IDENTIFIER : (<LETTER> | "_") (<LETTER> | <DIGIT> | "_")*>
+      { debugStream.println("IDENTIFIER token: " + matchedToken.image); }
+  | < STRING: "\"" (~[])* "\"" >
+      { debugStream.println("STRING token: " + matchedToken.image); }
+  | < CHARACTER: "'" (["'"] | (("\\") (~[]))?) "'" >
+      { debugStream.println("CHARACTER token: " + matchedToken.image); }
+  | < NUMBER: (<DIGIT>)+ (["."] (<DIGIT>)*)?  ((["e", "E"])+ (["+", "-"])? (<DIGIT>)*)? >
+      { debugStream.println("NUMBER token: " + matchedToken.image); }
+  | <#DIGIT : ["0"-"9"]>
+  | <#LETTER : ["a"-"z", "A"-"Z"]>
+}
 
 TOKEN : /* Other stuff */
 {
   < ANNOTATION: "@" >
-  |	< PERIOD : "." >
+  | < PERIOD : "." >
   | < COMMA : "," >
 }
