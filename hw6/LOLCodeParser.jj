@@ -1,0 +1,222 @@
+options {
+    BUILD_PARSER=true;
+    IGNORE_CASE=false;
+    //DEBUG_TOKEN_MANAGER=true;
+}
+
+PARSER_BEGIN(LOLCodeParser)
+    public class LOLCodeParser {}
+PARSER_END(LOLCodeParser)
+
+TOKEN_MGR_DECLS : {
+    public static void main(String[] args) throws java.io.FileNotFoundException
+    {
+        java.io.FileReader inputFile = new java.io.FileReader(args[0]);
+        SimpleCharStream scs = new SimpleCharStream(inputFile);
+        LOLCodeParserTokenManager mgr = new LOLCodeParserTokenManager(scs);
+        
+        while (mgr.getNextToken().kind != EOF) {}
+//        for (Token t = mgr.getNextToken(); t.kind != EOF; t = mgr.getNextToken()) {
+//            debugStream.println("Found token: " + t.image);
+//        }
+    }
+}
+
+SKIP : {
+  <[" ", "\t"]>
+| <["\r", "\n"] >
+| < "//" (~["\r", "\n"])*>
+| < "/*" > : ML_COMMENT_STATE
+}
+
+<ML_COMMENT_STATE> SKIP :
+{  < "*/" > : DEFAULT
+| < ~[] >   
+}
+
+TOKEN : /* OPERATORS */
+{
+  < ADD : "SUM" >
+      { debugStream.println("ADD token: " + matchedToken.image); }
+| < SUBTRACT : "DIFF" >
+      { debugStream.println("SUBTRACT token: " + matchedToken.image); }
+| < MULTIPLY : "PRODUKT" >
+      { debugStream.println("MULTIPLY token: " + matchedToken.image); }
+| < DIVIDE : "QUOSHUNT" >
+      { debugStream.println("DIVIDE token: " + matchedToken.image); }
+| < MODULO : "MOD" >
+      { debugStream.println("MODULO token: " + matchedToken.image); }
+| < MAXIMUM : "BIGGR" >
+      { debugStream.println("MAXIMUM token: " + matchedToken.image); }
+| < MINIMUM : "SMALLR" >
+      { debugStream.println("MINIMUM token: " + matchedToken.image); }            
+| < XOR : "WON" >
+      { debugStream.println("XOR token: " + matchedToken.image); }
+| < LOGICAL_AND : "BOTH" >
+      { debugStream.println("LOGICAL_AND token: " + matchedToken.image); }
+| < LOGICAL_OR : "EITHER" >
+      { debugStream.println("LOGICAL_OR token: " + matchedToken.image); }
+| < INCREMENT: "UPPIN" >
+      { debugStream.println("INCREMENT token: " + matchedToken.image); }
+| < DECREMENT: "NERFIN" >
+      { debugStream.println("DECREMENT token: " + matchedToken.image); }
+| < ASSIGNMENT: "R" >
+      { debugStream.println("ASSIGNMENT token: " + matchedToken.image); }
+| < EQUAL: "SAEM" >
+      { debugStream.println("EQUALS token: " + matchedToken.image); }
+| < LOGICAL_NOT : "NOT" >
+      { debugStream.println("LOGICAL_NOT token: " + matchedToken.image); }
+| < NOT_EQUAL: "DIFFRINT" >
+      { debugStream.println("NOT_EQUALS token: " + matchedToken.image); }
+| < ALL: "ALL" >
+      { debugStream.println("ALL token: " + matchedToken.image); }
+| < ANY: "ANY" >
+      { debugStream.println("ANY token: " + matchedToken.image); }
+| < MAEK: "MAEK" >
+      { debugStream.println("MAEK token: " + matchedToken.image); }
+| < SMOOSH: "SMOOSH" >
+      { debugStream.println("CONCATENATION token: " + matchedToken.image); }                  
+}
+
+TOKEN : /* Scope tokens */
+{
+  < COLON : ":" >
+      { debugStream.println("COLON token: " + matchedToken.image); }
+  | < OPEN_PARENS : "(" >
+      { debugStream.println("OPEN_PARENS token: " + matchedToken.image); }
+  | < CLOSE_PARENS : ")" >
+      { debugStream.println("CLOSE_PARENS token: " + matchedToken.image); }
+  | < OPEN_BRACKET : "[" >
+      { debugStream.println("OPEN_BRACKET token: " + matchedToken.image); }
+  | < CLOSE_BRACKET : "]" >
+      { debugStream.println("CLOSE_BRACKET token: " + matchedToken.image); }
+  | < OPEN_BRACE : "{" >
+      { debugStream.println("OPEN_BRACE token: " + matchedToken.image); }
+  | < CLOSE_BRACE : "}" >
+      { debugStream.println("CLOSE_BRACE token: " + matchedToken.image); }
+  | < SEMICOLON : ";" >
+      { debugStream.println("SEMICOLON token: " + matchedToken.image); }
+  | < QUOTE: "\'" >
+      { debugStream.println("SINGLE_QUOTE token: " + matchedToken.image); }
+  | < DBL_QUOTE: "\"" >
+      { debugStream.println("DBL_QUOTE token: " + matchedToken.image); }
+}
+
+TOKEN : /* Reserved words */
+{
+  < A : "A" > // variable declaration/re-cast end
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }    
+  | < AN : "AN" >  // operand separator
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < BTW: "BTW" > // single line comment start
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < DUZ: "DUZ" > // function start middle
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }                  
+  | < FAIL: "FAIL" > // boolean false
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < FOUND: "FOUND" > // return
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }            
+  | < GIMMEH: "GIMMEH" > // take input
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }            
+  | < GTFO: "GTFO" > // break
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < HAI: "HAI" > // program start
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < HAS: "HAS" > // variable declaration middle
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < HOW: "HOW" > // function start begin
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }                  
+  | < I: "I" > // variable declaration start & function start end
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < IF: "IF" > // function end start
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }            
+  | < IM: "IM" > // loop start/end begin
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < IN: "IN" > // loop start middle
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }                        
+  | < IT: "IT" > // temporary variable identifier
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }            
+  | < ITZ: "ITZ" > // variable declaration initialize
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < IS: "IS" > // re-cast start
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }                              
+  | < KTHXBYE: "KTHXBYE" > // program end
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < MEBBE: "MEBBE" > // if statement optional expression block start
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }            
+  | < MKAY: "MKAY" > // operator list closer
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < NO: "NO" > // if statement false start
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }                  
+  | < NOOB: "NOOB" > // untyped
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }            
+  | < NOW: "NOW" > // re-cast middle
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }                        
+  | < NUMBAR: "NUMBAR" > // integer
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }      
+  | < NUMBR: "NUMBR" > // real/float
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < O: "O" > // if statement start begin
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }            
+  | < OBTW: "OBTW" > // multi line comment start
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < OF: "OF" > // used in many operators
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < OIC: "OIC" > // if statement end
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }                              
+  | < OMG: "OMG" > // case
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < OMGWTF: "OMGWTF" > // default case
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < OUTTA: "OUTTA" > // loop end middle
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }            
+  | < RLY: "RLY" > // if statement true end
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }            
+  | < RLYQ: "RLY?" > // if statement start end
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < SAY: "SAY" > // function end middle
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < SO: "SO" > // function end end
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }                        
+  | < TIL: "TIL" > // until
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }                        
+  | < TLDR: "TLDR" > // multi line comment end
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }      
+  | < TROOF: "TROOF" > // boolean
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < U: "U" > // function end middle
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }            
+  | < VISIBLE: "VISIBLE" > // print out
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < WAI: "WAI" > // if statement false end
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }                        
+  | < WILE: "WILE" > // while
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < WIN: "WIN" > // boolean true
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < WTF: "WTF?" > // switch
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < YA: "YA" > // if statement true begin
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }            
+  | < YARN: "YARN" > // string
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < YR: "YR" > // loop start/end end / return end
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }                        
+}
+
+TOKEN : { /* Types like IDENTIFIER, CHAR, NUMBER */
+    <IDENTIFIER : (<LETTER> | "_") (<LETTER> | <DIGIT> | "_")*>
+      { debugStream.println("IDENTIFIER token: " + matchedToken.image); }
+  | < STRING: "\"" (~["\n", "\r", "\""])* "\"" >
+      { debugStream.println("STRING token: " + matchedToken.image); }
+  | < CHARACTER: "'" (~[]){1} "'" >
+      { debugStream.println("CHARACTER token: " + matchedToken.image); }
+  | < REAL_NUMBER: (<DECIMAL_INTEGER>)(["."])?(<DIGIT>)*["e", "E"](["+", "-"])?(<DIGIT>)* |
+                   ["."](<DIGIT>)+(["e", "E"](["+", "-"])?(<DIGIT>)*)? |
+                   (<DECIMAL_INTEGER>)["."](<DIGIT>)* >
+      { debugStream.println("REAL_NUMBER token: " + matchedToken.image); }
+  | < DECIMAL_INTEGER: "0" | ["1"-"9"](<DIGIT>)* >
+      { debugStream.println("DECIMAL_INTEGER token: " + matchedToken.image); }  
+  | <#DIGIT : ["0"-"9"]>
+  | <#LETTER : ["a"-"z", "A"-"Z"]>
+}
