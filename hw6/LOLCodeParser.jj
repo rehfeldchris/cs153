@@ -5,32 +5,32 @@ options {
 }
 
 PARSER_BEGIN(LOLCodeParser)
-    public class LOLCodeParser {}
-PARSER_END(LOLCodeParser)
-
-TOKEN_MGR_DECLS : {
-    public static void main(String[] args) throws java.io.FileNotFoundException
+import java.io.*;
+    public class LOLCodeParser
     {
-        java.io.FileReader inputFile = new java.io.FileReader(args[0]);
-        SimpleCharStream scs = new SimpleCharStream(inputFile);
-        LOLCodeParserTokenManager mgr = new LOLCodeParserTokenManager(scs);
-        
-        while (mgr.getNextToken().kind != EOF) {}
-//        for (Token t = mgr.getNextToken(); t.kind != EOF; t = mgr.getNextToken()) {
-//            debugStream.println("Found token: " + t.image);
-//        }
+	  public static void main(String[] args) throws FileNotFoundException 
+	  {	     java.io.FileReader inputFile = new java.io.FileReader(args[0]);
+	     LOLCodeParser parser = new LOLCodeParser(inputFile);
+
+	     try {
+	        parser.LOLCodeProgram();
+	     } 
+	     catch (ParseException ex) {
+	       ex.printStackTrace();
+	     }	      	    
+	  }      
     }
-}
+PARSER_END(LOLCodeParser)
 
 SKIP : {
   <[" ", "\t"]>
 | <["\r", "\n"] >
-| < "//" (~["\r", "\n"])*>
-| < "/*" > : ML_COMMENT_STATE
+| < "BTW" (~["\r", "\n"])*>
+| < "OBTW" > : ML_COMMENT_STATE
 }
 
 <ML_COMMENT_STATE> SKIP :
-{  < "*/" > : DEFAULT
+{  < "TLDR" > : DEFAULT
 | < ~[] >   
 }
 
@@ -100,6 +100,8 @@ TOKEN : /* Scope tokens */
       { debugStream.println("SINGLE_QUOTE token: " + matchedToken.image); }
   | < DBL_QUOTE: "\"" >
       { debugStream.println("DBL_QUOTE token: " + matchedToken.image); }
+  | < UNDERSCORE : "_" >
+      { debugStream.println("UNDERSCORE token: " + matchedToken.image); }
 }
 
 TOKEN : /* Reserved words */
@@ -107,8 +109,6 @@ TOKEN : /* Reserved words */
   < A : "A" > // variable declaration/re-cast end
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }    
   | < AN : "AN" >  // operand separator
-      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
-  | < BTW: "BTW" > // single line comment start
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
   | < DUZ: "DUZ" > // function start middle
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }                  
@@ -158,8 +158,6 @@ TOKEN : /* Reserved words */
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
   | < O: "O" > // if statement start begin
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }            
-  | < OBTW: "OBTW" > // multi line comment start
-      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
   | < OF: "OF" > // used in many operators
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
   | < OIC: "OIC" > // if statement end
@@ -180,8 +178,6 @@ TOKEN : /* Reserved words */
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }                        
   | < TIL: "TIL" > // until
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }                        
-  | < TLDR: "TLDR" > // multi line comment end
-      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }      
   | < TROOF: "TROOF" > // boolean
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
   | < U: "U" > // function end middle
@@ -205,7 +201,7 @@ TOKEN : /* Reserved words */
 }
 
 TOKEN : { /* Types like IDENTIFIER, CHAR, NUMBER */
-    <IDENTIFIER : (<LETTER> | "_") (<LETTER> | <DIGIT> | "_")*>
+    <IDENTIFIER : (<LETTER>)(<LETTER> | <DIGIT> | "_")*>
       { debugStream.println("IDENTIFIER token: " + matchedToken.image); }
   | < STRING: "\"" (~["\n", "\r", "\""])* "\"" >
       { debugStream.println("STRING token: " + matchedToken.image); }
@@ -216,7 +212,20 @@ TOKEN : { /* Types like IDENTIFIER, CHAR, NUMBER */
                    (<DECIMAL_INTEGER>)["."](<DIGIT>)* >
       { debugStream.println("REAL_NUMBER token: " + matchedToken.image); }
   | < DECIMAL_INTEGER: "0" | ["1"-"9"](<DIGIT>)* >
-      { debugStream.println("DECIMAL_INTEGER token: " + matchedToken.image); }  
+      { debugStream.println("DECIMAL_INTEGER token: " + matchedToken.image); }       
   | <#DIGIT : ["0"-"9"]>
   | <#LETTER : ["a"-"z", "A"-"Z"]>
+}
+
+void LOLCodeProgram() : {
+  StringBuffer sb = new StringBuffer();}
+{  <HAI> <IDENTIFIER>
+  Variable(sb)
+  <KTHXBYE>
+  {System.out.println("Parsed LOLCode Program");}    
+}     
+void Variable(StringBuffer sb) : {}
+{
+  <IDENTIFIER> {sb.append(token.image);}
+  {System.out.println("Variable: " + sb.toString());}         
 }
