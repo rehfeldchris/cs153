@@ -217,15 +217,255 @@ TOKEN : { /* Types like IDENTIFIER, CHAR, NUMBER */
   | <#LETTER : ["a"-"z", "A"-"Z"]>
 }
 
-void LOLCodeProgram() : {
-  StringBuffer sb = new StringBuffer();}
-{  <HAI> <IDENTIFIER>
-  Variable(sb)
-  <KTHXBYE>
+void LOLCodeProgram() : {}
+{  programStart()
+  
+  (expressionOrStatement())*
+  
+  programEnd()
   {System.out.println("Parsed LOLCode Program");}    
-}     
+}
+
+  
 void Variable(StringBuffer sb) : {}
 {
   <IDENTIFIER> {sb.append(token.image);}
   {System.out.println("Variable: " + sb.toString());}         
 }
+
+/*lolcode programs start with HAI followed by the language version number, eg hai 1.2 */
+void programStart() : {}{
+  	<HAI> (<REAL_NUMBER>)?}
+
+
+void programEnd() : {}
+{
+  	<KTHXBYE> <EOF>
+}
+
+void expressionOrStatement() : {}
+{
+	expression()
+}
+
+
+
+void expression() : {}{
+	  simpleExpression()
+	| basicMathExpression()
+	| booleanExpression()
+	| stringConcatenationExpression()
+	| typeCastExpression()
+	| assignmentExpression()}
+
+void basicMathExpression() : {}
+{
+	  additionExpression()
+	| subtractionExpression()
+	| multiplicationExpression()
+	| divisionExpression()
+	| moduloExpression()
+	| maximumExpression()
+	| minimumExpression()
+}
+
+void booleanExpression() : { }
+{
+  /*two of the productions start with the LOGICAL_AND token, but the productions diverge by the second token, so lookahead(2) is enough. */
+  LOOKAHEAD(2)
+	  logicalAndExpression()
+	| logicalOrExpression()
+	| logicalXorExpression()
+	| logicalNotExpression()
+	| logicalAndListExpression()
+	| logicalOrListExpression()
+	| equalsExpression()
+	| notEqualsExpression() 
+}
+
+void constantExpression() : {}
+{
+	<STRING> | <CHARACTER> | <REAL_NUMBER> | <DECIMAL_INTEGER> | troof()
+}
+
+void simpleExpression() : {}
+{
+	<IDENTIFIER> | constantExpression()
+}
+
+
+
+void binaryOperands() : {}
+{
+	expression() (<AN>)? expression()
+}
+
+
+void variableArityOperands() : {}
+{
+/*
+the spec says you can use the end of line character in place of "mkay" to terminate the var args list.
+a single EOL needs to terminate all currently open var args lists though, because there could be nested function calls.
+so, we need to pay special attention whenever we actually implement this feature.
+
+for now, we always require an mkay token.
+*/
+	expression() (<MKAY> | (<AN>)? variableArityOperands())
+}
+
+
+
+/*Some basic math operators follow, like addition, subtraction etc...*/
+
+
+void additionExpression() : {}
+{
+	<ADD> <OF> binaryOperands()
+}
+
+void subtractionExpression() : {}
+{
+	<SUBTRACT> <OF> binaryOperands()
+}
+
+void multiplicationExpression() : {}
+{
+	<MULTIPLY> <OF> binaryOperands()
+}
+
+void divisionExpression() : {}
+{
+	<DIVIDE> <OF> binaryOperands()
+}
+
+void moduloExpression() : {}
+{
+	<MODULO> <OF> binaryOperands()
+}
+
+void maximumExpression() : {}
+{
+	<MAXIMUM> <OF> binaryOperands()
+}
+
+void minimumExpression() : {}
+{
+	<MINIMUM> <OF> binaryOperands()
+}
+
+
+
+
+
+
+/* Some statements for assigning and declaring variables follow */
+
+
+void variableDeclaration() : {System.out.println("variableDeclaration");}
+{
+	<I> <HAS> <A> <IDENTIFIER>
+}
+
+void assignmentExpression() : {System.out.println("assignmentExpression");}
+{
+  	LOOKAHEAD(5)
+	  variableDeclarationAndAssignment()
+	| variableDeclaration()
+	| variableAssignment() 
+}
+
+void variableAssignment() : {System.out.println("variableAssignment");}
+{
+	<IDENTIFIER> <ASSIGNMENT> expression()
+}
+
+void variableDeclarationAndAssignment() : {System.out.println("variableDeclarationAndAssignment");}
+{
+	variableDeclaration() <ITZ> expression()
+}
+
+
+
+
+
+
+/* Some boolean operators follow */
+
+
+void logicalAndExpression() : {}
+{
+	<LOGICAL_AND> <OF> binaryOperands()
+}
+
+void logicalOrExpression() : {}
+{
+	<LOGICAL_OR> <OF> binaryOperands()
+}
+
+void logicalXorExpression() : {}
+{
+	<XOR> <OF> binaryOperands()
+}
+
+void logicalNotExpression() : {}
+{
+	<LOGICAL_NOT> expression()
+}
+
+/*"all of foo an bar an baz" in lolcode is like "foo && bar && baz" in java*/
+void logicalAndListExpression() : {}
+{
+	<ALL> <OF> variableArityOperands()
+}
+
+/*"any of foo an bar an baz" in lolcode is like "foo || bar || baz" in java*/
+void logicalOrListExpression() : {}
+{
+	<ANY> <OF> variableArityOperands()
+}
+
+
+
+/*comparison operators*/
+
+void equalsExpression() : {}
+{
+  	/*example: BOTH SAEM 1 AN 2*/
+	<LOGICAL_AND> <EQUAL> binaryOperands()
+}
+
+void notEqualsExpression() : {}
+{
+  	/*example: DIFFRINT 1 AN 2*/
+	<NOT_EQUAL> binaryOperands()
+}
+
+
+
+/*string concatenation*/
+
+void stringConcatenationExpression() : {}
+{
+  	<SMOOSH> variableArityOperands()
+}
+
+
+/*types and casting */
+void type() : {}
+{
+  	<TROOF> | <YARN> | <NUMBAR> | <NUMBR> | <NOOB>
+}
+
+void troof() : {}
+{
+  	<WIN> | <FAIL>
+}
+
+void typeCastExpression() : {}
+{
+  LOOKAHEAD(2)
+  	<MAEK> expression() (<A>)? type()
+ | (<MAEK> <IDENTIFIER> (<A>)? type())
+ | (<IDENTIFIER> <IS> <NOW> <A> type())
+}
+
