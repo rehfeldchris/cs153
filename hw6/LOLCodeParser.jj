@@ -2,6 +2,7 @@ options {
     BUILD_PARSER=true;
     IGNORE_CASE=false;
     //DEBUG_TOKEN_MANAGER=true;
+    //DEBUG_PARSER=true;
 }
 
 PARSER_BEGIN(LOLCodeParser)
@@ -228,7 +229,10 @@ void LOLCodeProgram() : {}
 }
 
 void codeBlock() : {}
-{	(expressionOrStatement())*
+{	(
+	  LOOKAHEAD(1)
+	  expressionOrStatement()
+	)*
 }
   
 void Variable(StringBuffer sb) : {}
@@ -237,9 +241,8 @@ void Variable(StringBuffer sb) : {}
   {System.out.println("Variable: " + sb.toString());}         
 }
 
-/*lolcode programs start with HAI followed by the language version number, eg hai 1.2 */
 void programStart() : {}{
-  	<HAI> (<REAL_NUMBER>)?}
+  	<HAI> }
 
 
 void programEnd() : {}
@@ -249,11 +252,18 @@ void programEnd() : {}
 
 void expressionOrStatement() : {}
 {
-	expression() | statement()
+  	LOOKAHEAD(1)
+	statement() | expression()
 }
 
 void statement() : {}
-{	ifStatement() | whileStatement() | caseStatement() | functionDeclarationStatement()
+{
+  	LOOKAHEAD(4)	  ifStatement()
+	| whileStatement()
+	| variableAssignmentStatement()
+	| caseStatement()
+	| functionDeclarationStatement()
+	| variableDeclarationStatement()
 }
 
 void ifStatement() : {}{
@@ -266,14 +276,13 @@ void ifStatement() : {}{
 
 void whileStatement() : {}
 {
-  <IM> <IN> <YR> <IDENTIFIER> // (unaryExpression() <TIL> | <WILE> expression())?
+  <IM> <IN> <YR> <IDENTIFIER> ((<INCREMENT> | <DECREMENT>) <YR> <IDENTIFIER>) (<TIL> | <WILE> expression())?
   	codeBlock()
   <IM> <OUTTA> <YR> <IDENTIFIER>
 }
 
 void caseStatement() : {}
 {
-  expression()
   <WTF>
   	(<OMG> constantExpression() // 1 or more cases
   		codeBlock()
@@ -290,13 +299,13 @@ void functionDeclarationStatement() : {}
 }
 
 void expression() : {}{
-	LOOKAHEAD(8)
-	  assignmentExpression()
-	| simpleExpression()
+	LOOKAHEAD(2)
+	  simpleExpression()
 	| basicMathExpression()
 	| booleanExpression()
 	| stringConcatenationExpression()
 	| typeCastExpression()
+	| unaryExpression()
 }
 
 void basicMathExpression() : {}
@@ -394,38 +403,30 @@ void minimumExpression() : {}
 	<MINIMUM> <OF> binaryOperands()
 }
 
+void unaryExpression() : {}
+{
+	(<INCREMENT> | <DECREMENT>) expression()
+}
+
 
 
 
 
 
 /* Some statements for assigning and declaring variables follow */
-
+void variableDeclarationStatement() : {System.out.println("variableDeclarationStatement");}
+{
+	<I> <HAS> <A> <IDENTIFIER> (<ITZ> expression())?
+}
+void variableAssignmentStatement() : {System.out.println("variableAssignmentStatement");}
+{
+	<IDENTIFIER> <ASSIGNMENT> expression()
+}
 
 void variableDeclaration() : {System.out.println("variableDeclaration");}
 {
 	<I> <HAS> <A> <IDENTIFIER>
 }
-
-void assignmentExpression() : {System.out.println("assignmentExpression");}
-{
-  	LOOKAHEAD(2)
-	  variableDeclarationAndAssignment()
-	| variableDeclaration()
-	| variableAssignment() 
-}
-
-void variableAssignment() : {System.out.println("variableAssignment");}
-{
-	<IDENTIFIER> <ASSIGNMENT> expression()
-}
-
-void variableDeclarationAndAssignment() : {System.out.println("variableDeclarationAndAssignment");}
-{
-	variableDeclaration() <ITZ> expression()
-}
-
-
 
 
 
@@ -504,9 +505,7 @@ void troof() : {}
 
 void typeCastExpression() : {}
 {
-  LOOKAHEAD(2)
-  	<MAEK> <IDENTIFIER> (<A>)? type()
- | (<MAEK> expression() (<A>)? type())
+   (<MAEK> expression() (<A>)? type())
  | (<IDENTIFIER> <IS> <NOW> <A> type())
 }
 

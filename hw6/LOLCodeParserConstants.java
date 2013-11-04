@@ -75,107 +75,109 @@ public interface LOLCodeParserConstants {
   /** RegularExpression Id. */
   int AN = 39;
   /** RegularExpression Id. */
-  int DUZ = 40;
+  int BUKKIT = 40;
   /** RegularExpression Id. */
-  int FAIL = 41;
+  int DUZ = 41;
   /** RegularExpression Id. */
-  int FOUND = 42;
+  int FAIL = 42;
   /** RegularExpression Id. */
-  int GIMMEH = 43;
+  int FOUND = 43;
   /** RegularExpression Id. */
-  int GTFO = 44;
+  int GIMMEH = 44;
   /** RegularExpression Id. */
-  int HAI = 45;
+  int GTFO = 45;
   /** RegularExpression Id. */
-  int HAS = 46;
+  int HAI = 46;
   /** RegularExpression Id. */
-  int HOW = 47;
+  int HAS = 47;
   /** RegularExpression Id. */
-  int I = 48;
+  int HOW = 48;
   /** RegularExpression Id. */
-  int IF = 49;
+  int I = 49;
   /** RegularExpression Id. */
-  int IM = 50;
+  int IF = 50;
   /** RegularExpression Id. */
-  int IN = 51;
+  int IM = 51;
   /** RegularExpression Id. */
-  int IT = 52;
+  int IN = 52;
   /** RegularExpression Id. */
-  int ITZ = 53;
+  int IT = 53;
   /** RegularExpression Id. */
-  int IS = 54;
+  int ITZ = 54;
   /** RegularExpression Id. */
-  int KTHXBYE = 55;
+  int IS = 55;
   /** RegularExpression Id. */
-  int MEBBE = 56;
+  int KTHXBYE = 56;
   /** RegularExpression Id. */
-  int MKAY = 57;
+  int MEBBE = 57;
   /** RegularExpression Id. */
-  int NO = 58;
+  int MKAY = 58;
   /** RegularExpression Id. */
-  int NOOB = 59;
+  int NO = 59;
   /** RegularExpression Id. */
-  int NOW = 60;
+  int NOOB = 60;
   /** RegularExpression Id. */
-  int NUMBAR = 61;
+  int NOW = 61;
   /** RegularExpression Id. */
-  int NUMBR = 62;
+  int NUMBAR = 62;
   /** RegularExpression Id. */
-  int O = 63;
+  int NUMBR = 63;
   /** RegularExpression Id. */
-  int OF = 64;
+  int O = 64;
   /** RegularExpression Id. */
-  int OIC = 65;
+  int OF = 65;
   /** RegularExpression Id. */
-  int OMG = 66;
+  int OIC = 66;
   /** RegularExpression Id. */
-  int OMGWTF = 67;
+  int OMG = 67;
   /** RegularExpression Id. */
-  int OUTTA = 68;
+  int OMGWTF = 68;
   /** RegularExpression Id. */
-  int RLY = 69;
+  int OUTTA = 69;
   /** RegularExpression Id. */
-  int RLYQ = 70;
+  int RLY = 70;
   /** RegularExpression Id. */
-  int SAY = 71;
+  int RLYQ = 71;
   /** RegularExpression Id. */
-  int SO = 72;
+  int SAY = 72;
   /** RegularExpression Id. */
-  int TIL = 73;
+  int SO = 73;
   /** RegularExpression Id. */
-  int TROOF = 74;
+  int TIL = 74;
   /** RegularExpression Id. */
-  int U = 75;
+  int TROOF = 75;
   /** RegularExpression Id. */
-  int VISIBLE = 76;
+  int U = 76;
   /** RegularExpression Id. */
-  int WAI = 77;
+  int VISIBLE = 77;
   /** RegularExpression Id. */
-  int WILE = 78;
+  int WAI = 78;
   /** RegularExpression Id. */
-  int WIN = 79;
+  int WILE = 79;
   /** RegularExpression Id. */
-  int WTF = 80;
+  int WIN = 80;
   /** RegularExpression Id. */
-  int YA = 81;
+  int WTF = 81;
   /** RegularExpression Id. */
-  int YARN = 82;
+  int YA = 82;
   /** RegularExpression Id. */
-  int YR = 83;
+  int YARN = 83;
   /** RegularExpression Id. */
-  int IDENTIFIER = 84;
+  int YR = 84;
   /** RegularExpression Id. */
-  int STRING = 85;
+  int IDENTIFIER = 85;
   /** RegularExpression Id. */
-  int CHARACTER = 86;
+  int STRING = 86;
   /** RegularExpression Id. */
-  int REAL_NUMBER = 87;
+  int CHARACTER = 87;
   /** RegularExpression Id. */
-  int DECIMAL_INTEGER = 88;
+  int REAL_NUMBER = 88;
   /** RegularExpression Id. */
-  int DIGIT = 89;
+  int DECIMAL_INTEGER = 89;
   /** RegularExpression Id. */
-  int LETTER = 90;
+  int DIGIT = 90;
+  /** RegularExpression Id. */
+  int LETTER = 91;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -224,6 +226,7 @@ public interface LOLCodeParserConstants {
     "\"_\"",
     "\"A\"",
     "\"AN\"",
+    "\"BUKKIT\"",
     "\"DUZ\"",
     "\"FAIL\"",
     "\"FOUND\"",
