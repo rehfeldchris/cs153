@@ -2,7 +2,7 @@ options {
     BUILD_PARSER=true;
     IGNORE_CASE=false;
     //DEBUG_TOKEN_MANAGER=true;
-    //DEBUG_PARSER=true;
+    DEBUG_PARSER=true;
 }
 
 PARSER_BEGIN(LOLCodeParser)
@@ -47,10 +47,10 @@ TOKEN : /* OPERATORS */
       { debugStream.println("DIVIDE token: " + matchedToken.image); }
 | < MODULO : "MOD" >
       { debugStream.println("MODULO token: " + matchedToken.image); }
-| < MAXIMUM : "BIGGR" >
-      { debugStream.println("MAXIMUM token: " + matchedToken.image); }
-| < MINIMUM : "SMALLR" >
-      { debugStream.println("MINIMUM token: " + matchedToken.image); }            
+| < BIGGR : "BIGGR" >
+      { debugStream.println("BIGGR token: " + matchedToken.image); }
+| < SMALLR : "SMALLR" >
+      { debugStream.println("SMALLR token: " + matchedToken.image); }            
 | < XOR : "WON" >
       { debugStream.println("XOR token: " + matchedToken.image); }
 | < LOGICAL_AND : "BOTH" >
@@ -112,30 +112,26 @@ TOKEN : /* Reserved words */
   | < AN : "AN" >  // operand separator
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
   | < BUKKIT : "BUKKIT" >  // array keyword
-      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
-  | < DUZ: "DUZ" > // function start middle
-      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }                  
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }                 
   | < FAIL: "FAIL" > // boolean false
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
   | < FOUND: "FOUND" > // return
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }            
   | < GIMMEH: "GIMMEH" > // take input
-      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }            
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }       
   | < GTFO: "GTFO" > // break
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
   | < HAI: "HAI" > // program start
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
-  | < HAS: "HAS" > // variable declaration middle
+  | <I_HAS_A: "I HAS A" > // variable declaration
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
-  | < HOW: "HOW" > // function start begin
-      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }                  
-  | < I: "I" > // variable declaration start & function start end
-      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
-  | < IF: "IF" > // function end start
+  | <HOW_DUZ_I: "HOW DUZ I"> // function start begin
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }      
+  | < IF_U_SAY_SO: "IF U SAY SO" > // function end start
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }            
-  | < IM: "IM" > // loop start/end begin
+  | < IM_IN_YR: "IM IN YR" > // loop start
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
-  | < IN: "IN" > // loop start middle
+  | < IM_OUTTA_YR: "IM OUTTA YR" > // loop end
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }                        
   | < IT: "IT" > // temporary variable identifier
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }            
@@ -168,23 +164,17 @@ TOKEN : /* Reserved words */
   | < OMG: "OMG" > // case
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
   | < OMGWTF: "OMGWTF" > // default case
-      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
-  | < OUTTA: "OUTTA" > // loop end middle
-      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }            
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }          
   | < RLY: "RLY" > // if statement true end
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }            
   | < RLYQ: "RLY?" > // if statement start end
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
-  | < SAY: "SAY" > // function end middle
-      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
-  | < SO: "SO" > // function end end
-      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }                        
+  | < THAN: "THAN" > // comparison operator
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }                           
   | < TIL: "TIL" > // until
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }                        
   | < TROOF: "TROOF" > // boolean
-      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
-  | < U: "U" > // function end middle
-      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }            
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }         
   | < VISIBLE: "VISIBLE" > // print out
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
   | < WAI: "WAI" > // if statement false end
@@ -204,7 +194,7 @@ TOKEN : /* Reserved words */
 }
 
 TOKEN : { /* Types like IDENTIFIER, CHAR, NUMBER */
-    <IDENTIFIER : (<LETTER>)+>
+    <IDENTIFIER : (<LETTER>)(<LETTER> | <DIGIT> | "_")*>
       { debugStream.println("IDENTIFIER token: " + matchedToken.image); }
   | < STRING: "\"" (~["\n", "\r", "\""])* "\"" >
       { debugStream.println("STRING token: " + matchedToken.image); }
@@ -275,10 +265,11 @@ void ifStatement() : {}{
   <OIC>  	  }
 
 void whileStatement() : {}
-{
-  <IM> <IN> <YR> <IDENTIFIER> ((<INCREMENT> | <DECREMENT>) <YR> <IDENTIFIER>) (<TIL> | <WILE> expression())?
+{                          // this is optional but can stand alone         this is optional but requires the inc/dec part
+  <IM_IN_YR> <IDENTIFIER> (((<INCREMENT> | <DECREMENT>) <YR> <IDENTIFIER>) ((<TIL> | <WILE>) booleanExpression())?)?
   	codeBlock()
-  <IM> <OUTTA> <YR> <IDENTIFIER>
+  	(<GTFO>)?
+  <IM_OUTTA_YR> <IDENTIFIER>
 }
 
 void caseStatement() : {}
@@ -286,25 +277,28 @@ void caseStatement() : {}
   <WTF>
   	(<OMG> constantExpression() // 1 or more cases
   		codeBlock()
+  		(<GTFO>)?
   	)+
-  	(<OMGWTF> codeBlock())?     // optional default
+  	(<OMGWTF>                 // optional default case
+  		codeBlock()
+  		(<GTFO>)?
+  	)?
   <OIC>  	  
 }
 
 void functionDeclarationStatement() : {}
 {
-  <HOW> <DUZ> <I> <IDENTIFIER> (<YR> <IDENTIFIER> (<AN> <YR> <IDENTIFIER>)*)?
+  <HOW_DUZ_I> <IDENTIFIER> (<YR> <IDENTIFIER> (<AN> <YR> <IDENTIFIER>)*)?
   		codeBlock()
-  <IF> <U> <SAY> <SO> 
+  <IF_U_SAY_SO>
 }
 
 void expression() : {}{
-	LOOKAHEAD(2)
-	  simpleExpression()
+	  LOOKAHEAD(2) simpleExpression()
 	| basicMathExpression()
-	| booleanExpression()
+	| LOOKAHEAD(2) booleanExpression()
 	| stringConcatenationExpression()
-	| typeCastExpression()
+	| LOOKAHEAD(2) typeCastExpression()
 	| unaryExpression()
 }
 
@@ -322,15 +316,16 @@ void basicMathExpression() : {}
 void booleanExpression() : { }
 {
   /*two of the productions start with the LOGICAL_AND token, but the productions diverge by the second token, so lookahead(2) is enough. */
-  LOOKAHEAD(2)
-	  logicalAndExpression()
+      LOOKAHEAD(2) logicalAndExpression()
 	| logicalOrExpression()
 	| logicalXorExpression()
 	| logicalNotExpression()
 	| logicalAndListExpression()
 	| logicalOrListExpression()
 	| equalsExpression()
-	| notEqualsExpression() 
+	| notEqualsExpression()
+	| LOOKAHEAD(2) greaterThanExpression()
+	| LOOKAHEAD(2) lessThanExpression()
 }
 
 void constantExpression() : {}
@@ -395,12 +390,12 @@ void moduloExpression() : {}
 
 void maximumExpression() : {}
 {
-	<MAXIMUM> <OF> binaryOperands()
+	<BIGGR> <OF> binaryOperands()
 }
 
 void minimumExpression() : {}
 {
-	<MINIMUM> <OF> binaryOperands()
+	<SMALLR> <OF> binaryOperands()
 }
 
 void unaryExpression() : {}
@@ -408,28 +403,15 @@ void unaryExpression() : {}
 	(<INCREMENT> | <DECREMENT>) expression()
 }
 
-
-
-
-
-
 /* Some statements for assigning and declaring variables follow */
 void variableDeclarationStatement() : {System.out.println("variableDeclarationStatement");}
 {
-	<I> <HAS> <A> <IDENTIFIER> (<ITZ> expression())?
+	<I_HAS_A> <IDENTIFIER> (<ITZ> expression())?
 }
 void variableAssignmentStatement() : {System.out.println("variableAssignmentStatement");}
 {
 	<IDENTIFIER> <ASSIGNMENT> expression()
 }
-
-void variableDeclaration() : {System.out.println("variableDeclaration");}
-{
-	<I> <HAS> <A> <IDENTIFIER>
-}
-
-
-
 
 /* Some boolean operators follow */
 
@@ -482,6 +464,15 @@ void notEqualsExpression() : {}
 	<NOT_EQUAL> binaryOperands()
 }
 
+void lessThanExpression() : {}
+{
+	simpleExpression() <SMALLR> <THAN> expression()
+}
+
+void greaterThanExpression() : {}
+{
+	simpleExpression() <BIGGR> <THAN> expression()
+}
 
 
 /*string concatenation*/
