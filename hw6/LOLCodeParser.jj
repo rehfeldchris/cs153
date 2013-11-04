@@ -110,6 +110,8 @@ TOKEN : /* Reserved words */
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }    
   | < AN : "AN" >  // operand separator
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < BUKKIT : "BUKKIT" >  // array keyword
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
   | < DUZ: "DUZ" > // function start middle
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }                  
   | < FAIL: "FAIL" > // boolean false
@@ -201,7 +203,7 @@ TOKEN : /* Reserved words */
 }
 
 TOKEN : { /* Types like IDENTIFIER, CHAR, NUMBER */
-    <IDENTIFIER : (<LETTER>)(<LETTER> | <DIGIT> | "_")*>
+    <IDENTIFIER : (<LETTER>)+>
       { debugStream.println("IDENTIFIER token: " + matchedToken.image); }
   | < STRING: "\"" (~["\n", "\r", "\""])* "\"" >
       { debugStream.println("STRING token: " + matchedToken.image); }
@@ -219,13 +221,15 @@ TOKEN : { /* Types like IDENTIFIER, CHAR, NUMBER */
 
 void LOLCodeProgram() : {}
 {  programStart()
-  
-  (expressionOrStatement())*
-  
+  codeBlock()
   programEnd()
+
   {System.out.println("Parsed LOLCode Program");}    
 }
 
+void codeBlock() : {}
+{	(expressionOrStatement())*
+}
   
 void Variable(StringBuffer sb) : {}
 {
@@ -245,10 +249,45 @@ void programEnd() : {}
 
 void expressionOrStatement() : {}
 {
-	expression()
+	expression() | statement()
 }
 
+void statement() : {}
+{	ifStatement() | whileStatement() | caseStatement() | functionDeclarationStatement()
+}
 
+void ifStatement() : {}{
+  <O> <RLY>
+  	<YA> <RLY>
+  		codeBlock()
+  	(<NO> <WAI>
+  		codeBlock())?
+  <OIC>  	  }
+
+void whileStatement() : {}
+{
+  <IM> <IN> <YR> <IDENTIFIER> // (unaryExpression() <TIL> | <WILE> expression())?
+  	codeBlock()
+  <IM> <OUTTA> <YR> <IDENTIFIER>
+}
+
+void caseStatement() : {}
+{
+  expression()
+  <WTF>
+  	(<OMG> constantExpression() // 1 or more cases
+  		codeBlock()
+  	)+
+  	(<OMGWTF> codeBlock())?     // optional default
+  <OIC>  	  
+}
+
+void functionDeclarationStatement() : {}
+{
+  <HOW> <DUZ> <I> <IDENTIFIER> (<YR> <IDENTIFIER> (<AN> <YR> <IDENTIFIER>)*)?
+  		codeBlock()
+  <IF> <U> <SAY> <SO> 
+}
 
 void expression() : {}{
 	LOOKAHEAD(8)
@@ -455,7 +494,7 @@ void stringConcatenationExpression() : {}
 /*types and casting */
 void type() : {}
 {
-  	<TROOF> | <YARN> | <NUMBAR> | <NUMBR> | <NOOB>
+  	<TROOF> | <YARN> | <NUMBAR> | <NUMBR> | <NOOB> | <BUKKIT>
 }
 
 void troof() : {}
