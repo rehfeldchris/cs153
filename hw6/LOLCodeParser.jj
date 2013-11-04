@@ -251,12 +251,14 @@ void expressionOrStatement() : {}
 
 
 void expression() : {}{
-	  simpleExpression()
+	LOOKAHEAD(8)
+	  assignmentExpression()
+	| simpleExpression()
 	| basicMathExpression()
 	| booleanExpression()
 	| stringConcatenationExpression()
 	| typeCastExpression()
-	| assignmentExpression()}
+}
 
 void basicMathExpression() : {}
 {
@@ -368,7 +370,7 @@ void variableDeclaration() : {System.out.println("variableDeclaration");}
 
 void assignmentExpression() : {System.out.println("assignmentExpression");}
 {
-  	LOOKAHEAD(5)
+  	LOOKAHEAD(2)
 	  variableDeclarationAndAssignment()
 	| variableDeclaration()
 	| variableAssignment() 
@@ -464,8 +466,8 @@ void troof() : {}
 void typeCastExpression() : {}
 {
   LOOKAHEAD(2)
-  	<MAEK> expression() (<A>)? type()
- | (<MAEK> <IDENTIFIER> (<A>)? type())
+  	<MAEK> <IDENTIFIER> (<A>)? type()
+ | (<MAEK> expression() (<A>)? type())
  | (<IDENTIFIER> <IS> <NOW> <A> type())
 }
 
