@@ -200,11 +200,11 @@ TOKEN : { /* Types like IDENTIFIER, CHAR, NUMBER */
       { debugStream.println("STRING token: " + matchedToken.image); }
   | < CHARACTER: "'" (~[]){1} "'" >
       { debugStream.println("CHARACTER token: " + matchedToken.image); }
-  | < REAL_NUMBER: (<DECIMAL_INTEGER>)(["."])?(<DIGIT>)*["e", "E"](["+", "-"])?(<DIGIT>)* |
+  | < REAL_NUMBER: (["-"])?((<DECIMAL_INTEGER>)(["."])?(<DIGIT>)*["e", "E"](["+", "-"])?(<DIGIT>)* |
                    ["."](<DIGIT>)+(["e", "E"](["+", "-"])?(<DIGIT>)*)? |
-                   (<DECIMAL_INTEGER>)["."](<DIGIT>)* >
+                   (<DECIMAL_INTEGER>)["."](<DIGIT>)*) >
       { debugStream.println("REAL_NUMBER token: " + matchedToken.image); }
-  | < DECIMAL_INTEGER: "0" | ["1"-"9"](<DIGIT>)* >
+  | < DECIMAL_INTEGER: (["-"])?(<DIGIT>)+ >
       { debugStream.println("DECIMAL_INTEGER token: " + matchedToken.image); }       
   | <#DIGIT : ["0"-"9"]>
   | <#LETTER : ["a"-"z", "A"-"Z"]>
