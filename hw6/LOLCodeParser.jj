@@ -2,7 +2,7 @@ options {
     BUILD_PARSER=true;
     IGNORE_CASE=false;
     //DEBUG_TOKEN_MANAGER=true;
-    DEBUG_PARSER=true;
+    //DEBUG_PARSER=true;
 }
 
 PARSER_BEGIN(LOLCodeParser)
@@ -19,7 +19,11 @@ import java.io.*;
 	     catch (ParseException ex) {
 	       ex.printStackTrace();
 	     }	      	    
-	  }      
+	  }
+
+	  public static void printCallerMethodName()	  {
+	    StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+	    System.out.println(stackTraceElements[2].getMethodName());	  }
     }
 PARSER_END(LOLCodeParser)
 
@@ -224,18 +228,13 @@ void codeBlock() : {}
 	  expressionOrStatement()
 	)*
 }
-  
-void Variable(StringBuffer sb) : {}
-{
-  <IDENTIFIER> {sb.append(token.image);}
-  {System.out.println("Variable: " + sb.toString());}         
-}
 
-void programStart() : {}{
+
+void programStart() : {printCallerMethodName();}{
   	<HAI> }
 
 
-void programEnd() : {}
+void programEnd() : {printCallerMethodName();}
 {
   	<KTHXBYE> <EOF>
 }
@@ -256,7 +255,7 @@ void statement() : {}
 	| variableDeclarationStatement()
 }
 
-void ifStatement() : {}{
+void ifStatement() : {printCallerMethodName();}{
   <O> <RLY>
   	<YA> <RLY>
   		codeBlock()
@@ -264,7 +263,7 @@ void ifStatement() : {}{
   		codeBlock())?
   <OIC>  	  }
 
-void whileStatement() : {}
+void whileStatement() : {printCallerMethodName();}
 {                          // this is optional but can stand alone         this is optional but requires the inc/dec part
   <IM_IN_YR> <IDENTIFIER> (((<INCREMENT> | <DECREMENT>) <YR> <IDENTIFIER>) ((<TIL> | <WILE>) booleanExpression())?)?
   	codeBlock()
@@ -272,7 +271,7 @@ void whileStatement() : {}
   <IM_OUTTA_YR> <IDENTIFIER>
 }
 
-void caseStatement() : {}
+void caseStatement() : {printCallerMethodName();}
 {
   <WTF>
   	(<OMG> constantExpression() // 1 or more cases
@@ -286,7 +285,7 @@ void caseStatement() : {}
   <OIC>  	  
 }
 
-void functionDeclarationStatement() : {}
+void functionDeclarationStatement() : {printCallerMethodName();}
 {
   <HOW_DUZ_I> <IDENTIFIER> (<YR> <IDENTIFIER> (<AN> <YR> <IDENTIFIER>)*)?
   		codeBlock()
@@ -313,7 +312,7 @@ void basicMathExpression() : {}
 	| minimumExpression()
 }
 
-void booleanExpression() : { }
+void booleanExpression() : {}
 {
   /*two of the productions start with the LOGICAL_AND token, but the productions diverge by the second token, so lookahead(2) is enough. */
       LOOKAHEAD(2) logicalAndExpression()
@@ -363,52 +362,52 @@ for now, we always require an mkay token.
 /*Some basic math operators follow, like addition, subtraction etc...*/
 
 
-void additionExpression() : {}
+void additionExpression() : {printCallerMethodName();}
 {
 	<ADD> <OF> binaryOperands()
 }
 
-void subtractionExpression() : {}
+void subtractionExpression() : {printCallerMethodName();}
 {
 	<SUBTRACT> <OF> binaryOperands()
 }
 
-void multiplicationExpression() : {}
+void multiplicationExpression() : {printCallerMethodName();}
 {
 	<MULTIPLY> <OF> binaryOperands()
 }
 
-void divisionExpression() : {}
+void divisionExpression() : {printCallerMethodName();}
 {
 	<DIVIDE> <OF> binaryOperands()
 }
 
-void moduloExpression() : {}
+void moduloExpression() : {printCallerMethodName();}
 {
 	<MODULO> <OF> binaryOperands()
 }
 
-void maximumExpression() : {}
+void maximumExpression() : {printCallerMethodName();}
 {
 	<BIGGR> <OF> binaryOperands()
 }
 
-void minimumExpression() : {}
+void minimumExpression() : {printCallerMethodName();}
 {
 	<SMALLR> <OF> binaryOperands()
 }
 
-void unaryExpression() : {}
+void unaryExpression() : {printCallerMethodName();}
 {
 	(<INCREMENT> | <DECREMENT>) expression()
 }
 
 /* Some statements for assigning and declaring variables follow */
-void variableDeclarationStatement() : {System.out.println("variableDeclarationStatement");}
+void variableDeclarationStatement() : {printCallerMethodName();}
 {
 	<I_HAS_A> <IDENTIFIER> (<ITZ> expression())?
 }
-void variableAssignmentStatement() : {System.out.println("variableAssignmentStatement");}
+void variableAssignmentStatement() : {printCallerMethodName();}
 {
 	<IDENTIFIER> <ASSIGNMENT> expression()
 }
@@ -416,34 +415,34 @@ void variableAssignmentStatement() : {System.out.println("variableAssignmentStat
 /* Some boolean operators follow */
 
 
-void logicalAndExpression() : {}
+void logicalAndExpression() : {printCallerMethodName();}
 {
 	<LOGICAL_AND> <OF> binaryOperands()
 }
 
-void logicalOrExpression() : {}
+void logicalOrExpression() : {printCallerMethodName();}
 {
 	<LOGICAL_OR> <OF> binaryOperands()
 }
 
-void logicalXorExpression() : {}
+void logicalXorExpression() : {printCallerMethodName();}
 {
 	<XOR> <OF> binaryOperands()
 }
 
-void logicalNotExpression() : {}
+void logicalNotExpression() : {printCallerMethodName();}
 {
 	<LOGICAL_NOT> expression()
 }
 
 /*"all of foo an bar an baz" in lolcode is like "foo && bar && baz" in java*/
-void logicalAndListExpression() : {}
+void logicalAndListExpression() : {printCallerMethodName();}
 {
 	<ALL> <OF> variableArityOperands()
 }
 
 /*"any of foo an bar an baz" in lolcode is like "foo || bar || baz" in java*/
-void logicalOrListExpression() : {}
+void logicalOrListExpression() : {printCallerMethodName();}
 {
 	<ANY> <OF> variableArityOperands()
 }
@@ -452,24 +451,24 @@ void logicalOrListExpression() : {}
 
 /*comparison operators*/
 
-void equalsExpression() : {}
+void equalsExpression() : {printCallerMethodName();}
 {
   	/*example: BOTH SAEM 1 AN 2*/
 	<LOGICAL_AND> <EQUAL> binaryOperands()
 }
 
-void notEqualsExpression() : {}
+void notEqualsExpression() : {printCallerMethodName();}
 {
   	/*example: DIFFRINT 1 AN 2*/
 	<NOT_EQUAL> binaryOperands()
 }
 
-void lessThanExpression() : {}
+void lessThanExpression() : {printCallerMethodName();}
 {
 	simpleExpression() <SMALLR> <THAN> expression()
 }
 
-void greaterThanExpression() : {}
+void greaterThanExpression() : {printCallerMethodName();}
 {
 	simpleExpression() <BIGGR> <THAN> expression()
 }
@@ -477,7 +476,7 @@ void greaterThanExpression() : {}
 
 /*string concatenation*/
 
-void stringConcatenationExpression() : {}
+void stringConcatenationExpression() : {printCallerMethodName();}
 {
   	<SMOOSH> variableArityOperands()
 }
@@ -494,7 +493,7 @@ void troof() : {}
   	<WIN> | <FAIL>
 }
 
-void typeCastExpression() : {}
+void typeCastExpression() : {printCallerMethodName();}
 {
    (<MAEK> expression() (<A>)? type())
  | (<IDENTIFIER> <IS> <NOW> <A> type())

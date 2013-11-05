@@ -14,116 +14,30 @@ import java.io.*;
              }
           }
 
+          public static void printCallerMethodName()
+          {
+            StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+            System.out.println(stackTraceElements[2].getMethodName());
+          }
+
   static final public void LOLCodeProgram() throws ParseException {
-    trace_call("LOLCodeProgram");
-    try {
-      programStart();
-      codeBlock();
-      programEnd();
+    programStart();
+    codeBlock();
+    programEnd();
    System.out.println("Parsed LOLCode Program");
-    } finally {
-      trace_return("LOLCodeProgram");
-    }
   }
 
   static final public void codeBlock() throws ParseException {
-    trace_call("codeBlock");
-    try {
-      label_1:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case ADD:
-        case SUBTRACT:
-        case MULTIPLY:
-        case DIVIDE:
-        case MODULO:
-        case MAXIMUM:
-        case MINIMUM:
-        case XOR:
-        case LOGICAL_AND:
-        case LOGICAL_OR:
-        case INCREMENT:
-        case DECREMENT:
-        case LOGICAL_NOT:
-        case NOT_EQUAL:
-        case ALL:
-        case ANY:
-        case MAEK:
-        case SMOOSH:
-        case FAIL:
-        case HOW:
-        case I:
-        case IM:
-        case O:
-        case WIN:
-        case WTF:
-        case IDENTIFIER:
-        case STRING:
-        case CHARACTER:
-        case REAL_NUMBER:
-        case DECIMAL_INTEGER:
-          ;
-          break;
-        default:
-          jj_la1[0] = jj_gen;
-          break label_1;
-        }
-        expressionOrStatement();
-      }
-    } finally {
-      trace_return("codeBlock");
-    }
-  }
-
-  static final public void Variable(StringBuffer sb) throws ParseException {
-    trace_call("Variable");
-    try {
-      jj_consume_token(IDENTIFIER);
-                sb.append(token.image);
-   System.out.println("Variable: " + sb.toString());
-    } finally {
-      trace_return("Variable");
-    }
-  }
-
-  static final public void programStart() throws ParseException {
-    trace_call("programStart");
-    try {
-      jj_consume_token(HAI);
-    } finally {
-      trace_return("programStart");
-    }
-  }
-
-  static final public void programEnd() throws ParseException {
-    trace_call("programEnd");
-    try {
-      jj_consume_token(KTHXBYE);
-      jj_consume_token(0);
-    } finally {
-      trace_return("programEnd");
-    }
-  }
-
-  static final public void expressionOrStatement() throws ParseException {
-    trace_call("expressionOrStatement");
-    try {
+    label_1:
+    while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case HOW:
-      case I:
-      case IM:
-      case O:
-      case WTF:
-      case IDENTIFIER:
-        statement();
-        break;
       case ADD:
       case SUBTRACT:
       case MULTIPLY:
       case DIVIDE:
       case MODULO:
-      case MAXIMUM:
-      case MINIMUM:
+      case BIGGR:
+      case SMALLR:
       case XOR:
       case LOGICAL_AND:
       case LOGICAL_OR:
@@ -136,87 +50,136 @@ import java.io.*;
       case MAEK:
       case SMOOSH:
       case FAIL:
+      case I_HAS_A:
+      case HOW_DUZ_I:
+      case IM_IN_YR:
+      case O:
       case WIN:
+      case WTF:
+      case IDENTIFIER:
       case STRING:
       case CHARACTER:
       case REAL_NUMBER:
       case DECIMAL_INTEGER:
-        expression();
+        ;
         break;
       default:
-        jj_la1[1] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
+        jj_la1[0] = jj_gen;
+        break label_1;
       }
-    } finally {
-      trace_return("expressionOrStatement");
+      expressionOrStatement();
+    }
+  }
+
+  static final public void programStart() throws ParseException {
+                       printCallerMethodName();
+    jj_consume_token(HAI);
+  }
+
+  static final public void programEnd() throws ParseException {
+                     printCallerMethodName();
+    jj_consume_token(KTHXBYE);
+    jj_consume_token(0);
+  }
+
+  static final public void expressionOrStatement() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case I_HAS_A:
+    case HOW_DUZ_I:
+    case IM_IN_YR:
+    case O:
+    case WTF:
+    case IDENTIFIER:
+      statement();
+      break;
+    case ADD:
+    case SUBTRACT:
+    case MULTIPLY:
+    case DIVIDE:
+    case MODULO:
+    case BIGGR:
+    case SMALLR:
+    case XOR:
+    case LOGICAL_AND:
+    case LOGICAL_OR:
+    case INCREMENT:
+    case DECREMENT:
+    case LOGICAL_NOT:
+    case NOT_EQUAL:
+    case ALL:
+    case ANY:
+    case MAEK:
+    case SMOOSH:
+    case FAIL:
+    case WIN:
+    case STRING:
+    case CHARACTER:
+    case REAL_NUMBER:
+    case DECIMAL_INTEGER:
+      expression();
+      break;
+    default:
+      jj_la1[1] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
     }
   }
 
   static final public void statement() throws ParseException {
-    trace_call("statement");
-    try {
-      if (jj_2_1(4)) {
-        ifStatement();
-      } else {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case IM:
-          whileStatement();
-          break;
-        case IDENTIFIER:
-          variableAssignmentStatement();
-          break;
-        case WTF:
-          caseStatement();
-          break;
-        case HOW:
-          functionDeclarationStatement();
-          break;
-        case I:
-          variableDeclarationStatement();
-          break;
-        default:
-          jj_la1[2] = jj_gen;
-          jj_consume_token(-1);
-          throw new ParseException();
-        }
+    if (jj_2_1(4)) {
+      ifStatement();
+    } else {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case IM_IN_YR:
+        whileStatement();
+        break;
+      case IDENTIFIER:
+        variableAssignmentStatement();
+        break;
+      case WTF:
+        caseStatement();
+        break;
+      case HOW_DUZ_I:
+        functionDeclarationStatement();
+        break;
+      case I_HAS_A:
+        variableDeclarationStatement();
+        break;
+      default:
+        jj_la1[2] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
       }
-    } finally {
-      trace_return("statement");
     }
   }
 
   static final public void ifStatement() throws ParseException {
-    trace_call("ifStatement");
-    try {
-      jj_consume_token(O);
-      jj_consume_token(RLY);
-      jj_consume_token(YA);
-      jj_consume_token(RLY);
+                      printCallerMethodName();
+    jj_consume_token(O);
+    jj_consume_token(RLY);
+    jj_consume_token(YA);
+    jj_consume_token(RLY);
+    codeBlock();
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case NO:
+      jj_consume_token(NO);
+      jj_consume_token(WAI);
       codeBlock();
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case NO:
-        jj_consume_token(NO);
-        jj_consume_token(WAI);
-        codeBlock();
-        break;
-      default:
-        jj_la1[3] = jj_gen;
-        ;
-      }
-      jj_consume_token(OIC);
-    } finally {
-      trace_return("ifStatement");
+      break;
+    default:
+      jj_la1[3] = jj_gen;
+      ;
     }
+    jj_consume_token(OIC);
   }
 
   static final public void whileStatement() throws ParseException {
-    trace_call("whileStatement");
-    try {
-      jj_consume_token(IM);
-      jj_consume_token(IN);
-      jj_consume_token(YR);
-      jj_consume_token(IDENTIFIER);
+                         printCallerMethodName();
+    jj_consume_token(IM_IN_YR);
+    jj_consume_token(IDENTIFIER);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case INCREMENT:
+    case DECREMENT:
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case INCREMENT:
         jj_consume_token(INCREMENT);
@@ -240,681 +203,575 @@ import java.io.*;
           break;
         case WILE:
           jj_consume_token(WILE);
-          expression();
           break;
         default:
           jj_la1[5] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
+        booleanExpression();
         break;
       default:
         jj_la1[6] = jj_gen;
         ;
       }
-      codeBlock();
-      jj_consume_token(IM);
-      jj_consume_token(OUTTA);
-      jj_consume_token(YR);
-      jj_consume_token(IDENTIFIER);
-    } finally {
-      trace_return("whileStatement");
+      break;
+    default:
+      jj_la1[7] = jj_gen;
+      ;
     }
+    codeBlock();
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case GTFO:
+      jj_consume_token(GTFO);
+      break;
+    default:
+      jj_la1[8] = jj_gen;
+      ;
+    }
+    jj_consume_token(IM_OUTTA_YR);
+    jj_consume_token(IDENTIFIER);
   }
 
   static final public void caseStatement() throws ParseException {
-    trace_call("caseStatement");
-    try {
-      jj_consume_token(WTF);
-      label_2:
-      while (true) {
-        jj_consume_token(OMG);
-        constantExpression();
-        codeBlock();
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case OMG:
-          ;
-          break;
-        default:
-          jj_la1[7] = jj_gen;
-          break label_2;
-        }
-      }
+                        printCallerMethodName();
+    jj_consume_token(WTF);
+    label_2:
+    while (true) {
+      jj_consume_token(OMG);
+      constantExpression();
+      codeBlock();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case OMGWTF:
-        jj_consume_token(OMGWTF);
-        codeBlock();
+      case GTFO:
+        jj_consume_token(GTFO);
         break;
       default:
-        jj_la1[8] = jj_gen;
+        jj_la1[9] = jj_gen;
         ;
       }
-      jj_consume_token(OIC);
-    } finally {
-      trace_return("caseStatement");
-    }
-  }
-
-  static final public void functionDeclarationStatement() throws ParseException {
-    trace_call("functionDeclarationStatement");
-    try {
-      jj_consume_token(HOW);
-      jj_consume_token(DUZ);
-      jj_consume_token(I);
-      jj_consume_token(IDENTIFIER);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case YR:
-        jj_consume_token(YR);
-        jj_consume_token(IDENTIFIER);
-        label_3:
-        while (true) {
-          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-          case AN:
-            ;
-            break;
-          default:
-            jj_la1[9] = jj_gen;
-            break label_3;
-          }
-          jj_consume_token(AN);
-          jj_consume_token(YR);
-          jj_consume_token(IDENTIFIER);
-        }
+      case OMG:
+        ;
         break;
       default:
         jj_la1[10] = jj_gen;
+        break label_2;
+      }
+    }
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case OMGWTF:
+      jj_consume_token(OMGWTF);
+      codeBlock();
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case GTFO:
+        jj_consume_token(GTFO);
+        break;
+      default:
+        jj_la1[11] = jj_gen;
         ;
       }
-      codeBlock();
-      jj_consume_token(IF);
-      jj_consume_token(U);
-      jj_consume_token(SAY);
-      jj_consume_token(SO);
-    } finally {
-      trace_return("functionDeclarationStatement");
+      break;
+    default:
+      jj_la1[12] = jj_gen;
+      ;
     }
+    jj_consume_token(OIC);
+  }
+
+  static final public void functionDeclarationStatement() throws ParseException {
+                                       printCallerMethodName();
+    jj_consume_token(HOW_DUZ_I);
+    jj_consume_token(IDENTIFIER);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case YR:
+      jj_consume_token(YR);
+      jj_consume_token(IDENTIFIER);
+      label_3:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case AN:
+          ;
+          break;
+        default:
+          jj_la1[13] = jj_gen;
+          break label_3;
+        }
+        jj_consume_token(AN);
+        jj_consume_token(YR);
+        jj_consume_token(IDENTIFIER);
+      }
+      break;
+    default:
+      jj_la1[14] = jj_gen;
+      ;
+    }
+    codeBlock();
+    jj_consume_token(IF_U_SAY_SO);
   }
 
   static final public void expression() throws ParseException {
-    trace_call("expression");
-    try {
-      if (jj_2_2(2)) {
-        simpleExpression();
-      } else {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case ADD:
-        case SUBTRACT:
-        case MULTIPLY:
-        case DIVIDE:
-        case MODULO:
-        case MAXIMUM:
-        case MINIMUM:
-          basicMathExpression();
-          break;
-        case XOR:
-        case LOGICAL_AND:
-        case LOGICAL_OR:
-        case LOGICAL_NOT:
-        case NOT_EQUAL:
-        case ALL:
-        case ANY:
+    if (jj_2_2(2)) {
+      simpleExpression();
+    } else {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case ADD:
+      case SUBTRACT:
+      case MULTIPLY:
+      case DIVIDE:
+      case MODULO:
+      case BIGGR:
+      case SMALLR:
+        basicMathExpression();
+        break;
+      default:
+        jj_la1[15] = jj_gen;
+        if (jj_2_3(2)) {
           booleanExpression();
-          break;
-        case SMOOSH:
-          stringConcatenationExpression();
-          break;
-        case MAEK:
-        case IDENTIFIER:
-          typeCastExpression();
-          break;
-        case INCREMENT:
-        case DECREMENT:
-          unaryExpression();
-          break;
-        default:
-          jj_la1[11] = jj_gen;
-          jj_consume_token(-1);
-          throw new ParseException();
+        } else {
+          switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+          case SMOOSH:
+            stringConcatenationExpression();
+            break;
+          default:
+            jj_la1[16] = jj_gen;
+            if (jj_2_4(2)) {
+              typeCastExpression();
+            } else {
+              switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+              case INCREMENT:
+              case DECREMENT:
+                unaryExpression();
+                break;
+              default:
+                jj_la1[17] = jj_gen;
+                jj_consume_token(-1);
+                throw new ParseException();
+              }
+            }
+          }
         }
       }
-    } finally {
-      trace_return("expression");
     }
   }
 
   static final public void basicMathExpression() throws ParseException {
-    trace_call("basicMathExpression");
-    try {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case ADD:
-        additionExpression();
-        break;
-      case SUBTRACT:
-        subtractionExpression();
-        break;
-      case MULTIPLY:
-        multiplicationExpression();
-        break;
-      case DIVIDE:
-        divisionExpression();
-        break;
-      case MODULO:
-        moduloExpression();
-        break;
-      case MAXIMUM:
-        maximumExpression();
-        break;
-      case MINIMUM:
-        minimumExpression();
-        break;
-      default:
-        jj_la1[12] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-    } finally {
-      trace_return("basicMathExpression");
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case ADD:
+      additionExpression();
+      break;
+    case SUBTRACT:
+      subtractionExpression();
+      break;
+    case MULTIPLY:
+      multiplicationExpression();
+      break;
+    case DIVIDE:
+      divisionExpression();
+      break;
+    case MODULO:
+      moduloExpression();
+      break;
+    case BIGGR:
+      maximumExpression();
+      break;
+    case SMALLR:
+      minimumExpression();
+      break;
+    default:
+      jj_la1[18] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
     }
   }
 
   static final public void booleanExpression() throws ParseException {
-    trace_call("booleanExpression");
-    try {
-      if (jj_2_3(2)) {
-        logicalAndExpression();
-      } else {
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case LOGICAL_OR:
-          logicalOrExpression();
-          break;
-        case XOR:
-          logicalXorExpression();
-          break;
-        case LOGICAL_NOT:
-          logicalNotExpression();
-          break;
-        case ALL:
-          logicalAndListExpression();
-          break;
-        case ANY:
-          logicalOrListExpression();
-          break;
-        case LOGICAL_AND:
-          equalsExpression();
-          break;
-        case NOT_EQUAL:
-          notEqualsExpression();
-          break;
-        default:
-          jj_la1[13] = jj_gen;
+    if (jj_2_5(2)) {
+      logicalAndExpression();
+    } else {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case LOGICAL_OR:
+        logicalOrExpression();
+        break;
+      case XOR:
+        logicalXorExpression();
+        break;
+      case LOGICAL_NOT:
+        logicalNotExpression();
+        break;
+      case ALL:
+        logicalAndListExpression();
+        break;
+      case ANY:
+        logicalOrListExpression();
+        break;
+      case LOGICAL_AND:
+        equalsExpression();
+        break;
+      case NOT_EQUAL:
+        notEqualsExpression();
+        break;
+      default:
+        jj_la1[19] = jj_gen;
+        if (jj_2_6(2)) {
+          greaterThanExpression();
+        } else if (jj_2_7(2)) {
+          lessThanExpression();
+        } else {
           jj_consume_token(-1);
           throw new ParseException();
         }
       }
-    } finally {
-      trace_return("booleanExpression");
     }
   }
 
   static final public void constantExpression() throws ParseException {
-    trace_call("constantExpression");
-    try {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case STRING:
-        jj_consume_token(STRING);
-        break;
-      case CHARACTER:
-        jj_consume_token(CHARACTER);
-        break;
-      case REAL_NUMBER:
-        jj_consume_token(REAL_NUMBER);
-        break;
-      case DECIMAL_INTEGER:
-        jj_consume_token(DECIMAL_INTEGER);
-        break;
-      case FAIL:
-      case WIN:
-        troof();
-        break;
-      default:
-        jj_la1[14] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-    } finally {
-      trace_return("constantExpression");
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case STRING:
+      jj_consume_token(STRING);
+      break;
+    case CHARACTER:
+      jj_consume_token(CHARACTER);
+      break;
+    case REAL_NUMBER:
+      jj_consume_token(REAL_NUMBER);
+      break;
+    case DECIMAL_INTEGER:
+      jj_consume_token(DECIMAL_INTEGER);
+      break;
+    case FAIL:
+    case WIN:
+      troof();
+      break;
+    default:
+      jj_la1[20] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
     }
   }
 
   static final public void simpleExpression() throws ParseException {
-    trace_call("simpleExpression");
-    try {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case IDENTIFIER:
-        jj_consume_token(IDENTIFIER);
-        break;
-      case FAIL:
-      case WIN:
-      case STRING:
-      case CHARACTER:
-      case REAL_NUMBER:
-      case DECIMAL_INTEGER:
-        constantExpression();
-        break;
-      default:
-        jj_la1[15] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-    } finally {
-      trace_return("simpleExpression");
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case IDENTIFIER:
+      jj_consume_token(IDENTIFIER);
+      break;
+    case FAIL:
+    case WIN:
+    case STRING:
+    case CHARACTER:
+    case REAL_NUMBER:
+    case DECIMAL_INTEGER:
+      constantExpression();
+      break;
+    default:
+      jj_la1[21] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
     }
   }
 
   static final public void binaryOperands() throws ParseException {
-    trace_call("binaryOperands");
-    try {
-      expression();
+    expression();
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case AN:
+      jj_consume_token(AN);
+      break;
+    default:
+      jj_la1[22] = jj_gen;
+      ;
+    }
+    expression();
+  }
+
+  static final public void variableArityOperands() throws ParseException {
+    expression();
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case MKAY:
+      jj_consume_token(MKAY);
+      break;
+    case ADD:
+    case SUBTRACT:
+    case MULTIPLY:
+    case DIVIDE:
+    case MODULO:
+    case BIGGR:
+    case SMALLR:
+    case XOR:
+    case LOGICAL_AND:
+    case LOGICAL_OR:
+    case INCREMENT:
+    case DECREMENT:
+    case LOGICAL_NOT:
+    case NOT_EQUAL:
+    case ALL:
+    case ANY:
+    case MAEK:
+    case SMOOSH:
+    case AN:
+    case FAIL:
+    case WIN:
+    case IDENTIFIER:
+    case STRING:
+    case CHARACTER:
+    case REAL_NUMBER:
+    case DECIMAL_INTEGER:
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case AN:
         jj_consume_token(AN);
         break;
       default:
-        jj_la1[16] = jj_gen;
+        jj_la1[23] = jj_gen;
         ;
       }
-      expression();
-    } finally {
-      trace_return("binaryOperands");
-    }
-  }
-
-  static final public void variableArityOperands() throws ParseException {
-    trace_call("variableArityOperands");
-    try {
-      expression();
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case MKAY:
-        jj_consume_token(MKAY);
-        break;
-      case ADD:
-      case SUBTRACT:
-      case MULTIPLY:
-      case DIVIDE:
-      case MODULO:
-      case MAXIMUM:
-      case MINIMUM:
-      case XOR:
-      case LOGICAL_AND:
-      case LOGICAL_OR:
-      case INCREMENT:
-      case DECREMENT:
-      case LOGICAL_NOT:
-      case NOT_EQUAL:
-      case ALL:
-      case ANY:
-      case MAEK:
-      case SMOOSH:
-      case AN:
-      case FAIL:
-      case WIN:
-      case IDENTIFIER:
-      case STRING:
-      case CHARACTER:
-      case REAL_NUMBER:
-      case DECIMAL_INTEGER:
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case AN:
-          jj_consume_token(AN);
-          break;
-        default:
-          jj_la1[17] = jj_gen;
-          ;
-        }
-        variableArityOperands();
-        break;
-      default:
-        jj_la1[18] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-    } finally {
-      trace_return("variableArityOperands");
+      variableArityOperands();
+      break;
+    default:
+      jj_la1[24] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
     }
   }
 
 /*Some basic math operators follow, like addition, subtraction etc...*/
   static final public void additionExpression() throws ParseException {
-    trace_call("additionExpression");
-    try {
-      jj_consume_token(ADD);
-      jj_consume_token(OF);
-      binaryOperands();
-    } finally {
-      trace_return("additionExpression");
-    }
+                             printCallerMethodName();
+    jj_consume_token(ADD);
+    jj_consume_token(OF);
+    binaryOperands();
   }
 
   static final public void subtractionExpression() throws ParseException {
-    trace_call("subtractionExpression");
-    try {
-      jj_consume_token(SUBTRACT);
-      jj_consume_token(OF);
-      binaryOperands();
-    } finally {
-      trace_return("subtractionExpression");
-    }
+                                printCallerMethodName();
+    jj_consume_token(SUBTRACT);
+    jj_consume_token(OF);
+    binaryOperands();
   }
 
   static final public void multiplicationExpression() throws ParseException {
-    trace_call("multiplicationExpression");
-    try {
-      jj_consume_token(MULTIPLY);
-      jj_consume_token(OF);
-      binaryOperands();
-    } finally {
-      trace_return("multiplicationExpression");
-    }
+                                   printCallerMethodName();
+    jj_consume_token(MULTIPLY);
+    jj_consume_token(OF);
+    binaryOperands();
   }
 
   static final public void divisionExpression() throws ParseException {
-    trace_call("divisionExpression");
-    try {
-      jj_consume_token(DIVIDE);
-      jj_consume_token(OF);
-      binaryOperands();
-    } finally {
-      trace_return("divisionExpression");
-    }
+                             printCallerMethodName();
+    jj_consume_token(DIVIDE);
+    jj_consume_token(OF);
+    binaryOperands();
   }
 
   static final public void moduloExpression() throws ParseException {
-    trace_call("moduloExpression");
-    try {
-      jj_consume_token(MODULO);
-      jj_consume_token(OF);
-      binaryOperands();
-    } finally {
-      trace_return("moduloExpression");
-    }
+                           printCallerMethodName();
+    jj_consume_token(MODULO);
+    jj_consume_token(OF);
+    binaryOperands();
   }
 
   static final public void maximumExpression() throws ParseException {
-    trace_call("maximumExpression");
-    try {
-      jj_consume_token(MAXIMUM);
-      jj_consume_token(OF);
-      binaryOperands();
-    } finally {
-      trace_return("maximumExpression");
-    }
+                            printCallerMethodName();
+    jj_consume_token(BIGGR);
+    jj_consume_token(OF);
+    binaryOperands();
   }
 
   static final public void minimumExpression() throws ParseException {
-    trace_call("minimumExpression");
-    try {
-      jj_consume_token(MINIMUM);
-      jj_consume_token(OF);
-      binaryOperands();
-    } finally {
-      trace_return("minimumExpression");
-    }
+                            printCallerMethodName();
+    jj_consume_token(SMALLR);
+    jj_consume_token(OF);
+    binaryOperands();
   }
 
   static final public void unaryExpression() throws ParseException {
-    trace_call("unaryExpression");
-    try {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case INCREMENT:
-        jj_consume_token(INCREMENT);
-        break;
-      case DECREMENT:
-        jj_consume_token(DECREMENT);
-        break;
-      default:
-        jj_la1[19] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-      expression();
-    } finally {
-      trace_return("unaryExpression");
+                          printCallerMethodName();
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case INCREMENT:
+      jj_consume_token(INCREMENT);
+      break;
+    case DECREMENT:
+      jj_consume_token(DECREMENT);
+      break;
+    default:
+      jj_la1[25] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
     }
+    expression();
   }
 
 /* Some statements for assigning and declaring variables follow */
   static final public void variableDeclarationStatement() throws ParseException {
-    trace_call("variableDeclarationStatement");
-    try {
-                                       System.out.println("variableDeclarationStatement");
-      jj_consume_token(I);
-      jj_consume_token(HAS);
-      jj_consume_token(A);
-      jj_consume_token(IDENTIFIER);
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case ITZ:
-        jj_consume_token(ITZ);
-        expression();
-        break;
-      default:
-        jj_la1[20] = jj_gen;
-        ;
-      }
-    } finally {
-      trace_return("variableDeclarationStatement");
+                                       printCallerMethodName();
+    jj_consume_token(I_HAS_A);
+    jj_consume_token(IDENTIFIER);
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case ITZ:
+      jj_consume_token(ITZ);
+      expression();
+      break;
+    default:
+      jj_la1[26] = jj_gen;
+      ;
     }
   }
 
   static final public void variableAssignmentStatement() throws ParseException {
-    trace_call("variableAssignmentStatement");
-    try {
-                                      System.out.println("variableAssignmentStatement");
-      jj_consume_token(IDENTIFIER);
-      jj_consume_token(ASSIGNMENT);
-      expression();
-    } finally {
-      trace_return("variableAssignmentStatement");
-    }
-  }
-
-  static final public void variableDeclaration() throws ParseException {
-    trace_call("variableDeclaration");
-    try {
-                              System.out.println("variableDeclaration");
-      jj_consume_token(I);
-      jj_consume_token(HAS);
-      jj_consume_token(A);
-      jj_consume_token(IDENTIFIER);
-    } finally {
-      trace_return("variableDeclaration");
-    }
+                                      printCallerMethodName();
+    jj_consume_token(IDENTIFIER);
+    jj_consume_token(ASSIGNMENT);
+    expression();
   }
 
 /* Some boolean operators follow */
   static final public void logicalAndExpression() throws ParseException {
-    trace_call("logicalAndExpression");
-    try {
-      jj_consume_token(LOGICAL_AND);
-      jj_consume_token(OF);
-      binaryOperands();
-    } finally {
-      trace_return("logicalAndExpression");
-    }
+                               printCallerMethodName();
+    jj_consume_token(LOGICAL_AND);
+    jj_consume_token(OF);
+    binaryOperands();
   }
 
   static final public void logicalOrExpression() throws ParseException {
-    trace_call("logicalOrExpression");
-    try {
-      jj_consume_token(LOGICAL_OR);
-      jj_consume_token(OF);
-      binaryOperands();
-    } finally {
-      trace_return("logicalOrExpression");
-    }
+                              printCallerMethodName();
+    jj_consume_token(LOGICAL_OR);
+    jj_consume_token(OF);
+    binaryOperands();
   }
 
   static final public void logicalXorExpression() throws ParseException {
-    trace_call("logicalXorExpression");
-    try {
-      jj_consume_token(XOR);
-      jj_consume_token(OF);
-      binaryOperands();
-    } finally {
-      trace_return("logicalXorExpression");
-    }
+                               printCallerMethodName();
+    jj_consume_token(XOR);
+    jj_consume_token(OF);
+    binaryOperands();
   }
 
   static final public void logicalNotExpression() throws ParseException {
-    trace_call("logicalNotExpression");
-    try {
-      jj_consume_token(LOGICAL_NOT);
-      expression();
-    } finally {
-      trace_return("logicalNotExpression");
-    }
+                               printCallerMethodName();
+    jj_consume_token(LOGICAL_NOT);
+    expression();
   }
 
 /*"all of foo an bar an baz" in lolcode is like "foo && bar && baz" in java*/
   static final public void logicalAndListExpression() throws ParseException {
-    trace_call("logicalAndListExpression");
-    try {
-      jj_consume_token(ALL);
-      jj_consume_token(OF);
-      variableArityOperands();
-    } finally {
-      trace_return("logicalAndListExpression");
-    }
+                                   printCallerMethodName();
+    jj_consume_token(ALL);
+    jj_consume_token(OF);
+    variableArityOperands();
   }
 
 /*"any of foo an bar an baz" in lolcode is like "foo || bar || baz" in java*/
   static final public void logicalOrListExpression() throws ParseException {
-    trace_call("logicalOrListExpression");
-    try {
-      jj_consume_token(ANY);
-      jj_consume_token(OF);
-      variableArityOperands();
-    } finally {
-      trace_return("logicalOrListExpression");
-    }
+                                  printCallerMethodName();
+    jj_consume_token(ANY);
+    jj_consume_token(OF);
+    variableArityOperands();
   }
 
 /*comparison operators*/
   static final public void equalsExpression() throws ParseException {
-    trace_call("equalsExpression");
-    try {
-      jj_consume_token(LOGICAL_AND);
-      jj_consume_token(EQUAL);
-      binaryOperands();
-    } finally {
-      trace_return("equalsExpression");
-    }
+                           printCallerMethodName();
+    jj_consume_token(LOGICAL_AND);
+    jj_consume_token(EQUAL);
+    binaryOperands();
   }
 
   static final public void notEqualsExpression() throws ParseException {
-    trace_call("notEqualsExpression");
-    try {
-      jj_consume_token(NOT_EQUAL);
-      binaryOperands();
-    } finally {
-      trace_return("notEqualsExpression");
-    }
+                              printCallerMethodName();
+    jj_consume_token(NOT_EQUAL);
+    binaryOperands();
+  }
+
+  static final public void lessThanExpression() throws ParseException {
+                             printCallerMethodName();
+    simpleExpression();
+    jj_consume_token(SMALLR);
+    jj_consume_token(THAN);
+    expression();
+  }
+
+  static final public void greaterThanExpression() throws ParseException {
+                                printCallerMethodName();
+    simpleExpression();
+    jj_consume_token(BIGGR);
+    jj_consume_token(THAN);
+    expression();
   }
 
 /*string concatenation*/
   static final public void stringConcatenationExpression() throws ParseException {
-    trace_call("stringConcatenationExpression");
-    try {
-      jj_consume_token(SMOOSH);
-      variableArityOperands();
-    } finally {
-      trace_return("stringConcatenationExpression");
-    }
+                                        printCallerMethodName();
+    jj_consume_token(SMOOSH);
+    variableArityOperands();
   }
 
 /*types and casting */
   static final public void type() throws ParseException {
-    trace_call("type");
-    try {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case TROOF:
-        jj_consume_token(TROOF);
-        break;
-      case YARN:
-        jj_consume_token(YARN);
-        break;
-      case NUMBAR:
-        jj_consume_token(NUMBAR);
-        break;
-      case NUMBR:
-        jj_consume_token(NUMBR);
-        break;
-      case NOOB:
-        jj_consume_token(NOOB);
-        break;
-      case BUKKIT:
-        jj_consume_token(BUKKIT);
-        break;
-      default:
-        jj_la1[21] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-    } finally {
-      trace_return("type");
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case TROOF:
+      jj_consume_token(TROOF);
+      break;
+    case YARN:
+      jj_consume_token(YARN);
+      break;
+    case NUMBAR:
+      jj_consume_token(NUMBAR);
+      break;
+    case NUMBR:
+      jj_consume_token(NUMBR);
+      break;
+    case NOOB:
+      jj_consume_token(NOOB);
+      break;
+    case BUKKIT:
+      jj_consume_token(BUKKIT);
+      break;
+    default:
+      jj_la1[27] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
     }
   }
 
   static final public void troof() throws ParseException {
-    trace_call("troof");
-    try {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case WIN:
-        jj_consume_token(WIN);
-        break;
-      case FAIL:
-        jj_consume_token(FAIL);
-        break;
-      default:
-        jj_la1[22] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
-    } finally {
-      trace_return("troof");
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case WIN:
+      jj_consume_token(WIN);
+      break;
+    case FAIL:
+      jj_consume_token(FAIL);
+      break;
+    default:
+      jj_la1[28] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
     }
   }
 
   static final public void typeCastExpression() throws ParseException {
-    trace_call("typeCastExpression");
-    try {
+                             printCallerMethodName();
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case MAEK:
+      jj_consume_token(MAEK);
+      expression();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case MAEK:
-        jj_consume_token(MAEK);
-        expression();
-        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case A:
-          jj_consume_token(A);
-          break;
-        default:
-          jj_la1[23] = jj_gen;
-          ;
-        }
-        type();
-        break;
-      case IDENTIFIER:
-        jj_consume_token(IDENTIFIER);
-        jj_consume_token(IS);
-        jj_consume_token(NOW);
+      case A:
         jj_consume_token(A);
-        type();
         break;
       default:
-        jj_la1[24] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
+        jj_la1[29] = jj_gen;
+        ;
       }
-    } finally {
-      trace_return("typeCastExpression");
+      type();
+      break;
+    case IDENTIFIER:
+      jj_consume_token(IDENTIFIER);
+      jj_consume_token(IS);
+      jj_consume_token(NOW);
+      jj_consume_token(A);
+      type();
+      break;
+    default:
+      jj_la1[30] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
     }
   }
 
@@ -939,57 +796,48 @@ import java.io.*;
     finally { jj_save(2, xla); }
   }
 
-  static private boolean jj_3R_5() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(85)) {
-    jj_scanpos = xsp;
-    if (jj_3R_7()) return true;
-    }
+  static private boolean jj_2_4(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_4(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(3, xla); }
+  }
+
+  static private boolean jj_2_5(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_5(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(4, xla); }
+  }
+
+  static private boolean jj_2_6(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_6(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(5, xla); }
+  }
+
+  static private boolean jj_2_7(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_7(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(6, xla); }
+  }
+
+  static private boolean jj_3R_11() {
+    if (jj_3R_21()) return true;
     return false;
   }
 
-  static private boolean jj_3R_10() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(80)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(42)) return true;
-    }
+  static private boolean jj_3R_26() {
+    if (jj_scan_token(ANY)) return true;
+    if (jj_scan_token(OF)) return true;
     return false;
   }
 
-  static private boolean jj_3_3() {
-    if (jj_3R_6()) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_8() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(86)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(87)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(88)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(89)) {
-    jj_scanpos = xsp;
-    if (jj_3R_9()) return true;
-    }
-    }
-    }
-    }
-    return false;
-  }
-
-  static private boolean jj_3R_7() {
-    if (jj_3R_8()) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_9() {
-    if (jj_3R_10()) return true;
+  static private boolean jj_3R_25() {
+    if (jj_scan_token(ALL)) return true;
+    if (jj_scan_token(OF)) return true;
     return false;
   }
 
@@ -1001,8 +849,292 @@ import java.io.*;
     return false;
   }
 
+  static private boolean jj_3R_31() {
+    if (jj_3R_29()) return true;
+    return false;
+  }
+
   static private boolean jj_3_1() {
     if (jj_3R_4()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_24() {
+    if (jj_scan_token(LOGICAL_NOT)) return true;
+    if (jj_3R_29()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_5() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(80)) {
+    jj_scanpos = xsp;
+    if (jj_3R_11()) return true;
+    }
+    return false;
+  }
+
+  static private boolean jj_3R_23() {
+    if (jj_scan_token(XOR)) return true;
+    if (jj_scan_token(OF)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_21() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(81)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(82)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(83)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(84)) {
+    jj_scanpos = xsp;
+    if (jj_3R_30()) return true;
+    }
+    }
+    }
+    }
+    return false;
+  }
+
+  static private boolean jj_3R_22() {
+    if (jj_scan_token(LOGICAL_OR)) return true;
+    if (jj_scan_token(OF)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_7() {
+    if (jj_3R_10()) return true;
+    return false;
+  }
+
+  static private boolean jj_3_6() {
+    if (jj_3R_9()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_18() {
+    if (jj_3R_28()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_17() {
+    if (jj_3R_27()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_16() {
+    if (jj_3R_26()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_8() {
+    if (jj_scan_token(LOGICAL_AND)) return true;
+    if (jj_scan_token(OF)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_15() {
+    if (jj_3R_25()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_14() {
+    if (jj_3R_24()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_13() {
+    if (jj_3R_23()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_12() {
+    if (jj_3R_22()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_6() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_5()) {
+    jj_scanpos = xsp;
+    if (jj_3R_12()) {
+    jj_scanpos = xsp;
+    if (jj_3R_13()) {
+    jj_scanpos = xsp;
+    if (jj_3R_14()) {
+    jj_scanpos = xsp;
+    if (jj_3R_15()) {
+    jj_scanpos = xsp;
+    if (jj_3R_16()) {
+    jj_scanpos = xsp;
+    if (jj_3R_17()) {
+    jj_scanpos = xsp;
+    if (jj_3R_18()) {
+    jj_scanpos = xsp;
+    if (jj_3_6()) {
+    jj_scanpos = xsp;
+    if (jj_3_7()) return true;
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    return false;
+  }
+
+  static private boolean jj_3_5() {
+    if (jj_3R_8()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_45() {
+    if (jj_3R_52()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_44() {
+    if (jj_3R_51()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_43() {
+    if (jj_3R_50()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_42() {
+    if (jj_3R_49()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_41() {
+    if (jj_3R_48()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_40() {
+    if (jj_3R_47()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_39() {
+    if (jj_3R_46()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_36() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_39()) {
+    jj_scanpos = xsp;
+    if (jj_3R_40()) {
+    jj_scanpos = xsp;
+    if (jj_3R_41()) {
+    jj_scanpos = xsp;
+    if (jj_3R_42()) {
+    jj_scanpos = xsp;
+    if (jj_3R_43()) {
+    jj_scanpos = xsp;
+    if (jj_3R_44()) {
+    jj_scanpos = xsp;
+    if (jj_3R_45()) return true;
+    }
+    }
+    }
+    }
+    }
+    }
+    return false;
+  }
+
+  static private boolean jj_3R_38() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(17)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(18)) return true;
+    }
+    return false;
+  }
+
+  static private boolean jj_3R_20() {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    if (jj_scan_token(IS)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_35() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(75)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(41)) return true;
+    }
+    return false;
+  }
+
+  static private boolean jj_3R_7() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_19()) {
+    jj_scanpos = xsp;
+    if (jj_3R_20()) return true;
+    }
+    return false;
+  }
+
+  static private boolean jj_3R_19() {
+    if (jj_scan_token(MAEK)) return true;
+    if (jj_3R_29()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_52() {
+    if (jj_scan_token(SMALLR)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_34() {
+    if (jj_3R_38()) return true;
+    return false;
+  }
+
+  static private boolean jj_3_4() {
+    if (jj_3R_7()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_33() {
+    if (jj_3R_37()) return true;
+    return false;
+  }
+
+  static private boolean jj_3_3() {
+    if (jj_3R_6()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_32() {
+    if (jj_3R_36()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_30() {
+    if (jj_3R_35()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_51() {
+    if (jj_scan_token(BIGGR)) return true;
     return false;
   }
 
@@ -1011,9 +1143,79 @@ import java.io.*;
     return false;
   }
 
-  static private boolean jj_3R_6() {
+  static private boolean jj_3R_29() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_2()) {
+    jj_scanpos = xsp;
+    if (jj_3R_32()) {
+    jj_scanpos = xsp;
+    if (jj_3_3()) {
+    jj_scanpos = xsp;
+    if (jj_3R_33()) {
+    jj_scanpos = xsp;
+    if (jj_3_4()) {
+    jj_scanpos = xsp;
+    if (jj_3R_34()) return true;
+    }
+    }
+    }
+    }
+    }
+    return false;
+  }
+
+  static private boolean jj_3R_50() {
+    if (jj_scan_token(MODULO)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_37() {
+    if (jj_scan_token(SMOOSH)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_49() {
+    if (jj_scan_token(DIVIDE)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_9() {
+    if (jj_3R_5()) return true;
+    if (jj_scan_token(BIGGR)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_48() {
+    if (jj_scan_token(MULTIPLY)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_10() {
+    if (jj_3R_5()) return true;
+    if (jj_scan_token(SMALLR)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_47() {
+    if (jj_scan_token(SUBTRACT)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_28() {
+    if (jj_scan_token(NOT_EQUAL)) return true;
+    if (jj_3R_31()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_46() {
+    if (jj_scan_token(ADD)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_27() {
     if (jj_scan_token(LOGICAL_AND)) return true;
-    if (jj_scan_token(OF)) return true;
+    if (jj_scan_token(EQUAL)) return true;
     return false;
   }
 
@@ -1029,7 +1231,7 @@ import java.io.*;
   static private Token jj_scanpos, jj_lastpos;
   static private int jj_la;
   static private int jj_gen;
-  static final private int[] jj_la1 = new int[25];
+  static final private int[] jj_la1 = new int[31];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static private int[] jj_la1_2;
@@ -1039,15 +1241,15 @@ import java.io.*;
       jj_la1_init_2();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x7e7ff80,0x7e7ff80,0x0,0x0,0x60000,0x0,0x0,0x0,0x0,0x0,0x0,0x7e7ff80,0x3f80,0x1e1c000,0x0,0x0,0x0,0x0,0x7e7ff80,0x60000,0x0,0x0,0x0,0x0,0x2000000,};
+      jj_la1_0 = new int[] {0x7e7ff80,0x7e7ff80,0x0,0x0,0x60000,0x0,0x0,0x60000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3f80,0x4000000,0x60000,0x3f80,0x1e1c000,0x0,0x0,0x0,0x0,0x7e7ff80,0x60000,0x0,0x0,0x0,0x0,0x2000000,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0xb0400,0xb0400,0xb0000,0x8000000,0x0,0x0,0x0,0x0,0x0,0x80,0x0,0x0,0x0,0x0,0x400,0x400,0x80,0x80,0x4000480,0x0,0x400000,0xd0000100,0x400,0x40,0x0,};
+      jj_la1_1 = new int[] {0x4002c200,0x4002c200,0x2c000,0x2000000,0x0,0x0,0x0,0x0,0x1000,0x1000,0x0,0x1000,0x0,0x80,0x0,0x0,0x0,0x0,0x0,0x0,0x200,0x200,0x80,0x80,0x1000280,0x0,0x100000,0x34000100,0x200,0x40,0x0,};
    }
    private static void jj_la1_init_2() {
-      jj_la1_2 = new int[] {0x3e30001,0x3e30001,0x220000,0x0,0x0,0x8400,0x8400,0x8,0x10,0x0,0x100000,0x200000,0x0,0x0,0x3c10000,0x3e10000,0x0,0x0,0x3e10000,0x0,0x0,0x80800,0x10000,0x0,0x200000,};
+      jj_la1_2 = new int[] {0x1f1800,0x1f1800,0x11000,0x0,0x0,0x440,0x440,0x0,0x0,0x0,0x2,0x0,0x4,0x0,0x8000,0x0,0x0,0x0,0x0,0x0,0x1e0800,0x1f0800,0x0,0x0,0x1f0800,0x0,0x0,0x4080,0x800,0x0,0x10000,};
    }
-  static final private JJCalls[] jj_2_rtns = new JJCalls[3];
+  static final private JJCalls[] jj_2_rtns = new JJCalls[7];
   static private boolean jj_rescan = false;
   static private int jj_gc = 0;
 
@@ -1069,7 +1271,7 @@ import java.io.*;
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 25; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 31; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1084,7 +1286,7 @@ import java.io.*;
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 25; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 31; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1102,7 +1304,7 @@ import java.io.*;
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 25; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 31; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1113,7 +1315,7 @@ import java.io.*;
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 25; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 31; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1130,7 +1332,7 @@ import java.io.*;
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 25; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 31; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1140,7 +1342,7 @@ import java.io.*;
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 25; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 31; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1161,7 +1363,6 @@ import java.io.*;
           }
         }
       }
-      trace_token(token, "");
       return token;
     }
     token = oldToken;
@@ -1199,7 +1400,6 @@ import java.io.*;
     else token = token.next = token_source.getNextToken();
     jj_ntk = -1;
     jj_gen++;
-      trace_token(token, " (in getNextToken)");
     return token;
   }
 
@@ -1254,12 +1454,12 @@ import java.io.*;
   /** Generate ParseException. */
   static public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[92];
+    boolean[] la1tokens = new boolean[87];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 25; i++) {
+    for (int i = 0; i < 31; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -1274,7 +1474,7 @@ import java.io.*;
         }
       }
     }
-    for (int i = 0; i < 92; i++) {
+    for (int i = 0; i < 87; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
@@ -1291,60 +1491,17 @@ import java.io.*;
     return new ParseException(token, exptokseq, tokenImage);
   }
 
-  static private int trace_indent = 0;
-  static private boolean trace_enabled = true;
-
-/** Enable tracing. */
+  /** Enable tracing. */
   static final public void enable_tracing() {
-    trace_enabled = true;
   }
 
-/** Disable tracing. */
+  /** Disable tracing. */
   static final public void disable_tracing() {
-    trace_enabled = false;
-  }
-
-  static private void trace_call(String s) {
-    if (trace_enabled) {
-      for (int i = 0; i < trace_indent; i++) { System.out.print(" "); }
-      System.out.println("Call:   " + s);
-    }
-    trace_indent = trace_indent + 2;
-  }
-
-  static private void trace_return(String s) {
-    trace_indent = trace_indent - 2;
-    if (trace_enabled) {
-      for (int i = 0; i < trace_indent; i++) { System.out.print(" "); }
-      System.out.println("Return: " + s);
-    }
-  }
-
-  static private void trace_token(Token t, String where) {
-    if (trace_enabled) {
-      for (int i = 0; i < trace_indent; i++) { System.out.print(" "); }
-      System.out.print("Consumed token: <" + tokenImage[t.kind]);
-      if (t.kind != 0 && !tokenImage[t.kind].equals("\"" + t.image + "\"")) {
-        System.out.print(": \"" + t.image + "\"");
-      }
-      System.out.println(" at line " + t.beginLine + " column " + t.beginColumn + ">" + where);
-    }
-  }
-
-  static private void trace_scan(Token t1, int t2) {
-    if (trace_enabled) {
-      for (int i = 0; i < trace_indent; i++) { System.out.print(" "); }
-      System.out.print("Visited token: <" + tokenImage[t1.kind]);
-      if (t1.kind != 0 && !tokenImage[t1.kind].equals("\"" + t1.image + "\"")) {
-        System.out.print(": \"" + t1.image + "\"");
-      }
-      System.out.println(" at line " + t1.beginLine + " column " + t1.beginColumn + ">; Expected token: <" + tokenImage[t2] + ">");
-    }
   }
 
   static private void jj_rescan_token() {
     jj_rescan = true;
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 7; i++) {
     try {
       JJCalls p = jj_2_rtns[i];
       do {
@@ -1354,6 +1511,10 @@ import java.io.*;
             case 0: jj_3_1(); break;
             case 1: jj_3_2(); break;
             case 2: jj_3_3(); break;
+            case 3: jj_3_4(); break;
+            case 4: jj_3_5(); break;
+            case 5: jj_3_6(); break;
+            case 6: jj_3_7(); break;
           }
         }
         p = p.next;

@@ -19,9 +19,9 @@ public interface LOLCodeParserConstants {
   /** RegularExpression Id. */
   int MODULO = 11;
   /** RegularExpression Id. */
-  int MAXIMUM = 12;
+  int BIGGR = 12;
   /** RegularExpression Id. */
-  int MINIMUM = 13;
+  int SMALLR = 13;
   /** RegularExpression Id. */
   int XOR = 14;
   /** RegularExpression Id. */
@@ -77,107 +77,97 @@ public interface LOLCodeParserConstants {
   /** RegularExpression Id. */
   int BUKKIT = 40;
   /** RegularExpression Id. */
-  int DUZ = 41;
+  int FAIL = 41;
   /** RegularExpression Id. */
-  int FAIL = 42;
+  int FOUND = 42;
   /** RegularExpression Id. */
-  int FOUND = 43;
+  int GIMMEH = 43;
   /** RegularExpression Id. */
-  int GIMMEH = 44;
+  int GTFO = 44;
   /** RegularExpression Id. */
-  int GTFO = 45;
+  int HAI = 45;
   /** RegularExpression Id. */
-  int HAI = 46;
+  int I_HAS_A = 46;
   /** RegularExpression Id. */
-  int HAS = 47;
+  int HOW_DUZ_I = 47;
   /** RegularExpression Id. */
-  int HOW = 48;
+  int IF_U_SAY_SO = 48;
   /** RegularExpression Id. */
-  int I = 49;
+  int IM_IN_YR = 49;
   /** RegularExpression Id. */
-  int IF = 50;
+  int IM_OUTTA_YR = 50;
   /** RegularExpression Id. */
-  int IM = 51;
+  int IT = 51;
   /** RegularExpression Id. */
-  int IN = 52;
+  int ITZ = 52;
   /** RegularExpression Id. */
-  int IT = 53;
+  int IS = 53;
   /** RegularExpression Id. */
-  int ITZ = 54;
+  int KTHXBYE = 54;
   /** RegularExpression Id. */
-  int IS = 55;
+  int MEBBE = 55;
   /** RegularExpression Id. */
-  int KTHXBYE = 56;
+  int MKAY = 56;
   /** RegularExpression Id. */
-  int MEBBE = 57;
+  int NO = 57;
   /** RegularExpression Id. */
-  int MKAY = 58;
+  int NOOB = 58;
   /** RegularExpression Id. */
-  int NO = 59;
+  int NOW = 59;
   /** RegularExpression Id. */
-  int NOOB = 60;
+  int NUMBAR = 60;
   /** RegularExpression Id. */
-  int NOW = 61;
+  int NUMBR = 61;
   /** RegularExpression Id. */
-  int NUMBAR = 62;
+  int O = 62;
   /** RegularExpression Id. */
-  int NUMBR = 63;
+  int OF = 63;
   /** RegularExpression Id. */
-  int O = 64;
+  int OIC = 64;
   /** RegularExpression Id. */
-  int OF = 65;
+  int OMG = 65;
   /** RegularExpression Id. */
-  int OIC = 66;
+  int OMGWTF = 66;
   /** RegularExpression Id. */
-  int OMG = 67;
+  int RLY = 67;
   /** RegularExpression Id. */
-  int OMGWTF = 68;
+  int RLYQ = 68;
   /** RegularExpression Id. */
-  int OUTTA = 69;
+  int THAN = 69;
   /** RegularExpression Id. */
-  int RLY = 70;
+  int TIL = 70;
   /** RegularExpression Id. */
-  int RLYQ = 71;
+  int TROOF = 71;
   /** RegularExpression Id. */
-  int SAY = 72;
+  int VISIBLE = 72;
   /** RegularExpression Id. */
-  int SO = 73;
+  int WAI = 73;
   /** RegularExpression Id. */
-  int TIL = 74;
+  int WILE = 74;
   /** RegularExpression Id. */
-  int TROOF = 75;
+  int WIN = 75;
   /** RegularExpression Id. */
-  int U = 76;
+  int WTF = 76;
   /** RegularExpression Id. */
-  int VISIBLE = 77;
+  int YA = 77;
   /** RegularExpression Id. */
-  int WAI = 78;
+  int YARN = 78;
   /** RegularExpression Id. */
-  int WILE = 79;
+  int YR = 79;
   /** RegularExpression Id. */
-  int WIN = 80;
+  int IDENTIFIER = 80;
   /** RegularExpression Id. */
-  int WTF = 81;
+  int STRING = 81;
   /** RegularExpression Id. */
-  int YA = 82;
+  int CHARACTER = 82;
   /** RegularExpression Id. */
-  int YARN = 83;
+  int REAL_NUMBER = 83;
   /** RegularExpression Id. */
-  int YR = 84;
+  int DECIMAL_INTEGER = 84;
   /** RegularExpression Id. */
-  int IDENTIFIER = 85;
+  int DIGIT = 85;
   /** RegularExpression Id. */
-  int STRING = 86;
-  /** RegularExpression Id. */
-  int CHARACTER = 87;
-  /** RegularExpression Id. */
-  int REAL_NUMBER = 88;
-  /** RegularExpression Id. */
-  int DECIMAL_INTEGER = 89;
-  /** RegularExpression Id. */
-  int DIGIT = 90;
-  /** RegularExpression Id. */
-  int LETTER = 91;
+  int LETTER = 86;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -227,18 +217,16 @@ public interface LOLCodeParserConstants {
     "\"A\"",
     "\"AN\"",
     "\"BUKKIT\"",
-    "\"DUZ\"",
     "\"FAIL\"",
     "\"FOUND\"",
     "\"GIMMEH\"",
     "\"GTFO\"",
     "\"HAI\"",
-    "\"HAS\"",
-    "\"HOW\"",
-    "\"I\"",
-    "\"IF\"",
-    "\"IM\"",
-    "\"IN\"",
+    "\"I HAS A\"",
+    "\"HOW DUZ I\"",
+    "\"IF U SAY SO\"",
+    "\"IM IN YR\"",
+    "\"IM OUTTA YR\"",
     "\"IT\"",
     "\"ITZ\"",
     "\"IS\"",
@@ -255,14 +243,11 @@ public interface LOLCodeParserConstants {
     "\"OIC\"",
     "\"OMG\"",
     "\"OMGWTF\"",
-    "\"OUTTA\"",
     "\"RLY\"",
     "\"RLY?\"",
-    "\"SAY\"",
-    "\"SO\"",
+    "\"THAN\"",
     "\"TIL\"",
     "\"TROOF\"",
-    "\"U\"",
     "\"VISIBLE\"",
     "\"WAI\"",
     "\"WILE\"",
