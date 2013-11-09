@@ -1,0 +1,535 @@
+options {
+    BUILD_PARSER=true;
+    IGNORE_CASE=false;
+    //DEBUG_TOKEN_MANAGER=true;
+    //DEBUG_PARSER=true;
+}
+
+PARSER_BEGIN(LOLCodeParser)
+import java.io.*;
+    public class LOLCodeParser
+    {
+	  public static void main(String[] args) throws FileNotFoundException 
+	  {	     java.io.FileReader inputFile = new java.io.FileReader(args[0]);
+	     LOLCodeParser p = new LOLCodeParser(inputFile);
+
+	     try {
+	       SimpleNode e = p.LOLCodeProgram();
+	       e.dump(">");
+	     } 
+	     catch (ParseException ex) {
+	       ex.printStackTrace();
+	     }	      	    
+	  }
+
+	  public static void printCallerMethodName()	  {
+	    StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+	    System.out.println(stackTraceElements[2].getMethodName());	  }
+    }
+PARSER_END(LOLCodeParser)
+
+SKIP : {
+  <[" ", "\t"]>
+| <["\r", "\n"] >
+| < "BTW" (~["\r", "\n"])*>
+| < "OBTW" > : ML_COMMENT_STATE
+}
+
+<ML_COMMENT_STATE> SKIP :
+{  < "TLDR" > : DEFAULT
+| < ~[] >   
+}
+
+TOKEN : /* OPERATORS */
+{
+  < ADD : "SUM" >
+      { debugStream.println("ADD token: " + matchedToken.image); }
+| < SUBTRACT : "DIFF" >
+      { debugStream.println("SUBTRACT token: " + matchedToken.image); }
+| < MULTIPLY : "PRODUKT" >
+      { debugStream.println("MULTIPLY token: " + matchedToken.image); }
+| < DIVIDE : "QUOSHUNT" >
+      { debugStream.println("DIVIDE token: " + matchedToken.image); }
+| < MODULO : "MOD" >
+      { debugStream.println("MODULO token: " + matchedToken.image); }
+| < BIGGR : "BIGGR" >
+      { debugStream.println("BIGGR token: " + matchedToken.image); }
+| < SMALLR : "SMALLR" >
+      { debugStream.println("SMALLR token: " + matchedToken.image); }            
+| < XOR : "WON" >
+      { debugStream.println("XOR token: " + matchedToken.image); }
+| < LOGICAL_AND : "BOTH" >
+      { debugStream.println("LOGICAL_AND token: " + matchedToken.image); }
+| < LOGICAL_OR : "EITHER" >
+      { debugStream.println("LOGICAL_OR token: " + matchedToken.image); }
+| < INCREMENT: "UPPIN" >
+      { debugStream.println("INCREMENT token: " + matchedToken.image); }
+| < DECREMENT: "NERFIN" >
+      { debugStream.println("DECREMENT token: " + matchedToken.image); }
+| < ASSIGNMENT: "R" >
+      { debugStream.println("ASSIGNMENT token: " + matchedToken.image); }
+| < EQUAL: "SAEM" >
+      { debugStream.println("EQUALS token: " + matchedToken.image); }
+| < LOGICAL_NOT : "NOT" >
+      { debugStream.println("LOGICAL_NOT token: " + matchedToken.image); }
+| < NOT_EQUAL: "DIFFRINT" >
+      { debugStream.println("NOT_EQUALS token: " + matchedToken.image); }
+| < ALL: "ALL" >
+      { debugStream.println("ALL token: " + matchedToken.image); }
+| < ANY: "ANY" >
+      { debugStream.println("ANY token: " + matchedToken.image); }
+| < MAEK: "MAEK" >
+      { debugStream.println("MAEK token: " + matchedToken.image); }
+| < SMOOSH: "SMOOSH" >
+      { debugStream.println("CONCATENATION token: " + matchedToken.image); }                  
+}
+
+TOKEN : /* Scope tokens */
+{
+  < COLON : ":" >
+      { debugStream.println("COLON token: " + matchedToken.image); }
+  | < OPEN_PARENS : "(" >
+      { debugStream.println("OPEN_PARENS token: " + matchedToken.image); }
+  | < CLOSE_PARENS : ")" >
+      { debugStream.println("CLOSE_PARENS token: " + matchedToken.image); }
+  | < OPEN_BRACKET : "[" >
+      { debugStream.println("OPEN_BRACKET token: " + matchedToken.image); }
+  | < CLOSE_BRACKET : "]" >
+      { debugStream.println("CLOSE_BRACKET token: " + matchedToken.image); }
+  | < OPEN_BRACE : "{" >
+      { debugStream.println("OPEN_BRACE token: " + matchedToken.image); }
+  | < CLOSE_BRACE : "}" >
+      { debugStream.println("CLOSE_BRACE token: " + matchedToken.image); }
+  | < SEMICOLON : ";" >
+      { debugStream.println("SEMICOLON token: " + matchedToken.image); }
+  | < QUOTE: "\'" >
+      { debugStream.println("SINGLE_QUOTE token: " + matchedToken.image); }
+  | < DBL_QUOTE: "\"" >
+      { debugStream.println("DBL_QUOTE token: " + matchedToken.image); }
+  | < UNDERSCORE : "_" >
+      { debugStream.println("UNDERSCORE token: " + matchedToken.image); }
+}
+
+TOKEN : /* Reserved words */
+{
+  < A : "A" > // variable declaration/re-cast end
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }    
+  | < AN : "AN" >  // operand separator
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < BUKKIT : "BUKKIT" >  // array keyword
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }                 
+  | < FAIL: "FAIL" > // boolean false
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < FOUND: "FOUND" > // return
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }            
+  | < GIMMEH: "GIMMEH" > // take input
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }       
+  | < GTFO: "GTFO" > // break
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < HAI: "HAI" > // program start
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | <I_HAS_A: "I HAS A" > // variable declaration
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | <HOW_DUZ_I: "HOW DUZ I"> // function start begin
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }      
+  | < IF_U_SAY_SO: "IF U SAY SO" > // function end start
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }            
+  | < IM_IN_YR: "IM IN YR" > // loop start
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < IM_OUTTA_YR: "IM OUTTA YR" > // loop end
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }                        
+  | < IT: "IT" > // temporary variable identifier
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }            
+  | < ITZ: "ITZ" > // variable declaration initialize
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < IS: "IS" > // re-cast start
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }                              
+  | < KTHXBYE: "KTHXBYE" > // program end
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < MEBBE: "MEBBE" > // if statement optional expression block start
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }            
+  | < MKAY: "MKAY" > // operator list closer
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < NO: "NO" > // if statement false start
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }                  
+  | < NOOB: "NOOB" > // untyped
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }            
+  | < NOW: "NOW" > // re-cast middle
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }                        
+  | < NUMBAR: "NUMBAR" > // integer
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }      
+  | < NUMBR: "NUMBR" > // real/float
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < O: "O" > // if statement start begin
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }            
+  | < OF: "OF" > // used in many operators
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < OIC: "OIC" > // if statement end
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }                              
+  | < OMG: "OMG" > // case
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < OMGWTF: "OMGWTF" > // default case
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }          
+  | < RLY: "RLY" > // if statement true end
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }            
+  | < RLYQ: "RLY?" > // if statement start end
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < THAN: "THAN" > // comparison operator
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }                           
+  | < TIL: "TIL" > // until
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }                        
+  | < TROOF: "TROOF" > // boolean
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }         
+  | < VISIBLE: "VISIBLE" > // print out
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < WAI: "WAI" > // if statement false end
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }                        
+  | < WILE: "WILE" > // while
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < WIN: "WIN" > // boolean true
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < WTF: "WTF?" > // switch
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < YA: "YA" > // if statement true begin
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }            
+  | < YARN: "YARN" > // string
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | < YR: "YR" > // loop start/end end / return end
+      { debugStream.println("RESERVED WORD token: " + matchedToken.image); }                        
+}
+
+TOKEN : { /* Types like IDENTIFIER, CHAR, NUMBER */
+    <IDENTIFIER : (<LETTER>)(<LETTER> | <DIGIT> | "_")*>
+      { debugStream.println("IDENTIFIER token: " + matchedToken.image); }
+  | < STRING: "\"" (~["\n", "\r", "\""])* "\"" >
+      { debugStream.println("STRING token: " + matchedToken.image); }
+  | < CHARACTER: "'" (~[]){1} "'" >
+      { debugStream.println("CHARACTER token: " + matchedToken.image); }
+  | < REAL_NUMBER: (["-"])?((<DECIMAL_INTEGER>)(["."])?(<DIGIT>)*["e", "E"](["+", "-"])?(<DIGIT>)* |
+                   ["."](<DIGIT>)+(["e", "E"](["+", "-"])?(<DIGIT>)*)? |
+                   (<DECIMAL_INTEGER>)["."](<DIGIT>)*) >
+      { debugStream.println("REAL_NUMBER token: " + matchedToken.image); }
+  | < DECIMAL_INTEGER: (["-"])?(<DIGIT>)+ >
+      { debugStream.println("DECIMAL_INTEGER token: " + matchedToken.image); }       
+  | <#DIGIT : ["0"-"9"]>
+  | <#LETTER : ["a"-"z", "A"-"Z"]>
+}
+
+SimpleNode LOLCodeProgram()  : {}
+{  programStart()
+  codeBlock()
+  programEnd()
+
+  {System.out.println("Parsed LOLCode Program"); return jjtThis; }    
+}
+
+void codeBlock() #void : {}
+{	(
+	  LOOKAHEAD(1)
+	  expressionOrStatement()
+	)*
+}
+
+
+void programStart() #void : {printCallerMethodName();}{
+  	<HAI> }
+
+
+void programEnd() #void : {printCallerMethodName();}
+{
+  	<KTHXBYE> <EOF>
+}
+
+void expressionOrStatement() #void : {}
+{
+  	LOOKAHEAD(1)
+	statement() | expression()
+}
+
+void statement() #void : {}
+{
+  	  LOOKAHEAD(4) ifStatement()
+	| whileStatement()
+	| LOOKAHEAD(2) variableAssignmentStatement()
+	| LOOKAHEAD(2) switchStatement()
+	| functionDeclarationStatement()
+	| variableDeclarationStatement()
+}
+
+void ifStatement() #test : {printCallerMethodName();}{
+  <O> <RLY>
+  	<YA> <RLY>
+  		(codeBlock() #if_true)
+  	(<NO> <WAI>
+  		codeBlock() #if_false)?
+  <OIC>  	  }
+
+void whileStatement() #loop : {printCallerMethodName();}
+{  
+  <IM_IN_YR> loopInitialization()
+  	(codeBlock() #if_true)
+  	(<GTFO>)?
+  <IM_OUTTA_YR> identifier()
+}
+
+void loopInitialization() #void : {printCallerMethodName();}
+{	identifier() (loopAction() (loopCondition())?)?
+}  
+
+void loopAction() #loopAction : {printCallerMethodName();}
+{	decrement() | increment() <YR> identifier()
+}
+
+
+void loopCondition() #test : {printCallerMethodName();}  
+{
+  <TIL> booleanExpression() #not
+| <WILE> booleanExpression() }  
+
+void switchStatement() #switchStatement : {printCallerMethodName();}
+{
+  <WTF>
+  	(caseStatement())+    // 1 or more cases
+    (defaultStatement())? // optional default case
+  <OIC>  	  
+}
+
+void caseStatement() #caseStatement : { printCallerMethodName();}
+{	<OMG> constantExpression() 
+  		codeBlock()
+  		(<GTFO>)?
+}
+
+void defaultStatement() #defaultCase :{  printCallerMethodName();}{   	<OMGWTF>                 
+  		codeBlock()
+  		(<GTFO>)?}  
+
+void functionDeclarationStatement() #function : {printCallerMethodName();}
+{
+  <HOW_DUZ_I> (identifier() #name) (functionArguments())?
+  		(codeBlock() #execute)
+  <IF_U_SAY_SO>
+}
+
+void functionArguments() #args : {printCallerMethodName();}
+{	<YR> identifier() (<AN> <YR> identifier())*
+}  
+
+void expression() #void : {}{
+	  LOOKAHEAD(2) simpleExpression()
+	| basicMathExpression()
+	| LOOKAHEAD(2) booleanExpression()
+	| stringConcatenationExpression()
+	| LOOKAHEAD(2) typeCastExpression()
+	| unaryExpression()}
+
+void basicMathExpression() #void : {}
+{
+	  additionExpression()
+	| subtractionExpression()
+	| multiplicationExpression()
+	| divisionExpression()
+	| moduloExpression()
+	| maximumExpression()
+	| minimumExpression()
+}
+
+void booleanExpression() #void : {}
+{
+  /*two of the productions start with the LOGICAL_AND token, but the productions diverge by the second token, so lookahead(2) is enough. */
+      LOOKAHEAD(2) logicalAndExpression()
+	| logicalOrExpression()
+	| logicalXorExpression()
+	| logicalNotExpression()
+	| logicalAndListExpression()
+	| logicalOrListExpression()
+	| equalsExpression()
+	| notEqualsExpression()
+	| LOOKAHEAD(2) greaterThanExpression()
+	| LOOKAHEAD(2) lessThanExpression()
+}
+
+void constantExpression() #value : {}
+{
+	<STRING> | <CHARACTER> | <REAL_NUMBER> | <DECIMAL_INTEGER> | <WIN> | <FAIL>
+}
+
+void identifier() : {}
+{
+  <IDENTIFIER>
+}
+
+void simpleExpression() #void : {}
+{
+	identifier() | constantExpression()
+}
+
+
+
+
+void binaryOperands() #void : {}
+{
+	expression() (<AN>)? expression()
+}
+
+
+void variableArityOperands() #void : {}
+{
+/*
+the spec says you can use the end of line character in place of "mkay" to terminate the var args list.
+a single EOL needs to terminate all currently open var args lists though, because there could be nested function calls.
+so, we need to pay special attention whenever we actually implement this feature.
+
+for now, we always require an mkay token.
+*/
+	expression() (<MKAY> | (<AN>)? variableArityOperands())
+}
+
+
+
+/*Some basic math operators follow, like addition, subtraction etc...*/
+
+
+void additionExpression() #add : {printCallerMethodName();}
+{
+	<ADD> <OF> binaryOperands()
+}
+
+void subtractionExpression() #subtract : {printCallerMethodName();}
+{
+	<SUBTRACT> <OF> binaryOperands()
+}
+
+void multiplicationExpression() #multiply : {printCallerMethodName();}
+{
+	<MULTIPLY> <OF> binaryOperands()
+}
+
+void divisionExpression() #divide : {printCallerMethodName();}
+{
+	<DIVIDE> <OF> binaryOperands()
+}
+
+void moduloExpression() #modulo : {printCallerMethodName();}
+{
+	<MODULO> <OF> binaryOperands()
+}
+
+void maximumExpression() #max : {printCallerMethodName();}
+{
+	<BIGGR> <OF> binaryOperands()
+}
+
+void minimumExpression() #min : {printCallerMethodName();}
+{
+	<SMALLR> <OF> binaryOperands()
+}
+
+void unaryExpression() : {printCallerMethodName();}
+{
+	increment() | decrement() expression()
+}
+
+void decrement() #decrement : {printCallerMethodName();}
+{
+	<DECREMENT>
+}
+
+void increment() #increment : {printCallerMethodName();}
+{
+	<INCREMENT>
+}
+
+
+/* Some statements for assigning and declaring variables follow */
+void variableDeclarationStatement() #assign : {printCallerMethodName();}
+{
+	<I_HAS_A> identifier() (<ITZ> expression())?
+}
+void variableAssignmentStatement() #assign: {printCallerMethodName();}
+{
+	identifier() <ASSIGNMENT> expression()
+}
+
+/* Some boolean operators follow */
+
+
+void logicalAndExpression() #and : {printCallerMethodName();}
+{
+	<LOGICAL_AND> <OF> binaryOperands()
+}
+
+void logicalOrExpression() #or : {printCallerMethodName();}
+{
+	<LOGICAL_OR> <OF> binaryOperands()
+}
+
+void logicalXorExpression() #xor : {printCallerMethodName();}
+{
+	<XOR> <OF> binaryOperands()
+}
+
+void logicalNotExpression() #not : {printCallerMethodName();}
+{
+	<LOGICAL_NOT> expression()
+}
+
+/*"all of foo an bar an baz" in lolcode is like "foo && bar && baz" in java*/
+void logicalAndListExpression() #and : {printCallerMethodName();}
+{
+	<ALL> <OF> variableArityOperands()
+}
+
+/*"any of foo an bar an baz" in lolcode is like "foo || bar || baz" in java*/
+void logicalOrListExpression() #or : {printCallerMethodName();}
+{
+	<ANY> <OF> variableArityOperands()
+}
+
+
+
+/*comparison operators*/
+
+void equalsExpression() #equals : {printCallerMethodName();}
+{
+  	/*example: BOTH SAEM 1 AN 2*/
+	<LOGICAL_AND> <EQUAL> binaryOperands()
+}
+
+void notEqualsExpression() #not : {printCallerMethodName();}
+{
+  	/*example: DIFFRINT 1 AN 2*/
+	<NOT_EQUAL> binaryOperands() #equals
+}
+
+void lessThanExpression() #less_than : {printCallerMethodName();}
+{
+	simpleExpression() <SMALLR> <THAN> expression()
+}
+
+void greaterThanExpression() #greater_than : {printCallerMethodName();}
+{
+	simpleExpression() <BIGGR> <THAN> expression()
+}
+
+
+/*string concatenation*/
+
+void stringConcatenationExpression() #concatenate : {printCallerMethodName();}
+{
+  	<SMOOSH> variableArityOperands()
+}
+
+
+/*types and casting */
+void type() : {}
+{
+  	<TROOF> | <YARN> | <NUMBAR> | <NUMBR> | <NOOB> | <BUKKIT>
+}
+
+void typeCastExpression() #cast : {printCallerMethodName();}
+{
+   (<MAEK> expression() (<A>)? type())
+ | (<IDENTIFIER> <IS> <NOW> <A> type())
+}
+
