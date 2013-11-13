@@ -1,21 +1,58 @@
 options {
     BUILD_PARSER=true;
     IGNORE_CASE=false;
+    JJTREE_OUTPUT_DIRECTORY="src/wci/frontend";
+    NODE_EXTENDS="wci.intermediate.icodeimpl.ICodeNodeImpl";    
     //DEBUG_TOKEN_MANAGER=true;
     //DEBUG_PARSER=true;
 }
 
 PARSER_BEGIN(LOLCodeParser)
+package wci.frontend;
+
 import java.io.*;
+
+import wci.intermediate.*;
+import wci.intermediate.symtabimpl.*;
+import wci.backend.*;
+import wci.util.*;
+
+import static wci.intermediate.symtabimpl.SymTabKeyImpl.*;
+import static wci.intermediate.symtabimpl.DefinitionImpl.*;
+import static wci.intermediate.symtabimpl.RoutineCodeImpl.*;
+import static wci.intermediate.symtabimpl.SymTabKeyImpl.*;
+import static wci.intermediate.icodeimpl.ICodeKeyImpl.*;
+
     public class LOLCodeParser
     {
+      private static SymTabStack symTabStack;
+      private static SymTabEntry programId;
+      
 	  public static void main(String[] args) throws FileNotFoundException 
-	  {	     java.io.FileReader inputFile = new java.io.FileReader(args[0]);
+	  {
+    	 // Create and initialize the symbol table stack.
+         symTabStack = SymTabFactory.createSymTabStack();
+         Predefined.initialize(symTabStack);
+	    	     java.io.FileReader inputFile = new java.io.FileReader(args[0]);
 	     LOLCodeParser p = new LOLCodeParser(inputFile);
 
 	     try {
 	       SimpleNode e = p.LOLCodeProgram();
-	       e.dump(">");
+//	       e.dump(">");
+
+           // Print the cross-reference table.
+//           CrossReferencer crossReferencer = new CrossReferencer();
+//           crossReferencer.print(symTabStack);
+
+           // Create and initialize the ICode wrapper for the parse tree.
+           ICode iCode = ICodeFactory.createICode();
+           iCode.setRoot(e);
+           programId.setAttribute(ROUTINE_ICODE, iCode);
+        
+           // Print the parse tree.
+           ParseTreePrinter treePrinter = new ParseTreePrinter(System.out);
+           treePrinter.print(symTabStack);
+
 	     } 
 	     catch (ParseException ex) {
 	       ex.printStackTrace();
@@ -232,7 +269,14 @@ void codeBlock() #void : {}
 
 
 void programStart() #void : {printCallerMethodName();}{
-  	<HAI> }
+  	<HAI>
+    <IDENTIFIER> {
+        programId = symTabStack.enterLocal(token.image);
+        programId.setDefinition(DefinitionImpl.PROGRAM);
+        programId.setAttribute(ROUTINE_SYMTAB, symTabStack.push());
+        symTabStack.setProgramId(programId);
+    }
+  	 }
 
 
 void programEnd() #void : {printCallerMethodName();}
