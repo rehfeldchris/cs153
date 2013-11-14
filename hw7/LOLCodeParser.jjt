@@ -393,9 +393,46 @@ void booleanExpression() #void : {}
 	| LOOKAHEAD(2) lessThanExpression()
 }
 
-void constantExpression() #value : {}
+void constantExpression() #void : {}
 {
-	<STRING> | <CHARACTER> | <REAL_NUMBER> | <DECIMAL_INTEGER> | <WIN> | <FAIL>
+	stringLiteral()
+	| characterConstant()
+	| realConstant()
+	| integerConstant()
+	| booleanValue()
+}
+
+void stringLiteral() : {}{
+    <STRING> {
+        jjtThis.setAttribute(VALUE, token.image);
+    }
+}
+  
+void characterConstant() : {}
+{    <CHARACTER> {        jjtThis.setTypeSpec(Predefined.charType);
+        jjtThis.setAttribute(VALUE, token.image);
+    }
+}  
+void integerConstant() : {}
+{    <DECIMAL_INTEGER> {
+        jjtThis.setTypeSpec(Predefined.integerType);
+        jjtThis.setAttribute(VALUE, Integer.parseInt(token.image));
+    }
+} 
+
+void realConstant() : {}
+{
+    <REAL_NUMBER> {
+        jjtThis.setTypeSpec(Predefined.realType);
+        jjtThis.setAttribute(VALUE, Float.parseFloat(token.image));
+    }
+}
+
+void booleanValue() : {}
+{    (<WIN> | <FAIL>) {
+        jjtThis.setTypeSpec(Predefined.booleanType);
+        jjtThis.setAttribute(VALUE, token.image);
+    }
 }
 
 void identifier() : {}
@@ -488,7 +525,14 @@ void increment() #increment : {printCallerMethodName();}
 /* Some statements for assigning and declaring variables follow */
 void variableDeclarationStatement() #assign : {printCallerMethodName();}
 {
-	<I_HAS_A> identifier() (<ITZ> expression())?
+	<I_HAS_A> identifier() {
+	    SymTabEntry variableId = symTabStack.enterLocal(token.image);
+//	    variableId.setIndex(index);
+	    variableId.setDefinition(DefinitionImpl.VARIABLE);
+	    variableId.appendLineNumber(token.beginLine);
+//	    variableList.add(variableId);
+	}
+	(<ITZ> expression())?
 }
 void variableAssignmentStatement() #assign: {printCallerMethodName();}
 {
