@@ -437,7 +437,18 @@ void booleanValue() : {}
 
 void identifier() : {}
 {
-  <IDENTIFIER>
+  <IDENTIFIER> {
+        SymTabEntry variableId = symTabStack.lookup(token.image);
+        if (variableId != null)
+        {          
+	        variableId.appendLineNumber(token.beginLine);
+	        TypeSpec type = variableId.getTypeSpec();
+	        jjtThis.setTypeSpec(type);
+	        jjtThis.setAttribute(ID, variableId);
+	    }
+	    else
+	        jjtThis.setAttribute(ID, token.image);
+    }
 }
 
 void simpleExpression() #void : {}
@@ -534,6 +545,7 @@ void variableDeclarationStatement() #assign : {printCallerMethodName();}
 	}
 	(<ITZ> expression())?
 }
+
 void variableAssignmentStatement() #assign: {printCallerMethodName();}
 {
 	identifier() <ASSIGNMENT> expression()
@@ -612,7 +624,9 @@ void stringConcatenationExpression() #concatenate : {printCallerMethodName();}
 /*types and casting */
 void type() : {}
 {
-  	<TROOF> | <YARN> | <NUMBAR> | <NUMBR> | <NOOB> | <BUKKIT>
+  	(<TROOF> | <YARN> | <NUMBAR> | <NUMBR> | <NOOB> | <BUKKIT>)
+  	{  	  jjtThis.setAttribute(VALUE, token.image);
+    }
 }
 
 void typeCastExpression() #cast : {printCallerMethodName();}
