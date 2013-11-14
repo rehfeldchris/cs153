@@ -41,8 +41,8 @@ import static wci.intermediate.icodeimpl.ICodeKeyImpl.*;
 //	       e.dump(">");
 
            // Print the cross-reference table.
-//           CrossReferencer crossReferencer = new CrossReferencer();
-//           crossReferencer.print(symTabStack);
+           CrossReferencer crossReferencer = new CrossReferencer();
+           crossReferencer.print(symTabStack);
 
            // Create and initialize the ICode wrapper for the parse tree.
            ICode iCode = ICodeFactory.createICode();
@@ -447,7 +447,9 @@ void identifier() : {}
 	        jjtThis.setAttribute(ID, variableId);
 	    }
 	    else
+	    {	      	      
 	        jjtThis.setAttribute(ID, token.image);
+	    }
     }
 }
 
@@ -542,6 +544,7 @@ void variableDeclarationStatement() #assign : {printCallerMethodName();}
 	    variableId.setDefinition(DefinitionImpl.VARIABLE);
 	    variableId.appendLineNumber(token.beginLine);
 //	    variableList.add(variableId);
+        variableId.setTypeSpec(Predefined.undefinedType);
 	}
 	(<ITZ> expression())?
 }
@@ -624,9 +627,12 @@ void stringConcatenationExpression() #concatenate : {printCallerMethodName();}
 /*types and casting */
 void type() : {}
 {
-  	(<TROOF> | <YARN> | <NUMBAR> | <NUMBR> | <NOOB> | <BUKKIT>)
-  	{  	  jjtThis.setAttribute(VALUE, token.image);
-    }
+  	<TROOF> { jjtThis.setTypeSpec(Predefined.booleanType); }
+  	| <YARN>
+  	| <NUMBAR> { jjtThis.setTypeSpec(Predefined.realType); }
+  	| <NUMBR> { jjtThis.setTypeSpec(Predefined.integerType); }
+  	| <NOOB> { jjtThis.setTypeSpec(Predefined.undefinedType); }
+  	| <BUKKIT>
 }
 
 void typeCastExpression() #cast : {printCallerMethodName();}
