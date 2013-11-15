@@ -27,6 +27,7 @@ import static wci.intermediate.icodeimpl.ICodeKeyImpl.*;
     {
       private static SymTabStack symTabStack;
       private static SymTabEntry programId;
+      private static int index = 0;
       
 	  public static void main(String[] args) throws FileNotFoundException 
 	  {
@@ -252,19 +253,20 @@ TOKEN : { /* Types like IDENTIFIER, CHAR, NUMBER */
   | <#LETTER : ["a"-"z", "A"-"Z"]>
 }
 
-SimpleNode LOLCodeProgram()  : {}
+SimpleNode LOLCodeProgram()  : {SimpleNode rootNode;}
 {  programStart()
-  codeBlock()
+  rootNode = codeBlock() {return rootNode;}       
   programEnd()
 
-  {System.out.println("Parsed LOLCode Program"); return jjtThis; }    
+  {System.out.println("Parsed LOLCode Program");}     
 }
 
-void codeBlock() #void : {}
+SimpleNode codeBlock() : {}
 {	(
 	  LOOKAHEAD(1)
 	  expressionOrStatement()
 	)*
+	{ return jjtThis; }	  
 }
 
 
@@ -348,11 +350,27 @@ void defaultStatement() #defaultCase :{  printCallerMethodName();}{   	<OMGWTF
   		codeBlock()
   		(<GTFO>)?}  
 
-void functionDeclarationStatement() #function : {printCallerMethodName();}
+void functionDeclarationStatement() #function : {int reset;
+                                                 SymTabEntry routineID;
+                                                 SimpleNode rootNode;
+                                                 printCallerMethodName();}
 {
-  <HOW_DUZ_I> (identifier() #name) (functionArguments())?
-  		(codeBlock() #execute)
-  <IF_U_SAY_SO>
+  <HOW_DUZ_I> (identifier() #name) {
+     reset = index;
+     index = 0;
+
+     routineID = symTabStack.enterLocal(token.image);
+     routineID.setDefinition(DefinitionImpl.PROCEDURE);
+  }    (functionArguments())?
+  		(rootNode = codeBlock() #execute) {
+		     ICode iCode = ICodeFactory.createICode();
+		     iCode.setRoot(rootNode);
+		     routineID.setAttribute(ROUTINE_ICODE, iCode);
+		     routineID.setAttribute(ROUTINE_SYMTAB, symTabStack.push());
+        }  		     		  
+  <IF_U_SAY_SO> {
+     index = reset;
+     symTabStack.pop();    }  
 }
 
 void functionArguments() #args : {printCallerMethodName();}
@@ -540,10 +558,10 @@ void variableDeclarationStatement() #assign : {printCallerMethodName();}
 {
 	<I_HAS_A> identifier() {
 	    SymTabEntry variableId = symTabStack.enterLocal(token.image);
-//	    variableId.setIndex(index);
+	    variableId.setIndex(index);
+	    index++;
 	    variableId.setDefinition(DefinitionImpl.VARIABLE);
 	    variableId.appendLineNumber(token.beginLine);
-//	    variableList.add(variableId);
         variableId.setTypeSpec(Predefined.undefinedType);
 	}
 	(<ITZ> expression())?
