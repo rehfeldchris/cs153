@@ -374,7 +374,19 @@ void functionDeclarationStatement() #function : {int reset;
 }
 
 void functionArguments() #args : {printCallerMethodName();}
-{	<YR> identifier() (<AN> <YR> identifier())*
+{	<YR> identifier() {
+	    SymTabEntry variableId = symTabStack.enterLocal(token.image);
+	    variableId.setIndex(index);
+	    index++;
+	    variableId.setDefinition(DefinitionImpl.VARIABLE);
+	    variableId.appendLineNumber(token.beginLine);
+        variableId.setTypeSpec(Predefined.undefinedType);    }    (<AN> <YR> identifier() {
+	    SymTabEntry parameterId = symTabStack.enterLocal(token.image);
+	    parameterId.setIndex(index);
+	    index++;
+	    parameterId.setDefinition(DefinitionImpl.VARIABLE);
+	    parameterId.appendLineNumber(token.beginLine);
+        parameterId.setTypeSpec(Predefined.undefinedType);    }      )*
 }  
 
 void expression() #void : {}{
