@@ -1,10 +1,6 @@
 HAI ErrorTest
 
 
-
-
-
-
 BTW recovery from a reserved word used as an argument to a binary operator(the sum expression is skipped)
 SUM OF 2 HAI
 
@@ -56,6 +52,38 @@ WTF?
  	I HAS A CASE_3 ITZ "DEFAULT"
  	GTFO
 OIC
+
+
+BTW trying to type cast to an invalid type. The cast structure is omitted due to the error. Notice the next statement succeeds, indicating recovery.
+MAEK "-1.5" A foo
+MAEK "-1.5" A NUMBAR
+
+
+
+BTW this switch has a nested if statement that has an error in it. Both the if, and the surrounding switch statement is salvaged.
+SUM OF 3 AN 4
+WTF?
+  OMG 7
+		WIN
+		O RLY
+		  YA RLY
+		    BTW the next statement is invalid
+			SUM hai there
+		  NO WAI
+			5
+		OIC
+    GTFO
+  OMG 8
+    I HAS A CASE_2 ITZ "EIGHT"
+    GTFO
+OIC
+
+
+
+
+
+
+
 
 
 
