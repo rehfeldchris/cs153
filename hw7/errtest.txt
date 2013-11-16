@@ -1,0 +1,63 @@
+HAI ErrorTest
+
+
+
+
+
+
+BTW recovery from a reserved word used as an argument to a binary operator(the sum expression is skipped)
+SUM OF 2 HAI
+
+BTW recovery will pick up here, parsing the valid expression
+SUM OF 2 AN 3
+
+
+BTW string concatenation, but omitting the MKAY token(the MKAY token closes the list of arguments)
+SMOOSH "A" AN "B" AN "C" AN 99 AN SUM OF 3 4
+
+
+BTW the following if statement is still parsed correctly, because we recovered from the prev error
+WIN
+O RLY
+  YA RLY
+	BTW ...code...
+  NO WAI
+	BTW ...code...
+OIC
+
+
+BTW the following if statement has an error in the "then" clause. The else clause, and the if structure is still built.
+WIN
+O RLY
+  YA RLY
+    BTW this is the "then" clause of the if statement. the next line is garbage, but it will recover.
+	SUM ./../././?90
+  NO WAI
+	BTW this else clause is still built because we recovered.
+	SUM OF 2 AN 3
+OIC
+
+
+BTW this loop has garbage inside the loop body. the loop structure is still built, but the body is empty.
+IM IN YR LOOP UPPIN YR VAR WILE I SMALLR THAN 10
+	SUM ./../././?90
+IM OUTTA YR LOOP
+
+BTW  the following switch statement has garbage in one of the case blocks. it recovers and parses the remaining case blocks.
+SUM OF 3 AN 4
+WTF?
+  OMG 7
+    MINUS ><
+    GTFO
+  OMG 8
+    I HAS A CASE_2 ITZ "EIGHT"
+    GTFO
+ OMGWTF
+ 	I HAS A CASE_3 ITZ "DEFAULT"
+ 	GTFO
+OIC
+
+
+
+
+KTHXBYE

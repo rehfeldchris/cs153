@@ -11,6 +11,7 @@ PARSER_BEGIN(LOLCodeParser)
 package wci.frontend;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.io.*;
 
 import wci.intermediate.*;
@@ -29,6 +30,21 @@ import static wci.intermediate.icodeimpl.ICodeKeyImpl.*;
       private static SymTabStack symTabStack;
       private static SymTabEntry programId;
       private static int index = 0;
+      private static Token previousErrorToken = null;
+	  private static HashSet<Integer> expressionOrStatementSyncSet = syncSet(
+		I_HAS_A,HOW_DUZ_I,IM_IN_YR,	O,	WTF,IDENTIFIER,	ADD,	SUBTRACT,	MULTIPLY,	DIVIDE,
+		MODULO,	BIGGR,	SMALLR,	XOR,LOGICAL_AND,LOGICAL_OR,	INCREMENT,	DECREMENT,	LOGICAL_NOT,
+		NOT_EQUAL,	ALL,ANY,MAEK,	SMOOSH,	FAIL,	WIN,STRING,	CHARACTER,	REAL_NUMBER,	DECIMAL_INTEGER, EOF
+		);
+	  private static HashSet<Integer> expressionSyncSet = syncSet(
+		ADD,	SUBTRACT,	MULTIPLY,	DIVIDE,
+		MODULO,	BIGGR,	SMALLR,	XOR,LOGICAL_AND,LOGICAL_OR,	INCREMENT,	DECREMENT,	LOGICAL_NOT,
+		NOT_EQUAL,	ALL,ANY,MAEK,	SMOOSH,	FAIL,	WIN,STRING,	CHARACTER,	REAL_NUMBER,	DECIMAL_INTEGER, EOF
+		);
+	  private static HashSet<Integer> statementSyncSet = syncSet(
+		I_HAS_A,HOW_DUZ_I,IM_IN_YR,	O,	WTF,IDENTIFIER,	EOF
+		);
+	private static final boolean STFU = true;
       
 	  public static void main(String[] args) throws FileNotFoundException 
 	  {
@@ -62,8 +78,16 @@ import static wci.intermediate.icodeimpl.ICodeKeyImpl.*;
 	  }
 
 	  public static void printCallerMethodName()	  {
+	    if (STFU) return;
 	    StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
 	    System.out.println(stackTraceElements[2].getMethodName());	  }
+
+	  public static HashSet<Integer> syncSet(Integer... args)
+	  {
+	    HashSet<Integer> syncSet = new HashSet<Integer>();
+	    for (Integer arg : args)	    {
+	      syncSet.add(arg);	    }
+	    return syncSet;	  }
     }
 PARSER_END(LOLCodeParser)
 
@@ -254,21 +278,30 @@ TOKEN : { /* Types like IDENTIFIER, CHAR, NUMBER */
   | <#LETTER : ["a"-"z", "A"-"Z"]>
 }
 
+TOKEN : { 
+   <ERROR : ~["\r", "\n"]>
+}
+
 SimpleNode LOLCodeProgram()  : {SimpleNode rootNode;}
 {  programStart()
-  rootNode = codeBlock() {return rootNode;}       
+  rootNode = codeBlock(expressionOrStatementSyncSet) {return rootNode;}
   programEnd()
 
   {System.out.println("Parsed LOLCode Program");}     
 }
 
-SimpleNode codeBlock() : {}
-{	(
-	  LOOKAHEAD(1)
-	  expressionOrStatement()
-	)*
-	{ return jjtThis; }	  
+SimpleNode codeBlock(HashSet<Integer> syncSet) : {}
+{
+  (
+	  try {
+		  expressionOrStatement()
+		|  Error() { throw new ParseException(); }		{		}	  } catch (ParseException ex) {
+	    handleError(ex, syncSet, false);	  }
+  )*
+	{ return jjtThis; }
 }
+
+
 
 
 void programStart() #void : {printCallerMethodName();}{
@@ -279,8 +312,7 @@ void programStart() #void : {printCallerMethodName();}{
         programId.setAttribute(ROUTINE_SYMTAB, symTabStack.push());
         programId.setAttribute(ROUTINE_ROUTINES, new ArrayList<SymTabEntry>());
         symTabStack.setProgramId(programId);
-    }
-  	 }
+    }}
 
 
 void programEnd() #void : {printCallerMethodName();}
@@ -296,7 +328,7 @@ void expressionOrStatement() #void : {}
 
 void statement() #void : {}
 {
-  	  LOOKAHEAD(4) ifStatement()
+  	  LOOKAHEAD(4) ifStatement(syncSet())
 	| whileStatement()
 	| LOOKAHEAD(2) variableAssignmentStatement()
 	| LOOKAHEAD(2) switchStatement()
@@ -304,18 +336,23 @@ void statement() #void : {}
 	| variableDeclarationStatement()
 }
 
-void ifStatement() #test : {printCallerMethodName();}{
-  <O> <RLY>
+void ifStatement(HashSet<Integer> syncSet) #test : {printCallerMethodName();}{
+  try {    
+    <O> <RLY>
   	<YA> <RLY>
-  		(codeBlock() #if_true)
+  		(codeBlock(syncSet(NO, OIC, EOF)) #if_true)
   	(<NO> <WAI>
-  		codeBlock() #if_false)?
-  <OIC>  	  }
+  		(codeBlock(syncSet(OIC, EOF)) #if_false))?
+  <OIC>
+
+  } catch (ParseException ex) {
+    handleError(ex, syncSet, false);  }}
 
 void whileStatement() #loop : {printCallerMethodName();}
-{  
-  <IM_IN_YR> loopInitialization()
-  	(codeBlock() #if_true)
+{
+  <IM_IN_YR>
+  	    loopInitialization()
+  		(codeBlock(syncSet(GTFO, IM_OUTTA_YR, EOF)) #if_true)
   	(<GTFO>)?
   <IM_OUTTA_YR> identifier()
 }
@@ -331,25 +368,25 @@ void loopAction() #loopAction : {printCallerMethodName();}
 
 void loopCondition() #test : {printCallerMethodName();}  
 {
-  <TIL> booleanExpression() #not
-| <WILE> booleanExpression() }  
+  <TIL>  booleanExpression() #not
+| <WILE> booleanExpression() }
 
 void switchStatement() #switchStatement : {printCallerMethodName();}
 {
   <WTF>
   	(caseStatement())+    // 1 or more cases
     (defaultStatement())? // optional default case
-  <OIC>  	  
+  <OIC>
 }
 
 void caseStatement() #caseStatement : { printCallerMethodName();}
 {	<OMG> constantExpression() 
-  		codeBlock()
+  		codeBlock(syncSet(GTFO, OMG, OIC, OMGWTF, EOF))
   		(<GTFO>)?
 }
 
-void defaultStatement() #defaultCase :{  printCallerMethodName();}{   	<OMGWTF>                 
-  		codeBlock()
+void defaultStatement() #defaultCase :{  printCallerMethodName();}{   	<OMGWTF>
+  		codeBlock(syncSet(GTFO, OMG, OIC, OMGWTF, EOF))
   		(<GTFO>)?}  
 
 void functionDeclarationStatement() #function : {int reset;
@@ -365,7 +402,7 @@ void functionDeclarationStatement() #function : {int reset;
      routineID.setDefinition(DefinitionImpl.FUNCTION);
      routineID.setAttribute(ROUTINE_SYMTAB, symTabStack.push());
   }    (functionArguments(routineID))?
-  		(rootNode = codeBlock()) {
+  		(rootNode = codeBlock(syncSet(IF_U_SAY_SO, EOF))) {
 		     ICode iCode = ICodeFactory.createICode();
 		     iCode.setRoot(rootNode);
 		     routineID.setAttribute(ROUTINE_ICODE, iCode);
@@ -424,7 +461,7 @@ void basicMathExpression() #void : {}
 
 void booleanExpression() #void : {}
 {
-  /*two of the productions start with the LOGICAL_AND token, but the productions diverge by the second token, so lookahead(2) is enough. */
+
       LOOKAHEAD(2) logicalAndExpression()
 	| logicalOrExpression()
 	| logicalXorExpression()
@@ -565,7 +602,7 @@ void minimumExpression() #min : {printCallerMethodName();}
 
 void unaryExpression() : {printCallerMethodName();}
 {
-	increment() | decrement() expression()
+	(increment() | decrement()) expression()
 }
 
 void decrement() #decrement : {printCallerMethodName();}
@@ -685,3 +722,27 @@ void typeCastExpression() #cast : {printCallerMethodName();}
  | (<IDENTIFIER> <IS> <NOW> <A> type())
 }
 
+JAVACODE
+String handleError(ParseException ex, HashSet syncSet, boolean doPop) #void
+{
+    Token token = ex.currentToken;
+    System.out.println(" >Error: " + ex.getMessage());
+
+    // Consume tokens up to but not including a token in the sync set.
+    while (!syncSet.contains(getToken(1).kind) && !syncSet.isEmpty()) {
+        System.out.println(" >Skipping token: " + getToken(1).image);
+        token = getNextToken();
+    }
+
+    //check the token this func call previous left with.
+    //it might not have changed, which can cause an endless loop.
+    //force a token consumption
+    if (token == previousErrorToken) {
+      System.out.println(" >Skipping token: " + token.image);
+      token = getNextToken();    }
+
+    previousErrorToken = token;
+
+    if (doPop) jjtree.popNode();
+    return token.image;
+}
