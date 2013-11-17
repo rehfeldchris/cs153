@@ -282,6 +282,10 @@ TOKEN : {
    <ERROR : ~["\r", "\n"]>
 }
 
+void Error() : {}
+{	<ERROR>
+}
+
 SimpleNode LOLCodeProgram()  : {SimpleNode rootNode;}
 {  programStart()
   rootNode = codeBlock(expressionOrStatementSyncSet) {return rootNode;}
