@@ -305,7 +305,8 @@ void Error() : {}
 
 SimpleNode LOLCodeProgram()  : {SimpleNode rootNode;}
 {  programStart()
-  rootNode = codeBlock(expressionOrStatementSyncSet) {return rootNode;}
+  rootNode = codeBlock(expressionOrStatementSyncSet) {programId.setAttribute(ROUTINE_LOCALS_COUNT, index);
+                                                      return rootNode;}
   programEnd()
 
   {System.out.println("Parsed LOLCode Program");}     
