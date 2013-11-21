@@ -50,7 +50,7 @@ import static wci.intermediate.icodeimpl.ICodeKeyImpl.*;
 		);
 	private static final boolean STFU = true;
       
-	  public static void main(String[] args) throws FileNotFoundException 
+	  public static void main(String[] args) throws Exception 
 	  {
     	 // Create and initialize the symbol table stack.
          symTabStack = SymTabFactory.createSymTabStack();
