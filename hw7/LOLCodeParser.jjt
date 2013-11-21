@@ -29,6 +29,8 @@ import static wci.intermediate.icodeimpl.ICodeKeyImpl.*;
 
     public class LOLCodeParser
     {
+	  private static final String SOURCE_SUFFIX = ".lol";
+	  private static final String OUTPUT_SUFFIX = ".j";      
       private static SymTabStack symTabStack;
       private static SymTabEntry programId;
       private static int index = 0;
@@ -53,7 +55,16 @@ import static wci.intermediate.icodeimpl.ICodeKeyImpl.*;
     	 // Create and initialize the symbol table stack.
          symTabStack = SymTabFactory.createSymTabStack();
          Predefined.initialize(symTabStack);
-	    	     java.io.FileReader inputFile = new java.io.FileReader(args[0]);
+
+         // Process the source file path which ends in .lol
+         // and create the output file path which ends in .j
+         String sourceFilePath = args[0];
+         int truncatedLength = sourceFilePath.length() - SOURCE_SUFFIX.length();
+         int suffixIndex = sourceFilePath.lastIndexOf(SOURCE_SUFFIX);
+         String objectFilePath = (suffixIndex == truncatedLength)
+             ? sourceFilePath.substring(0, truncatedLength) + OUTPUT_SUFFIX
+             : sourceFilePath + OUTPUT_SUFFIX;         
+	    	     java.io.FileReader inputFile = new java.io.FileReader(sourceFilePath);
 	     LOLCodeParser p = new LOLCodeParser(inputFile);
 
 	     try {
@@ -73,6 +84,10 @@ import static wci.intermediate.icodeimpl.ICodeKeyImpl.*;
            ParseTreePrinter treePrinter = new ParseTreePrinter(System.out);
            treePrinter.print(symTabStack);
 
+	       // Create the compiler backend and generate code.
+	       Backend backend = BackendFactory.createBackend("compile");
+	       backend.process(iCode, symTabStack, objectFilePath);
+           
 	     } 
 	     catch (ParseException ex) {
 	       ex.printStackTrace();
