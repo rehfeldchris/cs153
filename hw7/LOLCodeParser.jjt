@@ -2,7 +2,9 @@ options {
     BUILD_PARSER=true;
     IGNORE_CASE=false;
     JJTREE_OUTPUT_DIRECTORY="src/wci/frontend";
-    NODE_EXTENDS="wci.intermediate.icodeimpl.ICodeNodeImpl";    
+    NODE_EXTENDS="wci.intermediate.icodeimpl.ICodeNodeImpl";
+    MULTI=true;
+    VISITOR=true;    
     //DEBUG_TOKEN_MANAGER=true;
     //DEBUG_PARSER=true;
 }
