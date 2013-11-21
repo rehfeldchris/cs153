@@ -1,5 +1,6 @@
 package wci.intermediate;
 
+import wci.frontend.ASTError;
 import wci.frontend.ASTLOLCodeProgram;
 import wci.frontend.ASTadd;
 import wci.frontend.ASTand;
@@ -50,6 +51,11 @@ public class LOLCodeParserVisitorAdapter implements LOLCodeParserVisitor
       return node.childrenAccept(this, data);
    }
 
+   public Object visit(ASTError node, Object data)
+   {
+      return node.childrenAccept(this, data);      
+   }
+   
    public Object visit(ASTLOLCodeProgram node, Object data)
    {
       return node.childrenAccept(this, data);
