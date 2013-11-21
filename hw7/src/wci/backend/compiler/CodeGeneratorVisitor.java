@@ -15,7 +15,7 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
       int value = (Integer) node.getAttribute(ICodeKeyImpl.VALUE);
       
       // Emit a load constant instruction.
-      CodeGenerator.objectFile.println("     ldc " + value);
+      CodeGenerator.objectFile.println("    ldc " + value);
       CodeGenerator.objectFile.flush();
       
       return data;
@@ -26,7 +26,7 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
       float value = (Float) node.getAttribute(ICodeKeyImpl.VALUE);
       
       // Emit a load constant instruction.
-      CodeGenerator.objectFile.println("     ldc " + value);
+      CodeGenerator.objectFile.println("    ldc " + value);
       CodeGenerator.objectFile.flush();
       
       return data;
@@ -37,7 +37,7 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
       String value = (String) node.getAttribute(ICodeKeyImpl.VALUE);
       
       // Emit a load constant instruction.
-      CodeGenerator.objectFile.println("     ldc " + value);
+      CodeGenerator.objectFile.println("    ldc " + value);
       CodeGenerator.objectFile.flush();
       
       return data;
