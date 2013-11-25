@@ -1,13 +1,13 @@
 package wci.backend.compiler;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.io.*;
 
 import wci.frontend.*;
 import wci.intermediate.*;
 import wci.intermediate.symtabimpl.Predefined;
 import wci.backend.*;
-
 import static wci.intermediate.symtabimpl.SymTabKeyImpl.*;
 import static wci.intermediate.symtabimpl.DefinitionImpl.*;
 
@@ -61,14 +61,14 @@ public class CodeGenerator extends Backend
        ArrayList<SymTabEntry> locals = routineSymTab.sortedEntries();
 
        // Generate the program header.
-       objectFile.println(".class public " + programName);
-       objectFile.println(".super java/lang/Object");
-       objectFile.println();
+       pln(".class public " + programName);
+       pln(".super java/lang/Object");
+       pln();
        
        // Generate code for the timer and standard input fields.
-       objectFile.println(".field private static _runTimer LRunTimer;");
-       objectFile.println(".field private static _standardIn LPascalTextIn;");
-       objectFile.println();
+       pln(".field private static _runTimer LRunTimer;");
+       pln(".field private static _standardIn LPascalTextIn;");
+       pln();
        
        // Generate code for fields.
        for (SymTabEntry id : locals) {
@@ -78,40 +78,33 @@ public class CodeGenerator extends Backend
                String fieldName = id.getName();
                TypeSpec type = id.getTypeSpec();
                String typeCode = type == Predefined.integerType ? "I" : "F";
-               objectFile.println(".field private static " + fieldName + 
-                               " " + typeCode);
+               pln(".field private static " + fieldName + " " + typeCode);
            }
        }
-       objectFile.println();
+       pln();
        
        // Generate the class constructor.
-       objectFile.println(".method public <init>()V");
-       objectFile.println();
-       objectFile.println("  aload_0");
-       objectFile.println("  invokenonvirtual  java/lang/Object/<init>()V");
-       objectFile.println("  return");
-       objectFile.println();
-       objectFile.println(".limit locals 1");
-       objectFile.println(".limit stack 1");
-       objectFile.println(".end method");
-       objectFile.println();
+       pln(".method public <init>()V");
+       pln();
+       pln("  aload_0");
+       pln("  invokenonvirtual  java/lang/Object/<init>()V");
+       pln("  return");
+       pln();
+       pln(".limit locals 1");
+       pln(".limit stack 1");
+       pln(".end method");
+       pln();
        
        // Generate the main method header.
-       objectFile.println(".method public static main([Ljava/lang/String;)V");
-       objectFile.println();
+       pln(".method public static main([Ljava/lang/String;)V");
+       pln();
        
        // Generate the main method prologue.
-       objectFile.println("    new  RunTimer");
-       objectFile.println("    dup");
-       objectFile.println("    invokenonvirtual   RunTimer/<init>()V");
-       objectFile.println("    putstatic " + programName +
-                      "/_runTimer LRunTimer;");
-       objectFile.println("    new  PascalTextIn");
-       objectFile.println("    dup");
-       objectFile.println("    invokenonvirtual   PascalTextIn/<init>()V");
-       objectFile.println("    putstatic " + programName +
-                      "/_standardIn LPascalTextIn;");
-       objectFile.println();
+       pln("    new  PascalTextIn");
+       pln("    dup");
+       pln("    invokenonvirtual   PascalTextIn/<init>()V");
+       pln("    putstatic " + programName + "/_standardIn LPascalTextIn;");
+       pln();
        objectFile.flush();
 
        // Visit the parse tree nodes to generate code 
@@ -119,21 +112,147 @@ public class CodeGenerator extends Backend
        CodeGeneratorVisitor codeVisitor = new CodeGeneratorVisitor();
        Node rootNode = iCode.getRoot();
        rootNode.jjtAccept(codeVisitor, programName);
-       objectFile.println();
+       pln();
 
+       //in main, theres always 1 arg, and so we need a local for it.
+       //I multiple by 2 because i fear we may add a double or a long, which needs 2 slots ea.
+       int localSlots = (localsCount * 2) + 1;
        // Generate the main method epilogue.
-       objectFile.println("    getstatic " + programName +
-                      "/_runTimer LRunTimer;");
-       objectFile.println("    invokevirtual   RunTimer.printElapsedTime()V");
-       objectFile.println();
-       objectFile.println("    return");
-       objectFile.println();
-       objectFile.println(".limit locals " + localsCount);
-       objectFile.println(".limit stack  " + STACK_LIMIT);
-       objectFile.println(".end method");
+       pln();
+       pln("    return");
+       pln();
+       pln(".limit locals " + localSlots);
+       pln(".limit stack  " + STACK_LIMIT);
+       pln(".end method");
        objectFile.flush();
 
        CodeGenerator.objectFile.close();
        
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /**
+     * below are some short-named aliases to 
+     * help improve code legibility.
+     */
+    static void p(String s) {
+    	objectFile.print(s);
+    }
+    
+    static void pln(String s) {
+    	objectFile.println(s);
+    }
+    
+    static void pln() {
+    	objectFile.println();
+    }
+    
+    static void pf(String format, Object... args) {
+    	objectFile.printf(format, args);
+    }
+    
+    static void flush() {
+    	objectFile.flush();
+    }
+    
+    /**
+     * The methods below try to convert an instruction to the shortcut version.
+     * 
+     * eg, 
+     * 
+     * iconst(3) == "iconst_3"
+     * 
+     * but 
+     * 
+     * iconst(6) == "iconst 6"
+     * 
+     */
+    static String iconst(int val) {
+		if (isEqualToOneOf(val, 0, 1, 2, 3, 4, 5)) {
+			return "iconst_" + val;
+		}
+		if (val == -1) {
+			return "iconst_m1";
+		}
+		return "iconst " + val;
+    }
+    
+    static String lconst(long val) {
+		if (isEqualToOneOf(val, 0, 1)) {
+			return "lconst_" + val;
+		}
+		return "lconst " + val;
+    }
+    
+    static String fconst(double val) {
+		if (isEqualToOneOf(val, 0, 1, 2)) {
+			return "fconst_" + (int) val;
+		}
+		return "fconst " + val;
+    }
+    
+    static String dconst(float val) {
+		if (isEqualToOneOf(val, 0, 1)) {
+			return "dconst_" + (int) val;
+		}
+		return "dconst " + val;
+    }
+    
+    
+    static String load(int slot) {
+		if (isEqualToOneOf(slot, 0, 1, 2, 3)) {
+			return "load_" + slot;
+		}
+		return "load " + slot;
+    }
+    
+    static String iload(int slot) {
+		return "i" + load(slot);
+    }
+    
+    static String lload(int slot) {
+		return "l" + load(slot);
+    }
+    
+    static String fload(int slot) {
+		return "f" + load(slot);
+    }
+    
+    static String dload(int slot) {
+		return "d" + load(slot);
+    }
+    
+    static String aload(int slot) {
+		return "a" + load(slot);
+    }
+    
+    static boolean between(long val, long min, long max) {
+    	return val >= min && val <= max;
+    }
+    static boolean between(double val, double min, double max) {
+    	return val >= min && val <= max;
+    }
+    
+    static boolean isEqualToOneOf(double val, Integer... ints) {
+    	double epsilon = 0.000000001D;
+    	for (int i : ints) {
+    		if(Math.abs(val - i) < epsilon) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    static boolean isEqualToOneOf(int val, Integer... ints) {
+    	return Arrays.asList(ints).contains(val);
     }
 }
