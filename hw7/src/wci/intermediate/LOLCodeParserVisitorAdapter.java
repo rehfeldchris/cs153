@@ -17,6 +17,7 @@ import wci.frontend.ASTdefaultCase;
 import wci.frontend.ASTdivide;
 import wci.frontend.ASTequals;
 import wci.frontend.ASTfunction;
+import wci.frontend.ASTgimmeh;
 import wci.frontend.ASTgreater_than;
 import wci.frontend.ASTidentifier;
 import wci.frontend.ASTif_false;
@@ -40,6 +41,7 @@ import wci.frontend.ASTswitchStatement;
 import wci.frontend.ASTtest;
 import wci.frontend.ASTtype;
 import wci.frontend.ASTunaryExpression;
+import wci.frontend.ASTvisible;
 import wci.frontend.ASTxor;
 import wci.frontend.LOLCodeParserVisitor;
 import wci.frontend.SimpleNode;
@@ -255,5 +257,16 @@ public class LOLCodeParserVisitorAdapter implements LOLCodeParserVisitor
    {
       return node.childrenAccept(this, data);
    }
+
+	public Object visit(ASTvisible node, Object data)
+	{
+	    return node.childrenAccept(this, data);
+	}
+	
+	public Object visit(ASTgimmeh node, Object data)
+	{
+	    return node.childrenAccept(this, data);
+	}
+
 
 }

@@ -357,7 +357,20 @@ void statement() #void : {}
 	| LOOKAHEAD(2) switchStatement()
 	| functionDeclarationStatement()
 	| variableDeclarationStatement()
+	| visibleStatement()
+	| gimmehStatement()
 }
+
+void visibleStatement() #visible : {printCallerMethodName();}
+{
+  <VISIBLE> expression()
+}
+
+void gimmehStatement() #gimmeh : {printCallerMethodName();}
+{
+  <GIMMEH> expression()
+}
+
 
 void ifStatement(HashSet<Integer> syncSet) #test : {printCallerMethodName();}{
   try {    
