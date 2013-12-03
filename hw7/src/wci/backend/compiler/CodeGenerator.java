@@ -66,9 +66,9 @@ public class CodeGenerator extends Backend
        pln();
        
        // Generate code for the timer and standard input fields.
-       pln(".field private static _runTimer LRunTimer;");
-       pln(".field private static _standardIn LPascalTextIn;");
-       pln();
+//       pln(".field private static _runTimer LRunTimer;");
+//       pln(".field private static _standardIn LPascalTextIn;");
+//       pln();
        
        // Generate code for fields.
        for (SymTabEntry id : locals) {
@@ -100,13 +100,13 @@ public class CodeGenerator extends Backend
        pln();
        
        // Generate the main method prologue.
-       pln("    new  PascalTextIn");
+/*       pln("    new  PascalTextIn");
        pln("    dup");
        pln("    invokenonvirtual   PascalTextIn/<init>()V");
        pln("    putstatic " + programName + "/_standardIn LPascalTextIn;");
        pln();
        objectFile.flush();
-
+*/
        // Visit the parse tree nodes to generate code 
        // for the main method's compound statement.
        CodeGeneratorVisitor codeVisitor = new CodeGeneratorVisitor();

@@ -1,9 +1,12 @@
 package wci.backend.compiler;
 
+import wci.backend.compiler.CodeGenerator;
 import wci.frontend.ASTintegerConstant;
 import wci.frontend.ASTrealConstant;
 import wci.frontend.ASTstringLiteral;
+import wci.frontend.ASTvisible;
 import wci.frontend.LOLCodeParserTreeConstants;
+import wci.frontend.SimpleNode;
 import wci.intermediate.LOLCodeParserVisitorAdapter;
 import wci.intermediate.icodeimpl.*;
 
@@ -45,5 +48,16 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
       return data;
    }
 
+   public Object visit(ASTvisible node, Object data)
+   {
+      pln("    getstatic java/lang/System/out Ljava/io/PrintStream;");
+      flush();
+      SimpleNode literalNode = (SimpleNode) node.jjtGetChild(0);
+      literalNode.jjtAccept(this, data);
+      pln("    invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V");
+      flush();
+            
+      return data;
+   }
 
 }
