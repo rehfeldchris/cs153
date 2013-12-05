@@ -335,6 +335,10 @@ void programStart() #void : {printCallerMethodName();}{
         programId.setAttribute(ROUTINE_SYMTAB, symTabStack.push());
         programId.setAttribute(ROUTINE_ROUTINES, new ArrayList<SymTabEntry>());
         symTabStack.setProgramId(programId);
+
+        SymTabEntry itVariableId = symTabStack.enterLocal("IT");
+	    itVariableId.setDefinition(DefinitionImpl.VARIABLE);
+        itVariableId.setTypeSpec(Predefined.undefinedType);        
     }}
 
 
@@ -548,7 +552,10 @@ void realConstant() : {}
 void booleanValue() : {}
 {    (<WIN> | <FAIL>) {
         jjtThis.setTypeSpec(Predefined.booleanType);
-        jjtThis.setAttribute(VALUE, token.image);
+        if (token.image.equals("WIN"))
+           jjtThis.setAttribute(VALUE, "true");
+        else
+           jjtThis.setAttribute(VALUE, "false");
     }
 }
 
