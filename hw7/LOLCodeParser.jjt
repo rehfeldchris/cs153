@@ -87,6 +87,15 @@ import static wci.intermediate.icodeimpl.ICodeKeyImpl.*;
 	       // Create the compiler backend and generate code.
 	       Backend backend = BackendFactory.createBackend("compile");
 	       backend.process(iCode, symTabStack, objectFilePath);
+
+	       // Generate code for function definitions
+		   ArrayList<SymTabEntry> symTabEntries = (ArrayList<SymTabEntry>) programId.getAttribute(ROUTINE_ROUTINES);
+		   for (SymTabEntry symTab : symTabEntries)
+			{
+			  iCode = (ICode) symTab.getAttribute(ROUTINE_ICODE);
+			  backend.processFunction(iCode, symTabStack, objectFilePath, symTab);
+			}  
+	       
            
 	     } 
 	     catch (ParseException ex) {
@@ -441,7 +450,7 @@ void functionDeclarationStatement() #function : {int reset;
      routineID = symTabStack.enterLocal(token.image);
      routineID.setDefinition(DefinitionImpl.FUNCTION);
      routineID.setAttribute(ROUTINE_SYMTAB, symTabStack.push());
-  }    (functionArguments(routineID))?
+  }    (functionArguments(routineID))?    
   		(rootNode = codeBlock(syncSet(IF_U_SAY_SO, EOF))) {
 		     ICode iCode = ICodeFactory.createICode();
 		     iCode.setRoot(rootNode);
