@@ -44,9 +44,11 @@ public class CodeGenerator extends Backend
         // TODO: Figure out the return type
         
         pln();
-        pln(".method private static " + fName + "(");
-        //.method private static main([Ljava/lang/String;)V
-        pln();
+        p(".method private static " + fName + "(");
+        
+        for (SymTabEntry param : params)
+        	p("jbin/runtime/variant/Variant;");
+        pln(")jbin/runtime/variant/Variant");
         
         // Visit the parse tree nodes to generate code for this function
         CodeGeneratorVisitor codeVisitor = new CodeGeneratorVisitor();
