@@ -1,4 +1,3 @@
-package jbin.runtime.variant;
 
 import java.util.List;
 

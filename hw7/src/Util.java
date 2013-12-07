@@ -1,20 +1,12 @@
-package jbin.runtime;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import jbin.runtime.variant.DoubleVariant;
-import jbin.runtime.variant.LongVariant;
-import jbin.runtime.variant.StringVariant;
-import jbin.runtime.variant.Variant;
-import static jbin.runtime.variant.Variant.Type;
 
 public class Util 
 {
-	public Variant add(Variant a, Variant b)
+	public static Variant add(Variant a, Variant b)
 	{
-		if (typesOf(a, b).contains(Type.DOUBLE)) {
+		if (typesOf(a, b).contains(Variant.Type.DOUBLE)) {
 			return new DoubleVariant(
 				a.doubleVal() + b.doubleVal()
 			);
@@ -25,9 +17,9 @@ public class Util
 		);
 	}
 	
-	public Variant subtract(Variant a, Variant b)
+	public static Variant subtract(Variant a, Variant b)
 	{
-		if (typesOf(a, b).contains(Type.DOUBLE)) {
+		if (typesOf(a, b).contains(Variant.Type.DOUBLE)) {
 			return new DoubleVariant(
 				a.doubleVal() - b.doubleVal()
 			);
@@ -38,9 +30,9 @@ public class Util
 		);
 	}
 	
-	public Variant multiply(Variant a, Variant b)
+	public static Variant multiply(Variant a, Variant b)
 	{
-		if (typesOf(a, b).contains(Type.DOUBLE)) {
+		if (typesOf(a, b).contains(Variant.Type.DOUBLE)) {
 			return new DoubleVariant(
 				a.doubleVal() * b.doubleVal()
 			);
@@ -51,9 +43,9 @@ public class Util
 		);
 	}
 	
-	public Variant divide(Variant a, Variant b)
+	public static Variant divide(Variant a, Variant b)
 	{
-		if (typesOf(a, b).contains(Type.DOUBLE)) {
+		if (typesOf(a, b).contains(Variant.Type.DOUBLE)) {
 			return new DoubleVariant(
 				a.doubleVal() / b.doubleVal()
 			);
@@ -67,7 +59,7 @@ public class Util
 		return new LongVariant(result);
 	}
 	
-	public Variant mod(Variant a, Variant b)
+	public static Variant mod(Variant a, Variant b)
 	{
 		long result = 0;
 		try {
@@ -77,7 +69,7 @@ public class Util
 		return new LongVariant(result);
 	}
 	
-	public Variant concat(Variant...variants)
+	public static Variant concat(Variant...variants)
 	{
 		String buf = "";
 		for (Variant v : variants) {
@@ -86,11 +78,9 @@ public class Util
 		return new StringVariant(buf);
 	}
 	
-	
-	
-	
-	private List<Type> typesOf(Variant... variants) {
-		List<Type> types = new ArrayList<>();
+	private static List<Variant.Type> typesOf(Variant... variants)
+	{
+		List<Variant.Type> types = new ArrayList<>();
 		for (Variant v : variants) {
 			types.add(v.getType());
 		}

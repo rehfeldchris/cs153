@@ -1,10 +1,6 @@
-package jbin.runtime.variant;
 
 import java.util.Collections;
 import java.util.List;
-
-import jbin.runtime.variant.Variant.Type;
-
 
 public class StringVariant extends AbstractVariant
 {
@@ -15,6 +11,11 @@ public class StringVariant extends AbstractVariant
 		super();
 		this.value = value;
 		this.type = Type.STRING;
+	}
+	
+	public static StringVariant create(String value) 
+	{
+		return new StringVariant(value);
 	}
 	
 	public String stringVal()

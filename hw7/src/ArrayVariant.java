@@ -1,4 +1,3 @@
-package jbin.runtime.variant;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,6 +13,11 @@ public class ArrayVariant extends AbstractVariant
 		super();
 		this.value = new ArrayList<>(value);
 		this.type = Type.ARRAY;
+	}
+	
+	public static ArrayVariant create(List<? extends Variant> value)
+	{
+		return new ArrayVariant(value);
 	}
 
 	public String stringVal()

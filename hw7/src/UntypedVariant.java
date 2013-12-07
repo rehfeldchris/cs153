@@ -1,9 +1,6 @@
-package jbin.runtime.variant;
 
 import java.util.Collections;
 import java.util.List;
-
-import jbin.runtime.variant.Variant.Type;
 
 public class UntypedVariant extends AbstractVariant
 {
@@ -11,6 +8,11 @@ public class UntypedVariant extends AbstractVariant
 	{
 		super();
 		this.type = Type.UNTYPED;
+	}
+	
+	public static UntypedVariant create() 
+	{
+		return new UntypedVariant();
 	}
 
 	public String stringVal()

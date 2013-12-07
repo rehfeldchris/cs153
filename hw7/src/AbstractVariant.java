@@ -1,12 +1,7 @@
-package jbin.runtime.variant;
-
-import jbin.runtime.variant.Variant.Type;
-
 
 public abstract class AbstractVariant implements Variant
 {
 	protected Type type = Type.UNTYPED;
-	
 	
 	public Variant typeCast(Type newType) 
 	{
@@ -42,7 +37,6 @@ public abstract class AbstractVariant implements Variant
 				
 		}
 	}
-	
 	
 	public Type getType()
 	{
