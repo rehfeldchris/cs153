@@ -2,7 +2,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class Util 
+public class Util
 {
 	public static Variant add(Variant a, Variant b)
 	{
@@ -45,18 +45,9 @@ public class Util
 	
 	public static Variant divide(Variant a, Variant b)
 	{
-		if (typesOf(a, b).contains(Variant.Type.DOUBLE)) {
-			return new DoubleVariant(
-				a.doubleVal() / b.doubleVal()
-			);
-		}
-		
-		long result = 0;
-		try {
-			result = a.longVal() / b.longVal();
-		} catch (ArithmeticException e) {}
-		
-		return new LongVariant(result);
+		return new DoubleVariant(
+			a.doubleVal() / b.doubleVal()
+		);
 	}
 	
 	public static Variant mod(Variant a, Variant b)
@@ -67,6 +58,46 @@ public class Util
 		} catch (ArithmeticException e) {}
 		
 		return new LongVariant(result);
+	}
+	
+	//not done
+	public static Variant max(Variant a, Variant b)
+	{
+		return null;
+	}
+	
+	//not done
+	public int cmpVariant(Variant a, Variant b)
+	{
+		if (typesOf(a, b).contains(Variant.Type.DOUBLE)) {
+			double aVal = a.doubleVal();
+			double bVal = b.doubleVal();
+			
+			if (aVal < bVal) {
+				return -1;
+			} else if (aVal > bVal) {
+				return 1;
+			} else {
+				return 0;
+			}
+		}
+		
+		if (typesOf(a, b).contains(Variant.Type.LONG)) {
+			long aVal = a.longVal();
+			long bVal = b.longVal();
+			
+			if (aVal < bVal) {
+				return -1;
+			} else if (aVal > bVal) {
+				return 1;
+			} else {
+				return 0;
+			}
+		}
+		
+
+		
+		return -1;
 	}
 	
 	/**

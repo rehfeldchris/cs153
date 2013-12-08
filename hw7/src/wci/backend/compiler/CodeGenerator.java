@@ -139,8 +139,8 @@ public class CodeGenerator extends Backend
        pln("  invokenonvirtual  java/lang/Object/<init>()V");
        pln("  return");
        pln();
-       pln(".limit locals 1");
-       pln(".limit stack 1");
+       pln(".limit locals 11");
+       pln(".limit stack 11");
        pln(".end method");
        pln();
        
@@ -356,6 +356,20 @@ public class CodeGenerator extends Backend
     static String jasminUntypedVariant() {
     	String buf = "";
     	buf += "invokestatic 	UntypedVariant/create()LUntypedVariant;";
+    	return buf;
+    }
+    
+    /**
+     * sometimes we need to create an array of variants in jasmin
+     * so we can call a var-args method. this makes the jasmin to initializes the array.
+     * @param numElements
+     * @return
+     */
+    static String initVariantArray(int numElements) {
+    	String buf = "";
+    	buf += iconst(numElements);
+    	buf += "\n";
+    	buf += "anewarray 	LVariant;";
     	return buf;
     }
     
