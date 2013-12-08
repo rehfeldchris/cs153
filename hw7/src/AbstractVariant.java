@@ -1,13 +1,14 @@
-package jbin.runtime.variant;
-
-import jbin.runtime.variant.Variant.Type;
-
 
 public abstract class AbstractVariant implements Variant
 {
 	protected Type type = Type.UNTYPED;
 	
-	
+	/**
+	 * creates a new variant with the given type, 
+	 * using this objects value to be converted for the new object. 
+	 * 
+	 * this object is not modified.
+	 */
 	public Variant typeCast(Type newType) 
 	{
 
@@ -39,13 +40,25 @@ public abstract class AbstractVariant implements Variant
 			
 			default:
 				return null;
-				
 		}
 	}
-	
 	
 	public Type getType()
 	{
 		return type;
+	}
+	
+	/**
+	 * By default, toNumeric() converts everything to a long.
+	 * StringVariant, LongVariant, and DoubleVariant will override this.
+	 */
+	public Variant toNumeric()
+	{
+		return typeCast(Type.LONG);
+	}
+	
+	public String toString()
+	{
+		return stringVal();
 	}
 }

@@ -1,4 +1,3 @@
-package jbin.runtime.variant;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +14,11 @@ public class ArrayVariant extends AbstractVariant
 		this.value = new ArrayList<>(value);
 		this.type = Type.ARRAY;
 	}
+	
+	public static ArrayVariant create(List<? extends Variant> value)
+	{
+		return new ArrayVariant(value);
+	}
 
 	public String stringVal()
 	{
@@ -26,7 +30,7 @@ public class ArrayVariant extends AbstractVariant
 		return value.size() > 0;
 	}
 
-	public List<Variant> arrayVal() 
+	public List<Variant> arrayVal()
 	{
 		return Collections.unmodifiableList(value);
 	}

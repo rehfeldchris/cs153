@@ -1,12 +1,9 @@
-package jbin.runtime.variant;
 
 import java.util.Collections;
 import java.util.List;
 
-import jbin.runtime.variant.Variant.Type;
-
-public class DoubleVariant extends AbstractVariant {
-
+public class DoubleVariant extends AbstractVariant
+{
 	private double value;
 
 	public DoubleVariant(double value) 
@@ -14,6 +11,11 @@ public class DoubleVariant extends AbstractVariant {
 		super();
 		this.value = value;
 		this.type = Type.DOUBLE;
+	}
+	
+	public static DoubleVariant create(double value) 
+	{
+		return new DoubleVariant(value);
 	}
 
 	public String stringVal()
@@ -40,5 +42,9 @@ public class DoubleVariant extends AbstractVariant {
 	{
 		return (long) value;
 	}
-
+	
+	public Variant toNumeric()
+	{
+		return this;
+	}
 }

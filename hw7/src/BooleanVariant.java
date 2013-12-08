@@ -1,10 +1,6 @@
-package jbin.runtime.variant;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import jbin.runtime.variant.Variant.Type;
 
 public class BooleanVariant extends AbstractVariant
 {
@@ -15,6 +11,11 @@ public class BooleanVariant extends AbstractVariant
 		super();
 		this.value = value;
 		this.type = Type.BOOLEAN;
+	}
+	
+	public static BooleanVariant create(boolean value) 
+	{
+		return new BooleanVariant(value);
 	}
 
 	public String stringVal()
@@ -27,7 +28,7 @@ public class BooleanVariant extends AbstractVariant
 		return value;
 	}
 
-	public List<Variant> arrayVal() 
+	public List<Variant> arrayVal()
 	{
 		return Collections.<Variant>singletonList(this);
 	}

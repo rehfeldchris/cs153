@@ -1,4 +1,3 @@
-package jbin.runtime.variant;
 
 import java.util.Collections;
 import java.util.List;
@@ -12,6 +11,11 @@ public class LongVariant extends AbstractVariant
 		super();
 		this.value = value;
 		this.type = Type.LONG;
+	}
+	
+	public static LongVariant create(long value) 
+	{
+		return new LongVariant(value);
 	}
 
 	public String stringVal()
@@ -37,6 +41,11 @@ public class LongVariant extends AbstractVariant
 	public long longVal() 
 	{
 		return value;
+	}
+	
+	public Variant toNumeric()
+	{
+		return this;
 	}
 
 }

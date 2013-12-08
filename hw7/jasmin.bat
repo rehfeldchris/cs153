@@ -1,1 +1,1 @@
-java -jar ..\..\lib\jasmin-2.4\jasmin.jar %1 %2 %3 %4 %5
+java -jar ..\..\lib\jasmin-2.4\jasmin.jar -g %1 %2 %3 %4 %5

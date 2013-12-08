@@ -1,5 +1,6 @@
 *.exe
 *.o
+*.class
 /hw1
 /hw2
 /ch8
