@@ -373,4 +373,28 @@ public class CodeGenerator extends Backend
     	return buf;
     }
     
+    /**
+     * Whenever an expression is evaluated, we need to remember its value
+     * so that we can store it in that lolcode special "IT" variable. Evaluating 
+     * an expression results in a value, and our values are always wrapped in a Variant.
+     * 
+     * This method assumes the Variant is on top of the stack, and then it will call the runtime lib, letting it
+     * know that variant was just evaluated. This way the runtime lib can keep track of it for us, 
+     * which I think is more flexible.
+     * 
+     * @return jasmin code
+     */
+    static String setMostRecentExpression() {
+    	String buf = "";
+    	buf += "dup";
+    	buf += "\n";
+    	buf += "invokestatic 	Util/setMostRecentExpression(LVariant;)V";
+    	
+    	//this is for debugging - it makes every expression print its value when its evaluated
+    	//buf += "\n";
+    	//buf += "invokestatic 	Util/printMostRecentExpression()V";
+    	
+    	return buf;
+    }
+    
 }

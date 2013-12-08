@@ -4,6 +4,32 @@ import java.util.List;
 
 public class Util
 {
+	/**
+	 * The lolcode "IT" variable.
+	 * 
+	 * This will be the result of most recently evaluated expression.
+	 * We need to make sure to update this from jasmin. I initialize it to Untyped
+	 * so we dont get a null pointer exception if we read it before we happen to 
+	 * update it to a real runtime value.
+	 */
+	public static Variant mostRecentExpression = new UntypedVariant();
+	
+	public static void setMostRecentExpression(Variant v)
+	{
+		mostRecentExpression = v;
+	}
+	
+	public static Variant getMostRecentExpression()
+	{
+		return mostRecentExpression;
+	}
+	
+	//this method is for debugging.
+	public static void printMostRecentExpression()
+	{
+		printVariant(mostRecentExpression);
+	}
+	
 	public static Variant add(Variant a, Variant b)
 	{
 		//make them numerics if they arent already

@@ -14,6 +14,7 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
    {
       int value = (int) node.getAttribute(ICodeKeyImpl.VALUE);
       pln(jasminLongVariant(value));
+      pln(setMostRecentExpression());
       flush();
       
       return data;
@@ -23,6 +24,7 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
    {
       float value = (float) node.getAttribute(ICodeKeyImpl.VALUE);
       pln(jasminDoubleVariant(value));
+      pln(setMostRecentExpression());
       flush();
       
       return data;
@@ -34,6 +36,7 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 	  boolean value = node.getAttribute(ICodeKeyImpl.VALUE).equals("true");
 	  
       pln(jasminBooleanVariant(value));
+      pln(setMostRecentExpression());
       flush();
       
       return data;
@@ -50,6 +53,7 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 	      
       String value = (String) node.getAttribute(ICodeKeyImpl.VALUE);
       pln(jasminStringVariant(value));
+      pln(setMostRecentExpression());
       flush();
       
       return data;
@@ -74,6 +78,7 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
       
       //call the add method using the array on the stack as the argument
       pln("invokestatic Util/concat([LVariant;)LVariant;");
+      pln(setMostRecentExpression());
       flush();
 
       return data;
@@ -86,6 +91,7 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 
       //call the add method, letting it pick up its 2 args from top of stack
       pln("invokestatic Util/add(LVariant;LVariant;)LVariant;");
+      pln(setMostRecentExpression());
       flush();
 
       return data;
@@ -98,6 +104,7 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 
       //call the sub method, letting it pick up its 2 args from top of stack
       pln("invokestatic Util/subtract(LVariant;LVariant;)LVariant;");
+      pln(setMostRecentExpression());
       flush();
 
       return data;
@@ -110,6 +117,7 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 
       //call the mult method, letting it pick up its 2 args from top of stack
       pln("invokestatic Util/multiply(LVariant;LVariant;)LVariant;");
+      pln(setMostRecentExpression());
       flush();
 
       return data;
@@ -122,6 +130,7 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 
       //call the mult method, letting it pick up its 2 args from top of stack
       pln("invokestatic Util/divide(LVariant;LVariant;)LVariant;");
+      pln(setMostRecentExpression());
       flush();
 
       return data;
@@ -134,6 +143,7 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 
       //call the mult method, letting it pick up its 2 args from top of stack
       pln("invokestatic Util/mod(LVariant;LVariant;)LVariant;");
+      pln(setMostRecentExpression());
       flush();
 
       return data;
@@ -146,6 +156,7 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 
       //call the max method, letting it pick up its 2 args from top of stack
       pln("invokestatic Util/max(LVariant;LVariant;)LVariant;");
+      pln(setMostRecentExpression());
       flush();
 
       return data;
@@ -158,6 +169,7 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 
       //call the min method, letting it pick up its 2 args from top of stack
       pln("invokestatic Util/min(LVariant;LVariant;)LVariant;");
+      pln(setMostRecentExpression());
       flush();
 
       return data;
@@ -170,6 +182,7 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 
       //call the min method, letting it pick up its 2 args from top of stack
       pln("invokestatic Util/xor(LVariant;LVariant;)LVariant;");
+      pln(setMostRecentExpression());
       flush();
 
       return data;
@@ -179,6 +192,7 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
    {
 	  putChildrenDirectlyOntoStack(node, data);
       pln("invokestatic Util/typeCast(LVariant;LVariant;)LVariant;");
+      pln(setMostRecentExpression());
       flush();
 
       return data;
@@ -188,6 +202,7 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
    {
 	  putChildrenDirectlyOntoStack(node, data);
       pln("invokestatic Util/equal(LVariant;LVariant;)LVariant;");
+      pln(setMostRecentExpression());
       flush();
 
       return data;
@@ -197,6 +212,7 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
    {
 	  putChildrenDirectlyOntoStack(node, data);
       pln("invokestatic Util/negate(LVariant;)LVariant;");
+      pln(setMostRecentExpression());
       flush();
 
       return data;
@@ -206,6 +222,7 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
    {
 	  putChildrenDirectlyOntoStack(node, data);
       pln("invokestatic Util/and(LVariant;LVariant;)LVariant;");
+      pln(setMostRecentExpression());
       flush();
 
       return data;
@@ -215,6 +232,7 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
    {
 	  putChildrenDirectlyOntoStack(node, data);
       pln("invokestatic Util/or(LVariant;LVariant;)LVariant;");
+      pln(setMostRecentExpression());
       flush();
 
       return data;
