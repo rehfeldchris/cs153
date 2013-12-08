@@ -2,7 +2,6 @@ package wci.backend.compiler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.io.*;
 
 import wci.frontend.*;
@@ -34,22 +33,19 @@ public class CodeGenerator extends Backend
         // Open the file in append mode
         CodeGenerator.objectFile  = new PrintWriter(new BufferedWriter(new FileWriter(objectFilePath, true)));
                         
+        // Not sure if these are needed?
         //SymTab routineSymTab = (SymTab) functionId.getAttribute(ROUTINE_SYMTAB);
         //ArrayList<SymTabEntry> locals = routineSymTab.sortedEntries();
 
-        // Make the function declaration
-        String fName = functionId.getDefinition().toString();
-        ArrayList<SymTabEntry> params = (ArrayList<SymTabEntry>) functionId.getAttribute(ROUTINE_PARMS);
-        
-        //  TODO: Figure out how to type the parameters
-        // TODO: Figure out the return type
-        
+        // Make the function declaration                
         pln();
+        String fName = functionId.getDefinition().toString();
         p(".method private static " + fName + "(");
-        
+
+        ArrayList<SymTabEntry> params = (ArrayList<SymTabEntry>) functionId.getAttribute(ROUTINE_PARMS);
         for (SymTabEntry param : params)
-        	p("jbin/runtime/variant/Variant;");
-        pln(")jbin/runtime/variant/Variant");
+        	p("LVariant;");
+        pln(")LVariant");
         
         // Visit the parse tree nodes to generate code for this function
         CodeGeneratorVisitor codeVisitor = new CodeGeneratorVisitor();
