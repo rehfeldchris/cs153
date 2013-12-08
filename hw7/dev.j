@@ -79,6 +79,24 @@ ldc2_w 5
 invokestatic 	LongVariant/create(J)LLongVariant;
 invokestatic Util/mod(LVariant;LVariant;)LVariant;
 invokestatic Util/printVariant(LVariant;)V
+ldc "Max"
+invokestatic 	StringVariant/create(Ljava/lang/String;)LStringVariant;
+invokestatic Util/printVariant(LVariant;)V
+ldc2_w 11
+invokestatic 	LongVariant/create(J)LLongVariant;
+ldc2_w 5
+invokestatic 	LongVariant/create(J)LLongVariant;
+invokestatic Util/max(LVariant;LVariant;)LVariant;
+invokestatic Util/printVariant(LVariant;)V
+ldc "Min"
+invokestatic 	StringVariant/create(Ljava/lang/String;)LStringVariant;
+invokestatic Util/printVariant(LVariant;)V
+ldc2_w 11
+invokestatic 	LongVariant/create(J)LLongVariant;
+ldc2_w 5
+invokestatic 	LongVariant/create(J)LLongVariant;
+invokestatic Util/min(LVariant;LVariant;)LVariant;
+invokestatic Util/printVariant(LVariant;)V
 
 
     return

@@ -27,7 +27,7 @@ public class UntypedVariant extends AbstractVariant
 
 	public List<Variant> arrayVal() 
 	{
-		return Collections.<Variant>singletonList(this);
+		return Collections.<Variant>emptyList();
 	}
 
 	public double doubleVal()

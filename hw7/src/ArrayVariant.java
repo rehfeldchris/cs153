@@ -30,7 +30,7 @@ public class ArrayVariant extends AbstractVariant
 		return value.size() > 0;
 	}
 
-	public List<Variant> arrayVal() 
+	public List<Variant> arrayVal()
 	{
 		return Collections.unmodifiableList(value);
 	}

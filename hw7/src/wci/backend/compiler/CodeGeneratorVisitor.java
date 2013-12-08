@@ -137,6 +137,30 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 
       return data;
    }
+   
+   public Object visit(ASTmax node, Object data)
+   {
+	  //put the args onto the stack
+	  putChildrenDirectlyOntoStack(node, data);
+
+      //call the max method, letting it pick up its 2 args from top of stack
+      pln("invokestatic Util/max(LVariant;LVariant;)LVariant;");
+      flush();
+
+      return data;
+   }
+   
+   public Object visit(ASTmin node, Object data)
+   {
+	  //put the args onto the stack
+	  putChildrenDirectlyOntoStack(node, data);
+
+      //call the min method, letting it pick up its 2 args from top of stack
+      pln("invokestatic Util/min(LVariant;LVariant;)LVariant;");
+      flush();
+
+      return data;
+   }
 
    
    /**

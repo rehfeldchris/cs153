@@ -28,7 +28,7 @@ public class BooleanVariant extends AbstractVariant
 		return value;
 	}
 
-	public List<Variant> arrayVal() 
+	public List<Variant> arrayVal()
 	{
 		return Collections.<Variant>singletonList(this);
 	}

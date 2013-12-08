@@ -13,7 +13,7 @@ public class StringVariant extends AbstractVariant
 		this.type = Type.STRING;
 	}
 	
-	public static StringVariant create(String value) 
+	public static StringVariant create(String value)
 	{
 		return new StringVariant(value);
 	}
@@ -23,9 +23,13 @@ public class StringVariant extends AbstractVariant
 		return value;
 	}
 
+	/**
+	 * false when "", or "0", or "0.0"
+	 */
 	public boolean boolVal()
 	{
-		return "WIN".equals(value);
+		return value.length() == 0
+			|| typeCast(Type.DOUBLE).longVal() == 0;
 	}
 
 	public List<Variant> arrayVal() 
@@ -47,6 +51,25 @@ public class StringVariant extends AbstractVariant
 			return Long.parseLong(value);
 		} catch (NumberFormatException e) {}
 		return 0L;
+	}
+	
+	/**
+	 * if the string is all digits, this will convert to a LongVariant
+	 * if the string represent a valid double, it convert to a DoubleVariant
+	 * otherwise, it will return a LongVariant with the value 0
+	 * 
+	 */
+	public Variant toNumeric()
+	{
+		try {
+			return new LongVariant(Long.parseLong(value));
+		} catch (NumberFormatException e) {}
+		
+		try {
+			return new DoubleVariant(Double.parseDouble(value));
+		} catch (NumberFormatException e) {}
+		
+		return new LongVariant(0L);
 	}
 
 }

@@ -6,12 +6,18 @@ public class Util
 {
 	public static Variant add(Variant a, Variant b)
 	{
+		//make them numerics if they arent already
+		a = a.toNumeric();
+		b = b.toNumeric();
+		
+		//if at least one is a double, the result is a double
 		if (typesOf(a, b).contains(Variant.Type.DOUBLE)) {
 			return new DoubleVariant(
 				a.doubleVal() + b.doubleVal()
 			);
 		}
 		
+		//they must both be longs, so the result is a long.
 		return new LongVariant(
 			a.longVal() + b.longVal()
 		);
@@ -19,12 +25,18 @@ public class Util
 	
 	public static Variant subtract(Variant a, Variant b)
 	{
+		//make them numerics if they arent already
+		a = a.toNumeric();
+		b = b.toNumeric();
+		
+		//if at least one is a double, the result is a double
 		if (typesOf(a, b).contains(Variant.Type.DOUBLE)) {
 			return new DoubleVariant(
 				a.doubleVal() - b.doubleVal()
 			);
 		}
 		
+		//they must both be longs, so the result is a long.
 		return new LongVariant(
 			a.longVal() - b.longVal()
 		);
@@ -32,12 +44,18 @@ public class Util
 	
 	public static Variant multiply(Variant a, Variant b)
 	{
+		//make them numerics if they arent already
+		a = a.toNumeric();
+		b = b.toNumeric();
+		
+		//if at least one is a double, the result is a double
 		if (typesOf(a, b).contains(Variant.Type.DOUBLE)) {
 			return new DoubleVariant(
 				a.doubleVal() * b.doubleVal()
 			);
 		}
 		
+		//they must both be longs, so the result is a long.
 		return new LongVariant(
 			a.longVal() * b.longVal()
 		);
@@ -45,6 +63,29 @@ public class Util
 	
 	public static Variant divide(Variant a, Variant b)
 	{
+		//make them numerics if they arent already
+		a = a.toNumeric();
+		b = b.toNumeric();
+		
+		//try to keep the result a long, when possible
+		if (!typesOf(a, b).contains(Variant.Type.DOUBLE)) {
+			
+			//check for division by zero
+			//for 2 longs, we make division by zero results in 0
+			if (b.longVal() == 0) {
+				return new LongVariant(0L);
+			}
+			
+			//when the mod is zero, it means the numbers evenly divide, and so the result can be a long
+			if (a.longVal() % b.longVal() == 0) {
+				return new LongVariant(
+					a.longVal() / b.longVal()
+				);
+			}
+		}
+		
+		//otherwise, we make the result a double
+		//division by zero results in infinity here
 		return new DoubleVariant(
 			a.doubleVal() / b.doubleVal()
 		);
@@ -54,50 +95,38 @@ public class Util
 	{
 		long result = 0;
 		try {
+			//mod is only defined on longs, so we always cast to long
 			result = a.longVal() % b.longVal();
 		} catch (ArithmeticException e) {}
 		
 		return new LongVariant(result);
 	}
 	
-	//not done
-	public static Variant max(Variant a, Variant b)
+
+	public static Variant min(Variant a, Variant b)
 	{
-		return null;
+		return cmpVariant(a, b) < 0 ? a : b;
 	}
 	
-	//not done
-	public int cmpVariant(Variant a, Variant b)
+	public static Variant max(Variant a, Variant b)
 	{
-		if (typesOf(a, b).contains(Variant.Type.DOUBLE)) {
-			double aVal = a.doubleVal();
-			double bVal = b.doubleVal();
-			
-			if (aVal < bVal) {
-				return -1;
-			} else if (aVal > bVal) {
-				return 1;
-			} else {
-				return 0;
-			}
-		}
-		
-		if (typesOf(a, b).contains(Variant.Type.LONG)) {
-			long aVal = a.longVal();
-			long bVal = b.longVal();
-			
-			if (aVal < bVal) {
-				return -1;
-			} else if (aVal > bVal) {
-				return 1;
-			} else {
-				return 0;
-			}
-		}
-		
-
-		
-		return -1;
+		return cmpVariant(a, b) < 0 ? b : a;
+	}
+	
+	/**
+	 * returns -1 if a < b
+	 *          1 if a > b
+	 *          0 if a == b
+	 *          
+	 * You can compare any combo of variant types. this will automatically figure out a sane comparison method.
+	 * 
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static int cmpVariant(Variant a, Variant b)
+	{
+		return VariantComparator.INSTANCE.compare(a, b);
 	}
 	
 	/**

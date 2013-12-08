@@ -42,5 +42,10 @@ public class LongVariant extends AbstractVariant
 	{
 		return value;
 	}
+	
+	public Variant toNumeric()
+	{
+		return this;
+	}
 
 }

@@ -42,5 +42,9 @@ public class DoubleVariant extends AbstractVariant
 	{
 		return (long) value;
 	}
-
+	
+	public Variant toNumeric()
+	{
+		return this;
+	}
 }
