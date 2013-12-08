@@ -101,7 +101,6 @@ public class Util
 		
 		return new LongVariant(result);
 	}
-	
 
 	public static Variant min(Variant a, Variant b)
 	{
@@ -112,6 +111,77 @@ public class Util
 	{
 		return cmpVariant(a, b) < 0 ? b : a;
 	}
+	
+	public static Variant equal(Variant a, Variant b)
+	{
+		return new BooleanVariant(cmpVariant(a, b) == 0);
+	}
+	
+	public static Variant notEqual(Variant a, Variant b)
+	{
+		return new BooleanVariant(cmpVariant(a, b) != 0);
+	}
+	
+	public static Variant negate(Variant a)
+	{
+		return new BooleanVariant(!a.boolVal());
+	}
+	
+	public static Variant xor(Variant a, Variant b)
+	{
+		return new BooleanVariant(a.boolVal() != b.boolVal());
+	}
+	
+	public static Variant and(Variant a, Variant b)
+	{
+		return new BooleanVariant(a.boolVal() && b.boolVal());
+	}
+	
+	public static Variant or(Variant a, Variant b)
+	{
+		return new BooleanVariant(a.boolVal() || b.boolVal());
+	}
+	
+	//todo: seems we didnt implement all/any. cant find a ASTnode for it.
+	public static Variant all(Variant... args)
+	{
+		for (Variant arg : args) {
+			if (!arg.boolVal()) {
+				return new BooleanVariant(false);
+			}
+		}
+		return new BooleanVariant(true);
+	}
+	
+	public static Variant any(Variant... args)
+	{
+		for (Variant arg : args) {
+			if (arg.boolVal()) {
+				return new BooleanVariant(true);
+			}
+		}
+		return new BooleanVariant(false);
+	}
+	
+	//second arg should be a string variant describing the new type
+	public static Variant typeCast(Variant a, Variant b)
+	{
+		switch (b.stringVal().toUpperCase()) {
+		case "NUMBR":
+			return a.typeCast(Variant.Type.LONG);
+		case "NUMBAR":
+			return a.typeCast(Variant.Type.DOUBLE);
+		case "YARN":
+			return a.typeCast(Variant.Type.STRING);
+		case "TROOF":
+			return a.typeCast(Variant.Type.BOOLEAN);
+		case "NOOB":
+			default:
+			return a.typeCast(Variant.Type.UNTYPED);
+		}
+	}
+	
+	
 	
 	/**
 	 * returns -1 if a < b

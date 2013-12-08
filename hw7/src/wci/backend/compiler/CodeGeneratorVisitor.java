@@ -28,9 +28,10 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
       return data;
    }
    
+   //todo: this gets called for "MAEK 5 A TROOF". it prob shouldnt.
    public Object visit(ASTbooleanValue node, Object data)
    {
-	  boolean value = (boolean) node.getAttribute(ICodeKeyImpl.VALUE);
+	  boolean value = node.getAttribute(ICodeKeyImpl.VALUE).equals("true");
 	  
       pln(jasminBooleanVariant(value));
       flush();
@@ -157,6 +158,72 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 
       //call the min method, letting it pick up its 2 args from top of stack
       pln("invokestatic Util/min(LVariant;LVariant;)LVariant;");
+      flush();
+
+      return data;
+   }
+   
+   public Object visit(ASTxor node, Object data)
+   {
+	  //put the args onto the stack
+	  putChildrenDirectlyOntoStack(node, data);
+
+      //call the min method, letting it pick up its 2 args from top of stack
+      pln("invokestatic Util/xor(LVariant;LVariant;)LVariant;");
+      flush();
+
+      return data;
+   }
+   
+   public Object visit(ASTcast node, Object data)
+   {
+	  putChildrenDirectlyOntoStack(node, data);
+      pln("invokestatic Util/typeCast(LVariant;LVariant;)LVariant;");
+      flush();
+
+      return data;
+   }
+   
+   public Object visit(ASTequals node, Object data)
+   {
+	  putChildrenDirectlyOntoStack(node, data);
+      pln("invokestatic Util/equal(LVariant;LVariant;)LVariant;");
+      flush();
+
+      return data;
+   }
+   
+   public Object visit(ASTnot node, Object data)
+   {
+	  putChildrenDirectlyOntoStack(node, data);
+      pln("invokestatic Util/negate(LVariant;)LVariant;");
+      flush();
+
+      return data;
+   }
+   
+   public Object visit(ASTand node, Object data)
+   {
+	  putChildrenDirectlyOntoStack(node, data);
+      pln("invokestatic Util/and(LVariant;LVariant;)LVariant;");
+      flush();
+
+      return data;
+   }
+   
+   public Object visit(ASTor node, Object data)
+   {
+	  putChildrenDirectlyOntoStack(node, data);
+      pln("invokestatic Util/or(LVariant;LVariant;)LVariant;");
+      flush();
+
+      return data;
+   }
+   
+   public Object visit(ASTtype node, Object data)
+   {
+      String value = (String) node.getAttribute(ICodeKeyImpl.VALUE);
+      pln(jasminStringVariant(value));
       flush();
 
       return data;

@@ -82,20 +82,72 @@ invokestatic Util/printVariant(LVariant;)V
 ldc "Max"
 invokestatic 	StringVariant/create(Ljava/lang/String;)LStringVariant;
 invokestatic Util/printVariant(LVariant;)V
-ldc2_w 11
-invokestatic 	LongVariant/create(J)LLongVariant;
-ldc2_w 5
-invokestatic 	LongVariant/create(J)LLongVariant;
+ldc "aa"
+invokestatic 	StringVariant/create(Ljava/lang/String;)LStringVariant;
+ldc "zz"
+invokestatic 	StringVariant/create(Ljava/lang/String;)LStringVariant;
 invokestatic Util/max(LVariant;LVariant;)LVariant;
 invokestatic Util/printVariant(LVariant;)V
 ldc "Min"
 invokestatic 	StringVariant/create(Ljava/lang/String;)LStringVariant;
 invokestatic Util/printVariant(LVariant;)V
-ldc2_w 11
-invokestatic 	LongVariant/create(J)LLongVariant;
 ldc2_w 5
 invokestatic 	LongVariant/create(J)LLongVariant;
+ldc "2"
+invokestatic 	StringVariant/create(Ljava/lang/String;)LStringVariant;
 invokestatic Util/min(LVariant;LVariant;)LVariant;
+invokestatic Util/printVariant(LVariant;)V
+ldc "same"
+invokestatic 	StringVariant/create(Ljava/lang/String;)LStringVariant;
+invokestatic Util/printVariant(LVariant;)V
+ldc2_w 5
+invokestatic 	LongVariant/create(J)LLongVariant;
+ldc "2"
+invokestatic 	StringVariant/create(Ljava/lang/String;)LStringVariant;
+invokestatic Util/equal(LVariant;LVariant;)LVariant;
+invokestatic Util/printVariant(LVariant;)V
+ldc "diffrent"
+invokestatic 	StringVariant/create(Ljava/lang/String;)LStringVariant;
+invokestatic Util/printVariant(LVariant;)V
+ldc2_w 5
+invokestatic 	LongVariant/create(J)LLongVariant;
+ldc "2"
+invokestatic 	StringVariant/create(Ljava/lang/String;)LStringVariant;
+invokestatic Util/equal(LVariant;LVariant;)LVariant;
+invokestatic Util/negate(LVariant;)LVariant;
+invokestatic Util/printVariant(LVariant;)V
+ldc "xor"
+invokestatic 	StringVariant/create(Ljava/lang/String;)LStringVariant;
+invokestatic Util/printVariant(LVariant;)V
+iconst_1
+invokestatic 	BooleanVariant/create(Z)LBooleanVariant;
+iconst_0
+invokestatic 	BooleanVariant/create(Z)LBooleanVariant;
+invokestatic Util/xor(LVariant;LVariant;)LVariant;
+invokestatic Util/printVariant(LVariant;)V
+iconst_1
+invokestatic 	BooleanVariant/create(Z)LBooleanVariant;
+iconst_1
+invokestatic 	BooleanVariant/create(Z)LBooleanVariant;
+invokestatic Util/xor(LVariant;LVariant;)LVariant;
+invokestatic Util/printVariant(LVariant;)V
+ldc "both"
+invokestatic 	StringVariant/create(Ljava/lang/String;)LStringVariant;
+invokestatic Util/printVariant(LVariant;)V
+iconst_1
+invokestatic 	BooleanVariant/create(Z)LBooleanVariant;
+iconst_1
+invokestatic 	BooleanVariant/create(Z)LBooleanVariant;
+invokestatic Util/and(LVariant;LVariant;)LVariant;
+invokestatic Util/printVariant(LVariant;)V
+ldc "either"
+invokestatic 	StringVariant/create(Ljava/lang/String;)LStringVariant;
+invokestatic Util/printVariant(LVariant;)V
+iconst_0
+invokestatic 	BooleanVariant/create(Z)LBooleanVariant;
+iconst_1
+invokestatic 	BooleanVariant/create(Z)LBooleanVariant;
+invokestatic Util/or(LVariant;LVariant;)LVariant;
 invokestatic Util/printVariant(LVariant;)V
 
 
