@@ -4,3 +4,6 @@
 /hw1
 /hw2
 /ch8
+/.metadata
+*/.*
+*.gitignore
