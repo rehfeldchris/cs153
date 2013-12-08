@@ -1,2 +1,1 @@
-java Simpleinput
-pause
+java -cp .;../../lib/runtime.jar %1 %2 %3 %4 %5

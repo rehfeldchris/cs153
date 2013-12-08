@@ -2,6 +2,7 @@ package wci.backend.compiler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.io.*;
 
 import wci.frontend.*;
@@ -232,36 +233,45 @@ public class CodeGenerator extends Backend
 		if (val == -1) {
 			return "iconst_m1";
 		}
-		return "iconst " + val;
+		return "ldc " + val;
     }
     
     static String lconst(long val) {
 		if (isEqualToOneOf(val, 0, 1)) {
 			return "lconst_" + val;
 		}
-		return "lconst " + val;
+		return "ldc2_w " + val;
     }
     
-    static String fconst(double val) {
+    static String fconst(float val) {
 		if (isEqualToOneOf(val, 0, 1, 2)) {
-			return "fconst_" + (int) val;
+			int ival = (int) val;
+			if (isEqualToOneOf(ival, 0, 1, 2)) {
+				return "fconst_" + ival;
+			}
 		}
-		return "fconst " + val;
+		return "ldc " + val;
     }
     
-    static String dconst(float val) {
+    static String dconst(double val) {
 		if (isEqualToOneOf(val, 0, 1)) {
-			return "dconst_" + (int) val;
+			int ival = (int) val;
+			if (isEqualToOneOf(ival, 0, 1)) {
+				return "dconst_" + ival;
+			}
 		}
-		return "dconst " + val;
+		return "ldc2_w " + val;
     }
-    
     
     static String load(int slot) {
 		if (isEqualToOneOf(slot, 0, 1, 2, 3)) {
 			return "load_" + slot;
 		}
 		return "load " + slot;
+    }
+    
+    static String ldc(String value) {
+		return "ldc " + value;
     }
     
     static String iload(int slot) {
@@ -303,4 +313,50 @@ public class CodeGenerator extends Backend
     static boolean isEqualToOneOf(int val, Integer... ints) {
     	return Arrays.asList(ints).contains(val);
     }
+    
+    
+    /**
+     * The methods below take a value, and return a string that contains the jasmin code
+     * neccessary to create that type of Variant object to wrap the value.
+     * 
+     */
+    static String jasminStringVariant(String value) {
+    	String buf = "";
+    	buf += ldc(value);
+    	buf += "\n";
+    	buf += "invokestatic 	StringVariant/create(Ljava/lang/String;)LStringVariant;";
+    	return buf;
+    }
+    
+    static String jasminLongVariant(long value) {
+    	String buf = "";
+    	buf += lconst(value);
+    	buf += "\n";
+    	buf += "invokestatic 	LongVariant/create(J)LLongVariant;";
+    	return buf;
+    }
+    
+    static String jasminDoubleVariant(double value) {
+    	String buf = "";
+    	buf += dconst(value);
+    	buf += "\n";
+    	buf += "invokestatic 	DoubleVariant/create(D)LDoubleVariant;";
+    	return buf;
+    }
+    
+    static String jasminBooleanVariant(boolean value) {
+    	//i guess theres no boolean type, so use ints. 0 is false, 1 is true.
+    	String buf = "";
+    	buf += iconst(value ? 1 : 0);
+    	buf += "\n";
+    	buf += "invokestatic 	BooleanVariant/create(Z)LBooleanVariant;";
+    	return buf;
+    }
+    
+    static String jasminUntypedVariant() {
+    	String buf = "";
+    	buf += "invokestatic 	UntypedVariant/create()LUntypedVariant;";
+    	return buf;
+    }
+    
 }

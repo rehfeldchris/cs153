@@ -42,4 +42,9 @@ public abstract class AbstractVariant implements Variant
 	{
 		return type;
 	}
+	
+	public String toString()
+	{
+		return stringVal();
+	}
 }
