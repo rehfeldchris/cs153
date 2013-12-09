@@ -19,6 +19,7 @@ import wci.frontend.ASTequals;
 import wci.frontend.ASTfunction;
 import wci.frontend.ASTgimmeh;
 import wci.frontend.ASTgreater_than;
+import wci.frontend.ASTgtfo;
 import wci.frontend.ASTidentifier;
 import wci.frontend.ASTif_false;
 import wci.frontend.ASTif_true;
@@ -268,5 +269,9 @@ public class LOLCodeParserVisitorAdapter implements LOLCodeParserVisitor
 	    return node.childrenAccept(this, data);
 	}
 
+	public Object visit(ASTgtfo node, Object data)
+	{
+	    return node.childrenAccept(this, data);
+	}
 
 }

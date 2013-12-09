@@ -15,25 +15,80 @@
 
 .method public static main([Ljava/lang/String;)V
 
-lconst_0
-invokestatic 	LongVariant/create(J)LLongVariant;
+ldc "4aaaRa"
+invokestatic 	StringVariant/create(Ljava/lang/String;)LStringVariant;
 dup
 invokestatic 	Util/setMostRecentExpression(LVariant;)V
+invokestatic Util/getMostRecentExpression()LVariant;
+dup
+ldc "R"
+invokestatic 	StringVariant/create(Ljava/lang/String;)LStringVariant;
+dup
+invokestatic 	Util/setMostRecentExpression(LVariant;)V
+invokestatic Util/equal(LVariant;LVariant;)LVariant;
+dup
+invokestatic 	Util/setMostRecentExpression(LVariant;)V
+pop
 invokestatic Util/getMostRecentExpressionAsBoolean()Z
-ifeq else_1
-ldc "J00 HAV A CAT"
+ifne case_2
+dup
+ldc "4R"
+invokestatic 	StringVariant/create(Ljava/lang/String;)LStringVariant;
+dup
+invokestatic 	Util/setMostRecentExpression(LVariant;)V
+invokestatic Util/equal(LVariant;LVariant;)LVariant;
+dup
+invokestatic 	Util/setMostRecentExpression(LVariant;)V
+pop
+invokestatic Util/getMostRecentExpressionAsBoolean()Z
+ifne case_3
+dup
+ldc "4Ra"
+invokestatic 	StringVariant/create(Ljava/lang/String;)LStringVariant;
+dup
+invokestatic 	Util/setMostRecentExpression(LVariant;)V
+invokestatic Util/equal(LVariant;LVariant;)LVariant;
+dup
+invokestatic 	Util/setMostRecentExpression(LVariant;)V
+pop
+invokestatic Util/getMostRecentExpressionAsBoolean()Z
+ifne case_4
+dup
+ldc "Y"
+invokestatic 	StringVariant/create(Ljava/lang/String;)LStringVariant;
+dup
+invokestatic 	Util/setMostRecentExpression(LVariant;)V
+invokestatic Util/equal(LVariant;LVariant;)LVariant;
+dup
+invokestatic 	Util/setMostRecentExpression(LVariant;)V
+pop
+invokestatic Util/getMostRecentExpressionAsBoolean()Z
+ifne case_5
+goto case_default_1
+goto after_switch_0
+case_2:
+case_3:
+case_4:
+ldc "RED FISH"
 invokestatic 	StringVariant/create(Ljava/lang/String;)LStringVariant;
 dup
 invokestatic 	Util/setMostRecentExpression(LVariant;)V
 invokestatic Util/printVariant(LVariant;)V
-goto after_if_0
-else_1:
-ldc "J00 dont HAV A CAT"
+case_5:
+ldc "YELLOW FISH"
 invokestatic 	StringVariant/create(Ljava/lang/String;)LStringVariant;
 dup
 invokestatic 	Util/setMostRecentExpression(LVariant;)V
 invokestatic Util/printVariant(LVariant;)V
-after_if_0:
+goto after_switch_0
+case_default_1:
+ldc "FISH IS TRANSPARENT"
+invokestatic 	StringVariant/create(Ljava/lang/String;)LStringVariant;
+dup
+invokestatic 	Util/setMostRecentExpression(LVariant;)V
+invokestatic Util/printVariant(LVariant;)V
+after_switch_0:
+pop
 
 
     return

@@ -1,8 +1,9 @@
 package wci.backend.compiler;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import wci.frontend.*;
-import wci.frontend.LOLCodeParserTreeConstants;
-import wci.frontend.SimpleNode;
 import wci.intermediate.LOLCodeParserVisitorAdapter;
 import wci.intermediate.icodeimpl.*;
 import static wci.backend.compiler.CodeGenerator.*;
@@ -284,6 +285,90 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 
       return data;
    }
+   
+   
+   public Object visit(ASTswitchStatement node, Object data)
+   {
+	  //think of this label as the next line of code after the entire switch statement
+	  String labelAfterEntireSwitchStructure = jumpLabel("after_switch");
+	  SimpleNode literalNode;
+	  
+	  //ASTcaseStatement has the value as first child, and a codeblock as 2nd child
+	  List<ASTcaseStatement> caseStatements = new ArrayList<>();
+	  ASTdefaultCase defaultCase = null;
+	  String defaultCodeLocationLabel = jumpLabel("case_default");
+	  
+	  //a list of the case values
+	  List<SimpleNode> caseComparisonValueNodes = new ArrayList<>();
+	  List<SimpleNode> caseCodeBlockNodes = new ArrayList<>();
+	  List<String> caseJumpLabels = new ArrayList<>();
+	  List<Boolean> hasBreakStatement = new ArrayList<>();
+	  for (SimpleNode n : getChildrenOf(node)) {
+		  if (n instanceof ASTcaseStatement) {
+			  caseStatements.add((ASTcaseStatement) n);
+			  caseComparisonValueNodes.add((SimpleNode) n.jjtGetChild(0));
+			  caseCodeBlockNodes.add((SimpleNode) n.jjtGetChild(1));
+			  hasBreakStatement.add(n.jjtGetNumChildren() > 2);
+			  caseJumpLabels.add(jumpLabel("case"));
+		  } else if (n instanceof ASTdefaultCase) {
+			  defaultCase = (ASTdefaultCase) n;
+		  }
+	  }
+	  
+	  
+	  //put the switch value on the stack
+	  pln("invokestatic Util/getMostRecentExpression()LVariant;");
+	  
+	  for (int i = 0; i < caseComparisonValueNodes.size(); i++) {
+		  SimpleNode caseValNode = caseComparisonValueNodes.get(i);
+		  String labelLocationOfCode = caseJumpLabels.get(i);
+		  //each case statement comparison will eat up the orig switch val, so we need to dup it
+		  pln("dup");
+		  caseValNode.jjtAccept(this, data);
+		  
+		  //do the comparison
+		  pln("invokestatic Util/equal(LVariant;LVariant;)LVariant;");
+		  pln(setMostRecentExpression());
+		  //we dont want the variant that results because we will get it from the runtime lib, so clean up our stack by popping it off
+		  pln("pop");
+		  //get the bool value of the comparison
+		  pln("invokestatic Util/getMostRecentExpressionAsBoolean()Z");
+		  //test the cmp result, and maybe jump
+		  pln("ifne " + labelLocationOfCode);
+	  }
+	  
+	  if (defaultCase != null) {
+		  pln("goto " + defaultCodeLocationLabel);
+	  }
+	  
+	  pln("goto " + labelAfterEntireSwitchStructure);
+	  
+	  
+	  for (int i = 0; i < caseCodeBlockNodes.size(); i++) {
+		  SimpleNode caseCodeBlockNode = caseCodeBlockNodes.get(i);
+		  String labelLocationOfCode = caseJumpLabels.get(i);
+		  pln(labelLocationOfCode + ":");
+		  caseCodeBlockNode.jjtAccept(this, data);
+		  if (hasBreakStatement.get(i) == true) {
+			  pln("goto " + labelAfterEntireSwitchStructure);
+		  }
+	  }
+	  
+	  if (defaultCase != null) {
+		  pln(defaultCodeLocationLabel + ":");
+		  SimpleNode caseCodeBlockNode = (SimpleNode) defaultCase.jjtGetChild(0);
+		  caseCodeBlockNode.jjtAccept(this, data);
+	  }
+	  
+	  pln(labelAfterEntireSwitchStructure + ":");
+	  pln("pop");
+	  
+      flush();
+
+      return data;
+   }
+   
+   
 
    
    /**
@@ -336,6 +421,16 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 	      SimpleNode literalNode = (SimpleNode) node.jjtGetChild(i);
 	      literalNode.jjtAccept(this, data);
 	  }
+   }
+   
+   
+   List<SimpleNode> getChildrenOf(SimpleNode node)
+   {
+	  List<SimpleNode> nodes = new ArrayList<>();
+	  for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+		  nodes.add((SimpleNode) node.jjtGetChild(i));
+	  }
+	  return nodes;
    }
    
    

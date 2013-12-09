@@ -402,7 +402,7 @@ void whileStatement() #loop : {printCallerMethodName();}
   <IM_IN_YR>
   	    loopInitialization()
   		(codeBlock(syncSet(GTFO, IM_OUTTA_YR, EOF)) #if_true)
-  	(<GTFO>)?
+  	(gtfo())?
   <IM_OUTTA_YR> identifier()
 }
 
@@ -431,12 +431,17 @@ void switchStatement() #switchStatement : {printCallerMethodName();}
 void caseStatement() #caseStatement : { printCallerMethodName();}
 {	<OMG> constantExpression() 
   		codeBlock(syncSet(GTFO, OMG, OIC, OMGWTF, EOF))
-  		(<GTFO>)?
+  		(gtfo())?
 }
 
 void defaultStatement() #defaultCase :{  printCallerMethodName();}{   	<OMGWTF>
   		codeBlock(syncSet(GTFO, OMG, OIC, OMGWTF, EOF))
-  		(<GTFO>)?}  
+  		(gtfo())?}
+
+void gtfo() #gtfo :{  printCallerMethodName();}
+{
+  	<GTFO>
+}
 
 void functionDeclarationStatement() #function : {int reset;
                                        SymTabEntry routineID;

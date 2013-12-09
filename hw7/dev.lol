@@ -1,5 +1,27 @@
 HAI LOLDEMO
 
+
+
+"4aaaRa"
+WTF?
+  OMG "R"
+  OMG "4R"
+  OMG "4Ra"
+    VISIBLE "RED FISH"
+  OMG "Y"
+    VISIBLE "YELLOW FISH"
+    GTFO
+  OMGWTF
+    VISIBLE "FISH IS TRANSPARENT"
+OIC
+
+
+
+
+
+OBTW
+
+
 0
 O RLY?
   YA RLY
@@ -8,7 +30,7 @@ O RLY?
   	VISIBLE "J00 dont HAV A CAT"
 OIC
 
-OBTW
+
 
 
 VISIBLE SMOOSH "A" AN "B" AN "C" MKAY
