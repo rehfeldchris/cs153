@@ -24,6 +24,7 @@ public class CodeGenerator extends Backend
     static ICode iCode;
     static SymTabStack symTabStack;
     static PrintWriter objectFile;
+    static int uniqueLabelId = 0;
 
     public void processFunction(ICode iCode, SymTabStack symTabStack,
                         		String objectFilePath, SymTabEntry functionId) throws IOException
@@ -391,6 +392,19 @@ public class CodeGenerator extends Backend
     	//buf += "invokestatic 	Util/printMostRecentExpression()V";
     	
     	return buf;
+    }
+
+    /**
+     * 
+     * we have to make goto/jump labels in the jasmin programatically. so, we need a way to uniquely identify where to jump.
+     * we use this int as a suffix of the label, eg "if_jmp_label_55"
+     * 
+     * @param prefix, eg "if_jmp_label"
+     * @return your string with a globally unique suffix added to it.
+     */
+    static String jumpLabel(String prefix)
+    {
+    	return prefix + "_" + uniqueLabelId++;
     }
     
 }

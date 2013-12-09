@@ -246,6 +246,44 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 
       return data;
    }
+   
+	/**
+	 * if/else statement
+	 */
+   public Object visit(ASTtest node, Object data)
+   {
+	  //think of this label as the next line of code after the entire if statement
+	  String labelAfterEntireIfStructure = jumpLabel("after_if");
+	  String labelAtStartOfElseBlockCode = jumpLabel("else");
+	  SimpleNode literalNode;
+	  
+	  //get the bool value of the expression
+	  pln("invokestatic Util/getMostRecentExpressionAsBoolean()Z");
+	  
+	  //if the bool is 0/false, we will jump over the "if_true" codez into the else block codez
+	  pln("ifeq " + labelAtStartOfElseBlockCode);
+	  
+	  //recursively visit child nodes, which prints the if_true codez
+      literalNode = (SimpleNode) node.jjtGetChild(0);
+      literalNode.jjtAccept(this, data);
+      
+      //jump over the rest of the if structure, which is the else block code
+      pln("goto " + labelAfterEntireIfStructure);
+      //we always print the else label even if we dont have an else block, because we will still jump to it when the if is false
+      pln(labelAtStartOfElseBlockCode + ":");
+
+      //check for an else statement
+      if (node.jjtGetNumChildren() > 1) {
+    	  //recursively visit child nodes, which prints the if_false codez
+          literalNode = (SimpleNode) node.jjtGetChild(1);
+          literalNode.jjtAccept(this, data);
+      }
+
+      pln(labelAfterEntireIfStructure + ":");
+      flush();
+
+      return data;
+   }
 
    
    /**

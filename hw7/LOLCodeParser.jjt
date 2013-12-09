@@ -387,7 +387,7 @@ void gimmehStatement() #gimmeh : {printCallerMethodName();}
 
 void ifStatement(HashSet<Integer> syncSet) #test : {printCallerMethodName();}{
   try {    
-    <O> <RLY>
+    <O> <RLYQ>
   	<YA> <RLY>
   		(codeBlock(syncSet(NO, OIC, EOF)) #if_true)
   	(<NO> <WAI>

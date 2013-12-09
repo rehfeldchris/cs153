@@ -24,6 +24,18 @@ public class Util
 		return mostRecentExpression;
 	}
 	
+	/**
+	 * in jasmin, we dont have a bool type, we only have 0 and 1 ints. this converts the expression
+	 * to 1 if true, 0 if false. we need to do this often because we need to goto/jump depending 
+	 * on if its 0 or 1, in order to implement control structure.
+	 * 
+	 * @return 
+	 */
+	public static boolean getMostRecentExpressionAsBoolean()
+	{
+		return mostRecentExpression.boolVal();
+	}
+	
 	//this method is for debugging.
 	public static void printMostRecentExpression()
 	{
