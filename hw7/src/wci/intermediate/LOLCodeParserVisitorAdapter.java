@@ -157,7 +157,6 @@ public class LOLCodeParserVisitorAdapter implements LOLCodeParserVisitor
 
    public Object visit(ASTidentifier node, Object data)
    {
-	   String value = (String) node.getAttribute(ICodeKeyImpl.ID);
       return node.childrenAccept(this, data);
    }
 

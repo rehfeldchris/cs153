@@ -40,7 +40,7 @@ public class CodeGenerator extends Backend
 
         // Make the function declaration                
         pln();
-        String fName = functionId.getDefinition().toString();
+        String fName = functionId.getName().toString();
         p(".method private static " + fName + "(");
 
         ArrayList<SymTabEntry> params = (ArrayList<SymTabEntry>) functionId.getAttribute(ROUTINE_PARMS);

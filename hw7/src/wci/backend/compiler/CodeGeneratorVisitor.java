@@ -258,7 +258,28 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
       flush();
 
       return data;
+   }   
+   
+   public Object visit(ASTfunctionCall node, Object data)
+   {
+	   String functionName = node.getAttribute(ICodeKeyImpl.ID).toString();
+	   p("invokestatic	" + functionName + "(");
+	   
+	   // print an LVariant; for each arg (each child) and push onto the stack
+	   int numChildren = node.jjtGetNumChildren();
+	   for (int i = 0; i < numChildren; ++i)
+	   {
+		   p("LVariant;");
+		   SimpleNode literalNode = (SimpleNode) node.jjtGetChild(i);
+		   literalNode.jjtAccept(this, data);
+	   }
+	   pln(")LVariant;");
+	   pln(setMostRecentExpression());
+	   flush();
+	   
+	   return data;
    }
+
    
 	/**
 	 * if/else statement

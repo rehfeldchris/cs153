@@ -219,6 +219,8 @@ TOKEN : /* Reserved words */
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
   | <I_HAS_A: "I HAS A" > // variable declaration
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
+  | <I_CAN_HAS: "I CAN HAS" > // function call token
+  	  { debugStream.println("RESERVED WORD token: " + matchedToken.image);}     
   | <HOW_DUZ_I: "HOW DUZ I"> // function start begin
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }      
   | < IF_U_SAY_SO: "IF U SAY SO" > // function end start
@@ -492,7 +494,27 @@ void functionArguments(SymTabEntry routineID) #args : {ArrayList<SymTabEntry> pa
            variableID.setTypeSpec(Predefined.undefinedType);        
         routineID.setAttribute(ROUTINE_PARMS, parms);
         }    
-}  
+}
+void functionCallExpression() #functionCall : {printCallerMethodName();}
+{
+	<I_CAN_HAS>
+
+	<IDENTIFIER>
+	{
+	  SymTabEntry functionId = symTabStack.lookup(token.image);
+	  if (functionId != null)
+	  {
+	  	functionId.appendLineNumber(token.beginLine);
+	    jjtThis.setAttribute(ID, token.image);
+	  }
+	  else
+	  {
+	  	jjtThis.setAttribute(ID, token.image);
+	    // TODO: function not declared error goes here
+	  }
+	}
+	(simpleExpression())+ // arguments
+}  
 
 void expression() #void : {}{
 	  LOOKAHEAD(2) simpleExpression()
@@ -500,7 +522,8 @@ void expression() #void : {}{
 	| LOOKAHEAD(2) booleanExpression()
 	| stringConcatenationExpression()
 	| LOOKAHEAD(2) typeCastExpression()
-	| unaryExpression()}
+	| unaryExpression()
+	| functionCallExpression()}
 
 void basicMathExpression() #void : {}
 {
