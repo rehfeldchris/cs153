@@ -1,9 +1,14 @@
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Util
 {
+	
+	static Scanner in = new Scanner(System.in);
+	
+	
 	/**
 	 * The lolcode "IT" variable.
 	 * 
@@ -250,6 +255,16 @@ public class Util
 			buf += v.stringVal();
 		}
 		return new StringVariant(buf);
+	}
+	
+	/**
+	 * this will be for the gimmeh operator.
+	 * 
+	 * @return Variant a stringvariant with the text read in it.
+	 */
+	public static Variant readLineFromStdin()
+	{
+		return new StringVariant(in.nextLine());
 	}
 	
 	/**

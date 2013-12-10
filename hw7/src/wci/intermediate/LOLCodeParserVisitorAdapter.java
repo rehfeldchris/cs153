@@ -46,6 +46,7 @@ import wci.frontend.ASTvisible;
 import wci.frontend.ASTxor;
 import wci.frontend.LOLCodeParserVisitor;
 import wci.frontend.SimpleNode;
+import wci.intermediate.icodeimpl.ICodeKeyImpl;
 
 public class LOLCodeParserVisitorAdapter implements LOLCodeParserVisitor 
 {
@@ -156,6 +157,7 @@ public class LOLCodeParserVisitorAdapter implements LOLCodeParserVisitor
 
    public Object visit(ASTidentifier node, Object data)
    {
+	   String value = (String) node.getAttribute(ICodeKeyImpl.ID);
       return node.childrenAccept(this, data);
    }
 

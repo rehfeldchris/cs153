@@ -72,6 +72,18 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
       return data;
    }
    
+   public Object visit(ASTgimmeh node, Object data)
+   {
+	  //put the printVariant() arg onto the stack
+	  putChildrenDirectlyOntoStack(node, data);
+      
+      //print the variant
+      pln("invokestatic Util/readLineFromStdin()LVariant;");
+      flush();
+
+      return data;
+   }
+   
    public Object visit(ASTconcatenate node, Object data)
    {
 	  //put the concat() args onto the stack

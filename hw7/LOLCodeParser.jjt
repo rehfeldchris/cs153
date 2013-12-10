@@ -93,7 +93,7 @@ import static wci.intermediate.icodeimpl.ICodeKeyImpl.*;
 		   for (SymTabEntry symTab : symTabEntries)
 			{
 			  iCode = (ICode) symTab.getAttribute(ROUTINE_ICODE);
-			  //backend.processFunction(iCode, symTabStack, objectFilePath, symTab);
+			  backend.processFunction(iCode, symTabStack, objectFilePath, symTab);
 			}  
 	       
            
@@ -401,8 +401,7 @@ void whileStatement() #loop : {printCallerMethodName();}
 {
   <IM_IN_YR>
   	    loopInitialization()
-  		(codeBlock(syncSet(GTFO, IM_OUTTA_YR, EOF)) #if_true)
-  	(gtfo())?
+  		codeBlock(syncSet(GTFO, IM_OUTTA_YR, EOF))
   <IM_OUTTA_YR> identifier()
 }
 
@@ -411,7 +410,8 @@ void loopInitialization() #void : {printCallerMethodName();}
 }  
 
 void loopAction() #loopAction : {printCallerMethodName();}
-{	decrement() | increment() <YR> identifier()
+{	(	  decrement() | increment()
+	) <YR> identifier()
 }
 
 
