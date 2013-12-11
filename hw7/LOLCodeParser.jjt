@@ -33,7 +33,7 @@ import static wci.intermediate.icodeimpl.ICodeKeyImpl.*;
 	  private static final String OUTPUT_SUFFIX = ".j";      
       private static SymTabStack symTabStack;
       private static SymTabEntry programId;
-      private static int index = 0;
+      private static int index = 2; // slot 0 reserved for "this", 1 reserved for loop vars
       private static Token previousErrorToken = null;
 	  private static HashSet<Integer> expressionOrStatementSyncSet = syncSet(
 		I_HAS_A,HOW_DUZ_I,IM_IN_YR,	O,	WTF,IDENTIFIER,	ADD,	SUBTRACT,	MULTIPLY,	DIVIDE,
@@ -408,7 +408,7 @@ void whileStatement() #loop : {printCallerMethodName();}
 }
 
 void loopInitialization() #void : {printCallerMethodName();}
-{	identifier() (loopAction() (loopCondition())?)?
+{	voidIdentifier() (loopAction() (loopCondition())?)?
 }  
 
 void loopAction() #loopAction : {printCallerMethodName();}
@@ -513,7 +513,7 @@ void functionCallExpression() #functionCall : {printCallerMethodName();}
 	    // TODO: function not declared error goes here
 	  }
 	}
-	(simpleExpression())+ // arguments
+	(simpleExpression())+ #arg // arguments
 }  
 
 void expression() #void : {}{
@@ -605,11 +605,12 @@ void identifier() : {}
 	        variableId.appendLineNumber(token.beginLine);
 	        TypeSpec type = variableId.getTypeSpec();
 	        jjtThis.setTypeSpec(type);
-	        jjtThis.setAttribute(ID, variableId);
+	        jjtThis.setAttribute(ID, token.image);
 	    }
-	    else
+	    else // create a null variable with this name. assign an index/slot #
 	    {	      	      
 	        jjtThis.setAttribute(ID, token.image);
+//	        variableId = symTabStack.enterLocal(token.image);//		    variableId.setIndex(index);//		    index+=2;
 	    }
     }
 }
@@ -704,7 +705,7 @@ void increment() #increment : {printCallerMethodName();}
 
 
 /* Some statements for assigning and declaring variables follow */
-void variableDeclarationStatement() #declare : {printCallerMethodName();}
+void variableDeclarationStatement() #assign : {printCallerMethodName();}
 {
 	<I_HAS_A> voidIdentifier()
 	{
@@ -818,7 +819,7 @@ void type() : {}
 void typeCastExpression() #cast : {printCallerMethodName();}
 {
    (<MAEK> expression() (<A>)? type())
- | (<IDENTIFIER> <IS> <NOW> <A> type())
+ | (identifier() <IS> <NOW> <A> type())
 }
 
 JAVACODE

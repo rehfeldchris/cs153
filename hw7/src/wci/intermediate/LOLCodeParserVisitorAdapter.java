@@ -4,6 +4,7 @@ import wci.frontend.ASTError;
 import wci.frontend.ASTLOLCodeProgram;
 import wci.frontend.ASTadd;
 import wci.frontend.ASTand;
+import wci.frontend.ASTarg;
 import wci.frontend.ASTargs;
 import wci.frontend.ASTassign;
 import wci.frontend.ASTbooleanValue;
@@ -12,11 +13,13 @@ import wci.frontend.ASTcast;
 import wci.frontend.ASTcharacterConstant;
 import wci.frontend.ASTcodeBlock;
 import wci.frontend.ASTconcatenate;
+import wci.frontend.ASTdeclare;
 import wci.frontend.ASTdecrement;
 import wci.frontend.ASTdefaultCase;
 import wci.frontend.ASTdivide;
 import wci.frontend.ASTequals;
 import wci.frontend.ASTfunction;
+import wci.frontend.ASTfunctionCall;
 import wci.frontend.ASTgimmeh;
 import wci.frontend.ASTgreater_than;
 import wci.frontend.ASTgtfo;
@@ -275,4 +278,13 @@ public class LOLCodeParserVisitorAdapter implements LOLCodeParserVisitor
 	    return node.childrenAccept(this, data);
 	}
 
+	public Object visit(ASTfunctionCall node, Object data) {
+	    return node.childrenAccept(this, data);
+	}
+
+	@Override
+	public Object visit(ASTarg node, Object data) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

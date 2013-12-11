@@ -69,6 +69,7 @@ O RLY?
   NO WAI
 	I HAS A METH ITZ "NOT BLUE"
 OIC
+METH R "BLUE"
 
 BTW Case Statement
 
