@@ -260,6 +260,20 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
       return data;
    }   
    
+   public Object visit(ASTdeclare node, Object data)
+   {
+	   int varID = (int) node.getAttribute(ICodeKeyImpl.ID);
+	   String varType = null;
+	   if (node.jjtGetNumChildren() == 1)
+	   {
+		   varType = node.jjtGetChild(0).toString();
+		   
+		   // get the "VALUE" of the child and then pick the appropriate load slot command
+		   // switch (varType) { } etc. 
+	   }
+	   return data;
+   }
+   
    public Object visit(ASTfunctionCall node, Object data)
    {
 	   String functionName = node.getAttribute(ICodeKeyImpl.ID).toString();

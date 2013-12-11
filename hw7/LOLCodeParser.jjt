@@ -477,7 +477,7 @@ void functionArguments(SymTabEntry routineID) #args : {ArrayList<SymTabEntry> pa
 {	<YR> identifier() {	  
 	    SymTabEntry variableId = symTabStack.enterLocal(token.image);
 	    variableId.setIndex(index);
-	    index++;
+	    index+=2;
 	    variableId.setDefinition(DefinitionImpl.VARIABLE);
 	    variableId.appendLineNumber(token.beginLine);
         variableId.setTypeSpec(Predefined.undefinedType);
@@ -485,7 +485,7 @@ void functionArguments(SymTabEntry routineID) #args : {ArrayList<SymTabEntry> pa
         parms.add(variableId);    }    (<AN> <YR> identifier() {
 	    variableId = symTabStack.enterLocal(token.image);
 	    variableId.setIndex(index);
-	    index++;
+	    index+=2;
 	    variableId.setDefinition(DefinitionImpl.VARIABLE);
 	    variableId.appendLineNumber(token.beginLine);
         variableId.setTypeSpec(Predefined.undefinedType);
@@ -614,6 +614,13 @@ void identifier() : {}
     }
 }
 
+void voidIdentifier() #void : {}
+{
+  <IDENTIFIER> {
+        SymTabEntry variableId = symTabStack.lookup(token.image);        if (variableId != null)        {          	        variableId.appendLineNumber(token.beginLine);	        TypeSpec type = variableId.getTypeSpec();	    }//	    else//	    {	      	      //	        jjtThis.setAttribute(ID, token.image);//	    }
+    }
+}
+
 void simpleExpression() #void : {}
 {
 	identifier() | constantExpression()
@@ -697,12 +704,14 @@ void increment() #increment : {printCallerMethodName();}
 
 
 /* Some statements for assigning and declaring variables follow */
-void variableDeclarationStatement() #assign : {printCallerMethodName();}
+void variableDeclarationStatement() #declare : {printCallerMethodName();}
 {
-	<I_HAS_A> identifier() {
+	<I_HAS_A> voidIdentifier()
+	{
 	    SymTabEntry variableId = symTabStack.enterLocal(token.image);
 	    variableId.setIndex(index);
-	    index++;
+	    jjtThis.setAttribute(ID, index);
+	    index+=2;
 	    variableId.setDefinition(DefinitionImpl.VARIABLE);
 	    variableId.appendLineNumber(token.beginLine);
         variableId.setTypeSpec(Predefined.undefinedType);
@@ -712,7 +721,17 @@ void variableDeclarationStatement() #assign : {printCallerMethodName();}
 
 void variableAssignmentStatement() #assign: {printCallerMethodName();}
 {
-	identifier() <ASSIGNMENT> expression()
+	voidIdentifier()
+	{		SymTabEntry variableId = symTabStack.enterLocal(token.image);
+		if (variableId != null)
+		{
+			jjtThis.setAttribute(ID, variableId.getIndex()); 
+		    variableId.setDefinition(DefinitionImpl.VARIABLE);
+		    variableId.appendLineNumber(token.beginLine);
+	        variableId.setTypeSpec(Predefined.undefinedType);		}
+		//else ... error? idk
+	}
+	 <ASSIGNMENT> expression()
 }
 
 /* Some boolean operators follow */
