@@ -709,10 +709,13 @@ void variableDeclarationStatement() #assign : {printCallerMethodName();}
 {
 	<I_HAS_A> voidIdentifier()
 	{
-	    SymTabEntry variableId = symTabStack.enterLocal(token.image);
-	    variableId.setIndex(index);
-	    jjtThis.setAttribute(ID, index);
-	    index+=2;
+	    SymTabEntry variableId = symTabStack.lookupLocal(token.image);
+	    if (variableId == null)
+	    {	   		System.out.println("NUUUUUUUUUUUUUUUUUUUUULLLLLLLLL");   
+	    	variableId = symTabStack.enterLocal(token.image);
+		    variableId.setIndex(index);
+		    index+=2;	   }	   
+	    jjtThis.setAttribute(ID, variableId.getIndex());
 	    variableId.setDefinition(DefinitionImpl.VARIABLE);
 	    variableId.appendLineNumber(token.beginLine);
         variableId.setTypeSpec(Predefined.undefinedType);
@@ -723,14 +726,17 @@ void variableDeclarationStatement() #assign : {printCallerMethodName();}
 void variableAssignmentStatement() #assign: {printCallerMethodName();}
 {
 	voidIdentifier()
-	{		SymTabEntry variableId = symTabStack.enterLocal(token.image);
-		if (variableId != null)
-		{
-			jjtThis.setAttribute(ID, variableId.getIndex()); 
-		    variableId.setDefinition(DefinitionImpl.VARIABLE);
-		    variableId.appendLineNumber(token.beginLine);
-	        variableId.setTypeSpec(Predefined.undefinedType);		}
-		//else ... error? idk
+	{		SymTabEntry variableId = symTabStack.lookupLocal(token.image);
+		if (variableId == null)
+		{		  
+		  	variableId = symTabStack.enterLocal(token.image);
+		    variableId.setIndex(index);
+		    index+=2;
+		}
+		jjtThis.setAttribute(ID, variableId.getIndex());
+		variableId.setDefinition(DefinitionImpl.VARIABLE);
+		variableId.appendLineNumber(token.beginLine);
+	    variableId.setTypeSpec(Predefined.undefinedType);
 	}
 	 <ASSIGNMENT> expression()
 }

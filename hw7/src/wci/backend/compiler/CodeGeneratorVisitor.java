@@ -258,13 +258,14 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 		// assign loop variables to slot 1 (reserved)
 		if (entry == null)
 		{
+			// need to create a variant with value 0 to load onto stack
 			entry = symTabStack.enterLocal(name);
 			entry.setIndex(1);			
 		}
 		int slot = entry.getIndex();
 		pln("aload " + slot);
 		flush();
-		
+
 		return data;
 	}
 
