@@ -1,0 +1,58 @@
+BTW Example taken from http://progopedia.com/language/lolcode/
+
+HAI QUADRATIC
+  HOW DUZ I SQRT YR X
+    I HAS A X_N ITZ 10
+    I HAS A LIMIT ITZ 100
+    I HAS A COUNTER ITZ 0
+	
+    IM IN YR LOOP UPPIN YR COUNTER WILE COUNTER SMALLR THAN LIMIT
+      I HAS A TERM ITZ QUOSHUNT OF X AN X_N
+      TERM R SUM OF X_N AN TERM
+      TERM R QUOSHUNT OF TERM AN 2
+      X_N R TERM
+    IM OUTTA YR LOOP
+	
+    FOUND YR X_N
+  IF U SAY SO
+
+  VISIBLE "Enter a"
+  I HAS A AC
+  GIMMEH AC
+  MAEK AC A NUMBR
+  
+  BOTH SAEM AC AN 0
+  O RLY?
+    YA RLY
+      VISIBLE "Not a quadratic equation."
+    NO WAI
+	  VISIBLE "Enter b"
+      I HAS A BC
+      GIMMEH BC
+      MAEK BC A NUMBR
+	  
+	  VISIBLE "Enter c"
+      I HAS A CC
+      GIMMEH CC
+      MAEK CC A NUMBR
+	  
+      I HAS A D ITZ DIFF OF PRODUKT OF BC AN BC  AN PRODUKT OF 4 AN PRODUKT OF AC AN CC
+	  
+      BOTH SAEM D AN 0
+	  O RLY?
+        YA RLY
+          VISIBLE SMOOSH "x = " QUOSHUNT OF BC AN PRODUKT OF -2 AN AC
+        NO WAI
+          BOTH SAEM 0 AN SMALLR OF 0 AN D
+		  O RLY?
+            YA RLY
+              VISIBLE SMOOSH "x1 = " QUOSHUNT OF SUM OF BC AN SQRT D AN PRODUKT OF -2 AN AC
+              VISIBLE SMOOSH "x2 = " QUOSHUNT OF DIFF OF BC AN SQRT D AN PRODUKT OF -2 AN AC
+            NO WAI
+              D R PRODUKT OF D AN -1
+              VISIBLE SMOOSH "x1 = (" QUOSHUNT OF BC AN PRODUKT OF -2 AN AC ", " QUOSHUNT OF SQRT D AN PRODUKT OF -2 AN AC ")"
+              VISIBLE SMOOSH "x2 = (" QUOSHUNT OF BC AN PRODUKT OF -2 AN AC ", " QUOSHUNT OF SQRT D AN PRODUKT OF 2 AN AC ")"
+          OIC
+      OIC
+  OIC
+KTHXBYE

@@ -46,7 +46,7 @@ public class CodeGenerator extends Backend
         ArrayList<SymTabEntry> params = (ArrayList<SymTabEntry>) functionId.getAttribute(ROUTINE_PARMS);
         for (SymTabEntry param : params)
         	p("LVariant;");
-        pln(")LVariant");
+        pln(")LVariant;");
         
         // Visit the parse tree nodes to generate code for this function
         CodeGeneratorVisitor codeVisitor = new CodeGeneratorVisitor();
@@ -60,7 +60,7 @@ public class CodeGenerator extends Backend
         
         // Generate the function epilogue
         pln();
-        pln("    return");
+        pln("areturn");
         pln();
         pln(".limit locals " + localSlots);
         pln(".limit stack  " + STACK_LIMIT);

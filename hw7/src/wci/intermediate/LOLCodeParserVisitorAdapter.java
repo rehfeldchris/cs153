@@ -39,6 +39,7 @@ import wci.frontend.ASTname;
 import wci.frontend.ASTnot;
 import wci.frontend.ASTor;
 import wci.frontend.ASTrealConstant;
+import wci.frontend.ASTret;
 import wci.frontend.ASTstringLiteral;
 import wci.frontend.ASTsubtract;
 import wci.frontend.ASTswitchStatement;
@@ -278,13 +279,13 @@ public class LOLCodeParserVisitorAdapter implements LOLCodeParserVisitor
 	    return node.childrenAccept(this, data);
 	}
 
-	public Object visit(ASTfunctionCall node, Object data) {
+	public Object visit(ASTfunctionCall node, Object data) 
+	{
 	    return node.childrenAccept(this, data);
 	}
 
-	@Override
-	public Object visit(ASTarg node, Object data) {
-		// TODO Auto-generated method stub
-		return null;
+	public Object visit(ASTret node, Object data) 
+	{
+	    return node.childrenAccept(this, data);
 	}
 }

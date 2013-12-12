@@ -209,7 +209,7 @@ TOKEN : /* Reserved words */
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }                 
   | < FAIL: "FAIL" > // boolean false
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }
-  | < FOUND: "FOUND" > // return
+  | < FOUND_YR: "FOUND YR" > // return
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }            
   | < GIMMEH: "GIMMEH" > // take input
       { debugStream.println("RESERVED WORD token: " + matchedToken.image); }       
@@ -374,7 +374,12 @@ void statement() #void : {}
 	| variableDeclarationStatement()
 	| visibleStatement()
 	| gimmehStatement()
+	| returnStatement()
 }
+
+void returnStatement() #ret : {printCallerMethodName();}
+{
+  <FOUND_YR> expression()}  
 
 void visibleStatement() #visible : {printCallerMethodName();}
 {
@@ -513,7 +518,7 @@ void functionCallExpression() #functionCall : {printCallerMethodName();}
 	    // TODO: function not declared error goes here
 	  }
 	}
-	(simpleExpression())+ #arg // arguments
+	(simpleExpression())+  // arguments
 }  
 
 void expression() #void : {}{
@@ -711,7 +716,7 @@ void variableDeclarationStatement() #assign : {printCallerMethodName();}
 	{
 	    SymTabEntry variableId = symTabStack.lookupLocal(token.image);
 	    if (variableId == null)
-	    {	   		System.out.println("NUUUUUUUUUUUUUUUUUUUUULLLLLLLLL");   
+	    {
 	    	variableId = symTabStack.enterLocal(token.image);
 		    variableId.setIndex(index);
 		    index+=2;	   }	   

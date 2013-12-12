@@ -262,17 +262,20 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 			entry = symTabStack.enterLocal(name);
 			entry.setIndex(1);			
 		}
-		int slot = entry.getIndex();
-		pln("aload " + slot);
+		else
+		{
+			int slot = entry.getIndex();
+			pln("aload " + slot);
+		}
 		flush();
 
 		return data;
 	}
 
 	public Object visit(ASTfunctionCall node, Object data) {
-		String functionName = node.getAttribute(ICodeKeyImpl.ID).toString();
 		putChildrenDirectlyOntoStack(node, data);
-		
+
+		String functionName = node.getAttribute(ICodeKeyImpl.ID).toString();
 		p("invokestatic	" + functionName + "(");
 		int numChildren = node.jjtGetNumChildren();
 		for (int i = 0; i < numChildren; ++i)
@@ -281,6 +284,14 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 		pln(setMostRecentExpression());
 		flush();
 
+		return data;
+	}
+	
+	public Object visit(ASTret node, Object data) {
+		putChildrenDirectlyOntoStack(node, data); 
+		pln("areturn");
+		flush();
+		
 		return data;
 	}
 
