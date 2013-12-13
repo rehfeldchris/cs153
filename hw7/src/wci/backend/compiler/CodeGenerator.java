@@ -22,6 +22,7 @@ public class CodeGenerator extends Backend
 {
     private static final int STACK_LIMIT = 16;
         
+    static String programName;
     static ICode iCode;
     static SymTabStack symTabStack;
     static PrintWriter objectFile;
@@ -93,7 +94,7 @@ public class CodeGenerator extends Backend
 
        // Make the program and method names.
        int start = objectFilePath.lastIndexOf("/") + 1;
-       String programName = objectFilePath.substring(start);
+       programName = objectFilePath.substring(start);
        int end = programName.indexOf(".");
        if (end > -1) {
            programName = programName.substring(0, end);

@@ -271,7 +271,7 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 		putChildrenDirectlyOntoStack(node, data);
 
 		String functionName = node.getAttribute(ICodeKeyImpl.ID).toString();
-		p("invokestatic	" + data.toString() + "/" + functionName + "(");
+		p("invokestatic	" + programName + "/" + functionName + "(");
 		int numChildren = node.jjtGetNumChildren();
 		for (int i = 0; i < numChildren; ++i)
 			p("LVariant;");

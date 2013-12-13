@@ -197,6 +197,8 @@ TOKEN : /* Scope tokens */
       { debugStream.println("DBL_QUOTE token: " + matchedToken.image); }
   | < UNDERSCORE : "_" >
       { debugStream.println("UNDERSCORE token: " + matchedToken.image); }
+  | < COMMA : "," >
+      { debugStream.println("COMMA token: " + matchedToken.image); }    
 }
 
 TOKEN : /* Reserved words */
@@ -301,7 +303,7 @@ TOKEN : { /* Types like IDENTIFIER, CHAR, NUMBER */
                    (<DECIMAL_INTEGER>)["."](<DIGIT>)*) >
       { debugStream.println("REAL_NUMBER token: " + matchedToken.image); }
   | < DECIMAL_INTEGER: (["-"])?(<DIGIT>)+ >
-      { debugStream.println("DECIMAL_INTEGER token: " + matchedToken.image); }       
+      { debugStream.println("DECIMAL_INTEGER token: " + matchedToken.image); }      
   | <#DIGIT : ["0"-"9"]>
   | <#LETTER : ["a"-"z", "A"-"Z"]>
 }
@@ -394,7 +396,7 @@ void gimmehStatement() #gimmeh : {printCallerMethodName();}
 
 void ifStatement(HashSet<Integer> syncSet) #test : {printCallerMethodName();}{
   try {    
-    <O> <RLYQ>
+    (<COMMA>)? <O> <RLYQ>
   	<YA> <RLY>
   		(codeBlock(syncSet(NO, OIC, EOF)) #if_true)
   	(<NO> <WAI>
@@ -519,7 +521,7 @@ void functionCallExpression() #functionCall : {printCallerMethodName();}
 	    // TODO: function not declared error goes here
 	  }
 	}
-	(simpleExpression())+  // arguments
+	(expression())+  // arguments
 }  
 
 void expression() #void : {}{
