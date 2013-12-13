@@ -620,7 +620,7 @@ void identifier() : {}
 			//ASTintegerConstant child = new ASTintegerConstant(0);
 			//child.jjtSetValue(0);
 			//nullValue();
-			jjtThis.jjtAddChild(nullValue(), 0);
+//			jjtThis.jjtAddChild(nullValue(), 0);
 	    }
 	    variableId.appendLineNumber(token.beginLine);
 	    TypeSpec type = variableId.getTypeSpec();
@@ -628,10 +628,7 @@ void identifier() : {}
 	    jjtThis.setAttribute(ID, token.image);
     }
 }
-
-SimpleNode nullValue() #integerConstant :  {}
-{  {    jjtThis.setAttribute(VALUE, 0);
-    return jjtThis;  }  }
+////SimpleNode nullValue() #integerConstant :  {}//{//  {//    jjtThis.setAttribute(VALUE, 0);//    return jjtThis;//  }  //}
 
 void voidIdentifier() #void : {}
 {
