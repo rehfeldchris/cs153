@@ -389,8 +389,8 @@ public class CodeGenerator extends Backend
     	buf += "invokestatic 	Util/setMostRecentExpression(LVariant;)V";
     	
     	//this is for debugging - it makes every expression print its value when its evaluated
-    	//buf += "\n";
-    	//buf += "invokestatic 	Util/printMostRecentExpression()V";
+    	buf += "\n";
+    	buf += "invokestatic 	Util/printMostRecentExpression()V";
     	
     	return buf;
     }
