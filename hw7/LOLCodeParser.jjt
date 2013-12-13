@@ -483,7 +483,7 @@ void functionArguments(SymTabEntry routineID) #args : {ArrayList<SymTabEntry> pa
 {	<YR> identifier() {	  
 	    SymTabEntry variableId = symTabStack.enterLocal(token.image);
 	    variableId.setIndex(index);
-	    index+=2;
+	    ++index;
 	    variableId.setDefinition(DefinitionImpl.VARIABLE);
 	    variableId.appendLineNumber(token.beginLine);
         variableId.setTypeSpec(Predefined.undefinedType);
@@ -491,7 +491,7 @@ void functionArguments(SymTabEntry routineID) #args : {ArrayList<SymTabEntry> pa
         parms.add(variableId);    }    (<AN> <YR> identifier() {
 	    variableId = symTabStack.enterLocal(token.image);
 	    variableId.setIndex(index);
-	    index+=2;
+	    ++index;
 	    variableId.setDefinition(DefinitionImpl.VARIABLE);
 	    variableId.appendLineNumber(token.beginLine);
         variableId.setTypeSpec(Predefined.undefinedType);
@@ -616,7 +616,7 @@ void identifier() : {}
 	    else // create a null variable with this name. assign an index/slot #
 	    {	      	      
 	        jjtThis.setAttribute(ID, token.image);
-//	        variableId = symTabStack.enterLocal(token.image);//		    variableId.setIndex(index);//		    index+=2;
+//	        variableId = symTabStack.enterLocal(token.image);//		    variableId.setIndex(index);//		    ++index;
 	    }
     }
 }
@@ -720,7 +720,7 @@ void variableDeclarationStatement() #assign : {printCallerMethodName();}
 	    {
 	    	variableId = symTabStack.enterLocal(token.image);
 		    variableId.setIndex(index);
-		    index+=2;	   }	   
+		    ++index;	   }	   
 	    jjtThis.setAttribute(ID, variableId.getIndex());
 	    variableId.setDefinition(DefinitionImpl.VARIABLE);
 	    variableId.appendLineNumber(token.beginLine);
@@ -737,7 +737,7 @@ void variableAssignmentStatement() #assign: {printCallerMethodName();}
 		{		  
 		  	variableId = symTabStack.enterLocal(token.image);
 		    variableId.setIndex(index);
-		    index+=2;
+		    ++index;
 		}
 		jjtThis.setAttribute(ID, variableId.getIndex());
 		variableId.setDefinition(DefinitionImpl.VARIABLE);
