@@ -30,7 +30,7 @@ public class CodeGenerator extends Backend
                         		String objectFilePath, SymTabEntry functionId) throws IOException
     {
     	CodeGenerator.iCode       = iCode;
-        CodeGenerator.symTabStack = symTabStack;
+        CodeGenerator.symTabStack.push((SymTab) functionId.getAttribute(ROUTINE_SYMTAB));
         // Open the file in append mode
         CodeGenerator.objectFile  = new PrintWriter(new BufferedWriter(new FileWriter(objectFilePath, true)));
                         
@@ -68,6 +68,7 @@ public class CodeGenerator extends Backend
         objectFile.flush();
 
         CodeGenerator.objectFile.close();
+        CodeGenerator.symTabStack.pop();
     }
     
     
