@@ -8,6 +8,7 @@ import wci.frontend.*;
 import wci.intermediate.*;
 import wci.intermediate.symtabimpl.Predefined;
 import wci.backend.*;
+import static wci.backend.compiler.CodeGenerator.pln;
 import static wci.intermediate.symtabimpl.SymTabKeyImpl.*;
 import static wci.intermediate.symtabimpl.DefinitionImpl.*;
 
@@ -58,9 +59,11 @@ public class CodeGenerator extends Backend
         int localsCount = (Integer) functionId.getAttribute(ROUTINE_LOCALS_COUNT);
         int localSlots = (localsCount * 2) + 1;
         
-        // Generate the function epilogue
-        pln();
+        // put the IT variable on top of the stack to return
+		pln("invokestatic Util/getMostRecentExpression()LVariant;");
         pln("areturn");
+        
+        // Generate the function epilogue
         pln();
         pln(".limit locals " + localSlots);
         pln(".limit stack  " + STACK_LIMIT);
