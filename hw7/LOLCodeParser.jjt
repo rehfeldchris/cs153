@@ -467,6 +467,7 @@ void functionDeclarationStatement() #function : {int reset;
 		     ICode iCode = ICodeFactory.createICode();
 		     iCode.setRoot(rootNode);
 		     routineID.setAttribute(ROUTINE_ICODE, iCode);
+		     routineID.setAttribute(ROUTINE_LOCALS_COUNT, index);
              SymTabEntry parentId = symTabStack.getProgramId(); 
 		     ArrayList<SymTabEntry> subroutines = (ArrayList<SymTabEntry>)
 		           parentId.getAttribute(ROUTINE_ROUTINES);

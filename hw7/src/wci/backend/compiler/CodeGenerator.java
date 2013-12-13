@@ -54,8 +54,8 @@ public class CodeGenerator extends Backend
         rootNode.jjtAccept(codeVisitor, functionId);
         
         // approximate the number of slots needed for local variables
-        SymTabEntry programId = symTabStack.getProgramId();
-        int localsCount = (Integer) programId.getAttribute(ROUTINE_LOCALS_COUNT);
+//        SymTabEntry programId = symTabStack.getProgramId();
+        int localsCount = (Integer) functionId.getAttribute(ROUTINE_LOCALS_COUNT);
         int localSlots = (localsCount * 2) + 1;
         
         // Generate the function epilogue
