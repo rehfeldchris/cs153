@@ -259,7 +259,7 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 
 	public Object visit(ASTidentifier node, Object data) {		
 		String name = node.getAttribute(ICodeKeyImpl.ID).toString();
-		SymTabEntry entry = symTabStack.lookup(name);
+		SymTabEntry entry = symTabStack.lookupLocal(name);
 		int slot = entry.getIndex();
 		pln("aload " + slot);
 		flush();

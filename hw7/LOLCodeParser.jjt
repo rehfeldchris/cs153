@@ -33,7 +33,7 @@ import static wci.intermediate.icodeimpl.ICodeKeyImpl.*;
 	  private static final String OUTPUT_SUFFIX = ".j";      
       private static SymTabStack symTabStack;
       private static SymTabEntry programId;
-      private static int index = 2; // slot 0 reserved for "this", 1 reserved for loop vars
+      private static int index = 1; // slot 0 reserved for "this"
       private static Token previousErrorToken = null;
 	  private static HashSet<Integer> expressionOrStatementSyncSet = syncSet(
 		I_HAS_A,HOW_DUZ_I,IM_IN_YR,	O,	WTF,IDENTIFIER,	ADD,	SUBTRACT,	MULTIPLY,	DIVIDE,
@@ -455,7 +455,7 @@ void functionDeclarationStatement() #function : {int reset;
                                        SimpleNode rootNode;
                                        printCallerMethodName();}
 {
-  <HOW_DUZ_I> (identifier() #name) {
+  <HOW_DUZ_I> (voidIdentifier() #name) {
      reset = index;
      index = 0;
 
@@ -480,7 +480,7 @@ void functionDeclarationStatement() #function : {int reset;
 
 void functionArguments(SymTabEntry routineID) #args : {ArrayList<SymTabEntry> parms;
                                                        printCallerMethodName();}
-{	<YR> identifier() {	  
+{	<YR> voidIdentifier() {	  
 	    SymTabEntry variableId = symTabStack.enterLocal(token.image);
 	    variableId.setIndex(index);
 	    ++index;
@@ -488,7 +488,7 @@ void functionArguments(SymTabEntry routineID) #args : {ArrayList<SymTabEntry> pa
 	    variableId.appendLineNumber(token.beginLine);
         variableId.setTypeSpec(Predefined.undefinedType);
         parms = new ArrayList<SymTabEntry>();
-        parms.add(variableId);    }    (<AN> <YR> identifier() {
+        parms.add(variableId);    }    (<AN> <YR> voidIdentifier() {
 	    variableId = symTabStack.enterLocal(token.image);
 	    variableId.setIndex(index);
 	    ++index;
