@@ -244,6 +244,7 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 	public Object visit(ASTfunction node, Object data) {
 		return data;
 	}
+	
 	public Object visit(ASTassign node, Object data) {
 		// only emit a store instruction if there is a value to assign
 		if (node.jjtGetNumChildren() == 1)
@@ -258,20 +259,9 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 
 	public Object visit(ASTidentifier node, Object data) {		
 		String name = node.getAttribute(ICodeKeyImpl.ID).toString();
-		SymTabEntry entry = symTabStack.lookupLocal(name);
-		// assign previously undefined loop variables to slot 1 (reserved)
-		if (entry == null)
-		{
-			// create a variant with value 0 to load onto stack
-			entry = symTabStack.enterLocal(name);
-			entry.setIndex(1);
-			pln(jasminLongVariant(0));
-		}
-		else
-		{
-			int slot = entry.getIndex();
-			pln("aload " + slot);
-		}
+		SymTabEntry entry = symTabStack.lookup(name);
+		int slot = entry.getIndex();
+		pln("aload " + slot);
 		flush();
 
 		return data;

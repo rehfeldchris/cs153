@@ -409,7 +409,7 @@ void whileStatement() #loop : {printCallerMethodName();}
   <IM_IN_YR>
   	    loopInitialization()
   		codeBlock(syncSet(GTFO, IM_OUTTA_YR, EOF))
-  <IM_OUTTA_YR> identifier()
+  <IM_OUTTA_YR> voidIdentifier()
 }
 
 void loopInitialization() #void : {printCallerMethodName();}
@@ -606,26 +606,41 @@ void identifier() : {}
 {
   <IDENTIFIER> {
         SymTabEntry variableId = symTabStack.lookup(token.image);
-        if (variableId != null)
-        {          
-	        variableId.appendLineNumber(token.beginLine);
-	        TypeSpec type = variableId.getTypeSpec();
-	        jjtThis.setTypeSpec(type);
+
+        // create a null variable with this name. assign an index/slot #
+        if (variableId == null) 
+	    {
 	        jjtThis.setAttribute(ID, token.image);
+	        variableId = symTabStack.enterLocal(token.image);		    variableId.setIndex(index);		    ++index;
+		    variableId.setDefinition(DefinitionImpl.VARIABLE);
+	        variableId.setTypeSpec(Predefined.undefinedType);
+
+	        // Create a child node with value 0 so that the value is stored in the slot later
+	        // TODO: 
+			//ASTintegerConstant child = new ASTintegerConstant(0);
+			//child.jjtSetValue(0);
+			//nullValue();
+			jjtThis.jjtAddChild(nullValue(), 0);
 	    }
-	    else // create a null variable with this name. assign an index/slot #
-	    {	      	      
-	        jjtThis.setAttribute(ID, token.image);
-//	        variableId = symTabStack.enterLocal(token.image);//		    variableId.setIndex(index);//		    ++index;
-	    }
+	    variableId.appendLineNumber(token.beginLine);
+	    TypeSpec type = variableId.getTypeSpec();
+	    jjtThis.setTypeSpec(type);
+	    jjtThis.setAttribute(ID, token.image);
     }
 }
+
+SimpleNode nullValue() #integerConstant :  {}
+{  {    jjtThis.setAttribute(VALUE, 0);
+    return jjtThis;  }  }
 
 void voidIdentifier() #void : {}
 {
   <IDENTIFIER> {
-        SymTabEntry variableId = symTabStack.lookup(token.image);        if (variableId != null)        {          	        variableId.appendLineNumber(token.beginLine);	        TypeSpec type = variableId.getTypeSpec();	    }//	    else//	    {	      	      //	        jjtThis.setAttribute(ID, token.image);//	    }
-    }
+        SymTabEntry variableId = symTabStack.lookup(token.image);
+        if (variableId != null)
+        {        	variableId.appendLineNumber(token.beginLine);	    	TypeSpec type = variableId.getTypeSpec();
+    	}
+   }
 }
 
 void simpleExpression() #void : {}
