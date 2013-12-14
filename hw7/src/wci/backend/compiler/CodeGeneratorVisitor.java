@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import wci.frontend.*;
+import wci.intermediate.ICodeNodeType;
 import wci.intermediate.LOLCodeParserVisitorAdapter;
 import wci.intermediate.SymTabEntry;
+import wci.intermediate.TypeSpec;
 import wci.intermediate.icodeimpl.*;
 import static wci.backend.compiler.CodeGenerator.*;
 
@@ -69,11 +71,12 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 	}
 
 	public Object visit(ASTgimmeh node, Object data) {
-		// put the printVariant() arg onto the stack
-		putChildrenDirectlyOntoStack(node, data);
-
-		// print the variant
+		// do NOT visit the child node. manually store its value
+		SimpleNode child = (SimpleNode) node.jjtGetChild(0);
+		String name = child.getAttribute(ICodeKeyImpl.ID).toString();
+		int slot = symTabStack.lookupLocal(name).getIndex();
 		pln("invokestatic Util/readLineFromStdin()LVariant;");
+		pln("astore " + slot);
 		flush();
 
 		return data;
@@ -187,10 +190,17 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 		return data;
 	}
 
-	public Object visit(ASTcast node, Object data) {
+	public Object visit(ASTcast node, Object data) {	
+		// get the slot of the identifier being cast to store the cast result
+		// note: this means cast probably can't be used inline with other operators
+		String name = ((SimpleNode) node.jjtGetChild(0)).getAttribute(ICodeKeyImpl.ID).toString();
+		int slot = symTabStack.lookupLocal(name).getIndex();
+		
 		putChildrenDirectlyOntoStack(node, data);
 		pln("invokestatic Util/typeCast(LVariant;LVariant;)LVariant;");
 		pln(setMostRecentExpression());
+		pln("astore " + slot);
+		
 		flush();
 
 		return data;
@@ -233,8 +243,30 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 	}
 
 	public Object visit(ASTtype node, Object data) {
-		String value = (String) node.getAttribute(ICodeKeyImpl.VALUE);
-		pln(jasminStringVariant(value));
+		// get the type identifier and transform it into a LOLCODE type
+		SymTabEntry entry = node.getTypeSpec().getIdentifier();
+		String value;
+		switch((entry == null) ? "undefined" : entry.getName())
+		{
+			case "integer":
+				value = "NUMBR";
+				break;
+			case "string":
+				value = "YARN";
+				break;
+			case "real":
+				value = "NUMBAR";
+				break;
+			case "boolean":
+				value = "TROOF";
+				break;
+			case "undefined":
+			default:
+				value = "NOOB";
+				break;
+		}
+		// Make a string from the type to call the cast function afterward
+		pln(jasminStringVariant("\"" + value + "\""));
 		flush();
 
 		return data;
@@ -265,7 +297,52 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 		return data;
 	}
 	
-
+	public Object visit(ASTincrement node, Object data) {
+		SimpleNode valueToChange = (SimpleNode) node.jjtGetChild(0);
+		valueToChange.jjtAccept(this, data);
+		pln(jasminLongVariant(1));
+		pln("invokestatic Util/add(LVariant;LVariant;)LVariant;");
+		pln(setMostRecentExpression());
+		
+		if (!parentAlreadyAssignsThisVar(valueToChange))
+		{
+			SymTabEntry varId = symTabStack.lookupLocal((String) valueToChange.getAttribute(ICodeKeyImpl.ID));
+			pln("astore " + varId.getIndex());
+		}
+		flush();
+		
+		return data;
+	}
+	
+	public Object visit(ASTdecrement node, Object data) {
+		SimpleNode valueToChange = (SimpleNode) node.jjtGetChild(0);
+		valueToChange.jjtAccept(this, data);
+		pln(jasminLongVariant(-1));
+		pln("invokestatic Util/add(LVariant;LVariant;)LVariant;");
+		pln(setMostRecentExpression());	
+		
+		if (!parentAlreadyAssignsThisVar(valueToChange))
+		{
+			SymTabEntry varId = symTabStack.lookupLocal((String) valueToChange.getAttribute(ICodeKeyImpl.ID));
+			pln("astore " + varId.getIndex());
+		}
+		flush();
+		
+		return data;
+	}
+	
+	// Return true if the value being incremented or decremented is part of an assignment statement
+	// this is used to avoid duplicate astore commands in increment/decrement
+	public boolean parentAlreadyAssignsThisVar(SimpleNode node)
+	{
+		String childName = (String) node.getAttribute(ICodeKeyImpl.ID);
+		for (SimpleNode parent = (SimpleNode) node.jjtGetParent(); parent != null; parent = (SimpleNode) parent.jjtGetParent())
+			if (parent instanceof ASTassign
+			&& (symTabStack.lookupLocal(childName).getIndex() == (int) parent.getAttribute(ICodeKeyImpl.ID)))
+				return true;
+		return false;
+	}
+	
 	// IGNORE FUNCTION NODES!
 	public Object visit(ASTfunction node, Object data) {
 		return data;
@@ -283,8 +360,7 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 		return data;
 	}
 
-	public Object visit(ASTidentifier node, Object data) {		
-		
+	public Object visit(ASTidentifier node, Object data) {				
 		String name = node.getAttribute(ICodeKeyImpl.ID).toString();
 		SymTabEntry entry = symTabStack.lookupLocal(name);
 		int slot = entry.getIndex();
@@ -322,6 +398,45 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 		return data;
 	}
 
+	/* Make loops look like this
+	loop:
+		check variable
+		increment variable
+		ifeq rest_of_program
+		execute_code
+		goto loop
+	rest_of_program:
+	*/
+	public Object visit(ASTloop node, Object data) {
+		// print loop start label
+		String loopStart = jumpLabel("loop");
+		pln(loopStart + ":");
+		
+		// visit the loopTest node which will yield a bool for mostrecentexpression
+		SimpleNode literalNode = (SimpleNode) node.jjtGetChild(1);
+		literalNode.jjtAccept(this, data);
+		
+		// fix "inconsistent stack height" error by removing unused Boolean Variant
+		pln("pop");
+		pln("invokestatic Util/getMostRecentExpressionAsBoolean()Z");
+			
+		String endLoop = jumpLabel("end_loop");
+		pln("ifeq " + endLoop);
+		
+		// print increment/decrement code
+		literalNode = (SimpleNode) node.jjtGetChild(0);
+		literalNode.jjtAccept(this, data);		
+
+		// print the while statement codeBlock
+		literalNode = (SimpleNode) node.jjtGetChild(2);
+		literalNode.jjtAccept(this, data);
+		pln("goto " + loopStart);
+		pln(endLoop + ":");
+		flush();
+		
+		return data;
+	}
+		
 	/**
 	 * if/else statement
 	 */
@@ -332,6 +447,9 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 		String labelAtStartOfElseBlockCode = jumpLabel("else");
 		SimpleNode literalNode;
 
+		// fix "inconsistent stack height" error by removing unused Boolean Variant
+		pln("pop");
+		
 		// get the bool value of the expression
 		pln("invokestatic Util/getMostRecentExpressionAsBoolean()Z");
 
@@ -366,7 +484,6 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 		// think of this label as the next line of code after the entire switch
 		// statement
 		String labelAfterEntireSwitchStructure = jumpLabel("after_switch");
-		SimpleNode literalNode;
 
 		// ASTcaseStatement has the value as first child, and a codeblock as 2nd
 		// child
