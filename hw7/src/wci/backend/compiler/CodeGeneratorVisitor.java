@@ -284,9 +284,15 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 	}
 
 	public Object visit(ASTidentifier node, Object data) {		
+		
 		String name = node.getAttribute(ICodeKeyImpl.ID).toString();
 		SymTabEntry entry = symTabStack.lookupLocal(name);
 		int slot = entry.getIndex();
+		if ((String)node.getAttribute(ICodeKeyImpl.VALUE) == "undefined")
+		{
+			pln("invokestatic	UntypedVariant/create()LUntypedVariant;");
+			pln("astore " + slot);
+		}
 		pln("aload " + slot);
 		flush();
 

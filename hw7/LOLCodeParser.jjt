@@ -64,7 +64,8 @@ import static wci.intermediate.icodeimpl.ICodeKeyImpl.*;
          String objectFilePath = (suffixIndex == truncatedLength)
              ? sourceFilePath.substring(0, truncatedLength) + OUTPUT_SUFFIX
              : sourceFilePath + OUTPUT_SUFFIX;         
-	    	     java.io.FileReader inputFile = new java.io.FileReader(sourceFilePath);
+	    
+	     java.io.FileReader inputFile = new java.io.FileReader(sourceFilePath);
 	     LOLCodeParser p = new LOLCodeParser(inputFile);
 
 	     try {
@@ -94,7 +95,8 @@ import static wci.intermediate.icodeimpl.ICodeKeyImpl.*;
 			{
 			  iCode = (ICode) symTab.getAttribute(ROUTINE_ICODE);
 			  backend.processFunction(iCode, symTabStack, objectFilePath, symTab);
-			}  
+			}
+  
 	       
            
 	     } 
@@ -103,17 +105,22 @@ import static wci.intermediate.icodeimpl.ICodeKeyImpl.*;
 	     }	      	    
 	  }
 
-	  public static void printCallerMethodName()	  {
+	  public static void printCallerMethodName()
+	  {
 	    if (STFU) return;
 	    StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-	    System.out.println(stackTraceElements[2].getMethodName());	  }
+	    System.out.println(stackTraceElements[2].getMethodName());
+	  }
 
 	  public static HashSet<Integer> syncSet(Integer... args)
 	  {
 	    HashSet<Integer> syncSet = new HashSet<Integer>();
-	    for (Integer arg : args)	    {
-	      syncSet.add(arg);	    }
-	    return syncSet;	  }
+	    for (Integer arg : args)
+	    {
+	      syncSet.add(arg);
+	    }
+	    return syncSet;
+	  }
     }
 PARSER_END(LOLCodeParser)
 
@@ -125,7 +132,8 @@ SKIP : {
 }
 
 <ML_COMMENT_STATE> SKIP :
-{  < "TLDR" > : DEFAULT
+{
+  < "TLDR" > : DEFAULT
 | < ~[] >   
 }
 
@@ -198,7 +206,8 @@ TOKEN : /* Scope tokens */
   | < UNDERSCORE : "_" >
       { debugStream.println("UNDERSCORE token: " + matchedToken.image); }
   | < COMMA : "," >
-      { debugStream.println("COMMA token: " + matchedToken.image); }    
+      { debugStream.println("COMMA token: " + matchedToken.image); }
+    
 }
 
 TOKEN : /* Reserved words */
@@ -313,11 +322,13 @@ TOKEN : {
 }
 
 void Error() : {}
-{	<ERROR>
+{
+	<ERROR>
 }
 
 SimpleNode LOLCodeProgram()  : {SimpleNode rootNode;}
-{  programStart()
+{
+  programStart()
   rootNode = codeBlock(expressionOrStatementSyncSet)
   {programId.setAttribute(ROUTINE_LOCALS_COUNT, index);}
   programEnd()
@@ -331,8 +342,12 @@ SimpleNode codeBlock(HashSet<Integer> syncSet) : {}
   (
 	  try {
 		  expressionOrStatement()
-		|  Error() { throw new ParseException(); }		{		}	  } catch (ParseException ex) {
-	    handleError(ex, syncSet, false);	  }
+		|  Error() { throw new ParseException(); }
+		{
+		}
+	  } catch (ParseException ex) {
+	    handleError(ex, syncSet, false);
+	  }
   )*
 	{ return jjtThis; }
 }
@@ -340,7 +355,8 @@ SimpleNode codeBlock(HashSet<Integer> syncSet) : {}
 
 
 
-void programStart() #void : {printCallerMethodName();}{
+void programStart() #void : {printCallerMethodName();}
+{
   	<HAI>
     <IDENTIFIER> {
         programId = symTabStack.enterLocal(token.image);
@@ -352,7 +368,8 @@ void programStart() #void : {printCallerMethodName();}{
         SymTabEntry itVariableId = symTabStack.enterLocal("IT");
 	    itVariableId.setDefinition(DefinitionImpl.VARIABLE);
         itVariableId.setTypeSpec(Predefined.undefinedType);        
-    }}
+    }
+}
 
 
 void programEnd() #void : {printCallerMethodName();}
@@ -381,7 +398,10 @@ void statement() #void : {}
 
 void returnStatement() #ret : {printCallerMethodName();}
 {
-  <FOUND_YR> expression()}  
+  <FOUND_YR> expression()
+}
+
+  
 
 void visibleStatement() #visible : {printCallerMethodName();}
 {
@@ -394,9 +414,12 @@ void gimmehStatement() #gimmeh : {printCallerMethodName();}
 }
 
 
-void ifStatement(HashSet<Integer> syncSet) #test : {printCallerMethodName();}{
-  try {    
-    (<COMMA>)? <O> <RLYQ>
+void ifStatement(HashSet<Integer> syncSet) #test : {printCallerMethodName();}
+{
+  try {
+    
+
+    (<COMMA>)? <O> <RLYQ>
   	<YA> <RLY>
   		(codeBlock(syncSet(NO, OIC, EOF)) #if_true)
   	(<NO> <WAI>
@@ -404,7 +427,9 @@ void ifStatement(HashSet<Integer> syncSet) #test : {printCallerMethodName();}{
   <OIC>
 
   } catch (ParseException ex) {
-    handleError(ex, syncSet, false);  }}
+    handleError(ex, syncSet, false);
+  }
+}
 
 void whileStatement() #loop : {printCallerMethodName();}
 {
@@ -415,11 +440,15 @@ void whileStatement() #loop : {printCallerMethodName();}
 }
 
 void loopInitialization() #void : {printCallerMethodName();}
-{	voidIdentifier() (loopAction() (loopCondition())?)?
-}  
+{
+	voidIdentifier() (loopAction() (loopCondition())?)?
+}
+  
 
 void loopAction() #loopAction : {printCallerMethodName();}
-{	(	  decrement() | increment()
+{
+	(
+	  decrement() | increment()
 	) <YR> identifier()
 }
 
@@ -427,7 +456,8 @@ void loopAction() #loopAction : {printCallerMethodName();}
 void loopCondition() #test : {printCallerMethodName();}  
 {
   <TIL>  booleanExpression() #not
-| <WILE> booleanExpression() }
+| <WILE> booleanExpression() 
+}
 
 void switchStatement() #switchStatement : {printCallerMethodName();}
 {
@@ -438,14 +468,18 @@ void switchStatement() #switchStatement : {printCallerMethodName();}
 }
 
 void caseStatement() #caseStatement : { printCallerMethodName();}
-{	<OMG> constantExpression() 
+{
+	<OMG> constantExpression() 
   		codeBlock(syncSet(GTFO, OMG, OIC, OMGWTF, EOF))
   		(gtfo())?
 }
 
-void defaultStatement() #defaultCase :{  printCallerMethodName();}{   	<OMGWTF>
+void defaultStatement() #defaultCase :{  printCallerMethodName();}
+{
+   	<OMGWTF>
   		codeBlock(syncSet(GTFO, OMG, OIC, OMGWTF, EOF))
-  		(gtfo())?}
+  		(gtfo())?
+}
 
 void gtfo() #gtfo :{  printCallerMethodName();}
 {
@@ -464,7 +498,8 @@ void functionDeclarationStatement() #function : {int reset;
      routineID = symTabStack.enterLocal(token.image);
      routineID.setDefinition(DefinitionImpl.FUNCTION);
      routineID.setAttribute(ROUTINE_SYMTAB, symTabStack.push());
-  }    (functionArguments(routineID))?    
+  }  
+  (functionArguments(routineID))?    
   		(rootNode = codeBlock(syncSet(IF_U_SAY_SO, EOF))) {
 		     ICode iCode = ICodeFactory.createICode();
 		     iCode.setRoot(rootNode);
@@ -477,12 +512,14 @@ void functionDeclarationStatement() #function : {int reset;
         }  		     		  
   <IF_U_SAY_SO> {
      index = reset;
-     symTabStack.pop();    }  
+     symTabStack.pop();  
+  }  
 }
 
 void functionArguments(SymTabEntry routineID) #args : {ArrayList<SymTabEntry> parms;
                                                        printCallerMethodName();}
-{	<YR> voidIdentifier() {	  
+{
+	<YR> voidIdentifier() {	  
 	    SymTabEntry variableId = symTabStack.enterLocal(token.image);
 	    variableId.setIndex(index);
 	    ++index;
@@ -490,19 +527,24 @@ void functionArguments(SymTabEntry routineID) #args : {ArrayList<SymTabEntry> pa
 	    variableId.appendLineNumber(token.beginLine);
         variableId.setTypeSpec(Predefined.undefinedType);
         parms = new ArrayList<SymTabEntry>();
-        parms.add(variableId);    }    (<AN> <YR> voidIdentifier() {
+        parms.add(variableId);
+    }
+    (<AN> <YR> voidIdentifier() {
 	    variableId = symTabStack.enterLocal(token.image);
 	    variableId.setIndex(index);
 	    ++index;
 	    variableId.setDefinition(DefinitionImpl.VARIABLE);
 	    variableId.appendLineNumber(token.beginLine);
         variableId.setTypeSpec(Predefined.undefinedType);
-        parms.add(variableId);    }      )* {
+        parms.add(variableId);
+    }
+      )* {
         for (SymTabEntry variableID : parms)
            variableID.setTypeSpec(Predefined.undefinedType);        
         routineID.setAttribute(ROUTINE_PARMS, parms);
-        }    
-}
+        }
+    
+}
 void functionCallExpression() #functionCall : {printCallerMethodName();}
 {
 	<I_CAN_HAS>
@@ -518,20 +560,22 @@ void functionCallExpression() #functionCall : {printCallerMethodName();}
 	  else
 	  {
 	  	jjtThis.setAttribute(ID, token.image);
-	    // TODO: function not declared error goes here
+	    // TODO function not declared error goes here
 	  }
 	}
 	(expression())+  // arguments
 }  
 
-void expression() #void : {}{
+void expression() #void : {}
+{
 	  LOOKAHEAD(3) booleanExpression()
 	| LOOKAHEAD(3) simpleExpression()
 	| LOOKAHEAD(3) basicMathExpression()
 	| LOOKAHEAD(3) stringConcatenationExpression()
 	| LOOKAHEAD(3) typeCastExpression()
 	| LOOKAHEAD(3) unaryExpression()
-	| LOOKAHEAD(3) functionCallExpression()}
+	| LOOKAHEAD(3) functionCallExpression()
+}
 
 void basicMathExpression() #void : {}
 {
@@ -568,19 +612,24 @@ void constantExpression() #void : {}
 	| booleanValue()
 }
 
-void stringLiteral() : {}{
+void stringLiteral() : {}
+{
     <STRING> {
         jjtThis.setAttribute(VALUE, token.image);
     }
 }
   
 void characterConstant() : {}
-{    <CHARACTER> {        jjtThis.setTypeSpec(Predefined.charType);
+{
+    <CHARACTER> {
+        jjtThis.setTypeSpec(Predefined.charType);
         jjtThis.setAttribute(VALUE, token.image);
     }
-}  
+}
+  
 void integerConstant() : {}
-{    <DECIMAL_INTEGER> {
+{
+    <DECIMAL_INTEGER> {
         jjtThis.setTypeSpec(Predefined.integerType);
         jjtThis.setAttribute(VALUE, Integer.parseInt(token.image));
     }
@@ -595,7 +644,8 @@ void realConstant() : {}
 }
 
 void booleanValue() : {}
-{    (<WIN> | <FAIL>) {
+{
+    (<WIN> | <FAIL>) {
         jjtThis.setTypeSpec(Predefined.booleanType);
         if (token.image.equals("WIN"))
            jjtThis.setAttribute(VALUE, "true");
@@ -613,16 +663,15 @@ void identifier() : {}
         if (variableId == null) 
 	    {
 	        jjtThis.setAttribute(ID, token.image);
-	        variableId = symTabStack.enterLocal(token.image);		    variableId.setIndex(index);		    ++index;
+	        variableId = symTabStack.enterLocal(token.image);
+		    variableId.setIndex(index);
+		    ++index;
 		    variableId.setDefinition(DefinitionImpl.VARIABLE);
 	        variableId.setTypeSpec(Predefined.undefinedType);
 
-	        // Create a child node with value 0 so that the value is stored in the slot later
-	        // TODO: 
-			//ASTintegerConstant child = new ASTintegerConstant(0);
-			//child.jjtSetValue(0);
-			//nullValue();
-//			jjtThis.jjtAddChild(nullValue(), 0);
+			// Tell the CodeGeneratorVisitor to create an UntypedVariant for this node
+	                            // WTF why do I have to type the whole thing!? it's imported!!
+	        jjtThis.setAttribute(wci.intermediate.icodeimpl.ICodeKeyImpl.VALUE, "undefined");
 	    }
 	    variableId.appendLineNumber(token.beginLine);
 	    TypeSpec type = variableId.getTypeSpec();
@@ -630,14 +679,23 @@ void identifier() : {}
 	    jjtThis.setAttribute(ID, token.image);
     }
 }
-////SimpleNode nullValue() #integerConstant :  {}//{//  {//    jjtThis.setAttribute(VALUE, 0);//    return jjtThis;//  }  //}
+//
+//SimpleNode nullValue() #integerConstant :  {}
+//{
+//  {
+//    jjtThis.setAttribute(VALUE, 0);
+//    return jjtThis;
+//  }  
+//}
 
 void voidIdentifier() #void : {}
 {
   <IDENTIFIER> {
         SymTabEntry variableId = symTabStack.lookup(token.image);
         if (variableId != null)
-        {        	variableId.appendLineNumber(token.beginLine);	    	TypeSpec type = variableId.getTypeSpec();
+        {
+        	variableId.appendLineNumber(token.beginLine);
+	    	TypeSpec type = variableId.getTypeSpec();
     	}
    }
 }
@@ -734,7 +792,8 @@ void variableDeclarationStatement() #assign : {printCallerMethodName();}
 	    {
 	    	variableId = symTabStack.enterLocal(token.image);
 		    variableId.setIndex(index);
-		    ++index;	   }	   
+		    ++index;
+	   }	   
 	    jjtThis.setAttribute(ID, variableId.getIndex());
 	    variableId.setDefinition(DefinitionImpl.VARIABLE);
 	    variableId.appendLineNumber(token.beginLine);
@@ -746,7 +805,8 @@ void variableDeclarationStatement() #assign : {printCallerMethodName();}
 void variableAssignmentStatement() #assign: {printCallerMethodName();}
 {
 	voidIdentifier()
-	{		SymTabEntry variableId = symTabStack.lookupLocal(token.image);
+	{
+		SymTabEntry variableId = symTabStack.lookupLocal(token.image);
 		if (variableId == null)
 		{		  
 		  	variableId = symTabStack.enterLocal(token.image);
@@ -865,7 +925,8 @@ String handleError(ParseException ex, HashSet syncSet, boolean doPop) #void
     //force a token consumption
     if (token == previousErrorToken) {
       System.out.println(" >Skipping token: " + token.image);
-      token = getNextToken();    }
+      token = getNextToken();
+    }
 
     previousErrorToken = token;
 
