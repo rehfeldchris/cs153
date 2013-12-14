@@ -441,19 +441,11 @@ void whileStatement() #loop : {printCallerMethodName();}
 
 void loopInitialization() #void : {printCallerMethodName();}
 {
-	voidIdentifier() (loopAction() (loopCondition())?)?
-}
-  
-
-void loopAction() #loopAction : {printCallerMethodName();}
-{
-	(
-	  decrement() | increment()
-	) <YR> identifier()
+	voidIdentifier() (unaryExpression() (loopCondition())?)?
 }
 
 
-void loopCondition() #test : {printCallerMethodName();}  
+void loopCondition() #loopTest : {printCallerMethodName();}  
 {
   <TIL>  booleanExpression() #not
 | <WILE> booleanExpression() 
@@ -768,17 +760,17 @@ void minimumExpression() #min : {printCallerMethodName();}
 
 void unaryExpression() : {printCallerMethodName();}
 {
-	(increment() | decrement()) expression()
+	(increment() | decrement())
 }
 
 void decrement() #decrement : {printCallerMethodName();}
 {
-	<DECREMENT>
+	<DECREMENT> (<YR>)? expression()
 }
 
 void increment() #increment : {printCallerMethodName();}
 {
-	<INCREMENT>
+	<INCREMENT> (<YR>)? expression()
 }
 
 
@@ -895,8 +887,7 @@ void stringConcatenationExpression() #concatenate : {printCallerMethodName();}
 void type() : {}
 {
   	<TROOF> { jjtThis.setTypeSpec(Predefined.booleanType); }
-  	| <YARN>
-  	| <NUMBAR> { jjtThis.setTypeSpec(Predefined.realType); }
+  	| <YARN> { jjtThis.setTypeSpec(Predefined.stringType); }  	| <NUMBAR> { jjtThis.setTypeSpec(Predefined.realType); }
   	| <NUMBR> { jjtThis.setTypeSpec(Predefined.integerType); }
   	| <NOOB> { jjtThis.setTypeSpec(Predefined.undefinedType); }
   	| <BUKKIT>
@@ -904,7 +895,7 @@ void type() : {}
 
 void typeCastExpression() #cast : {printCallerMethodName();}
 {
-   (<MAEK> expression() (<A>)? type())
+   (<MAEK> identifier() (<A>)? type())
  | (identifier() <IS> <NOW> <A> type())
 }
 
