@@ -362,8 +362,8 @@ void programEnd() #void : {printCallerMethodName();}
 
 void expressionOrStatement() #void : {}
 {
-  	LOOKAHEAD(1)
-	statement() | expression()
+  	LOOKAHEAD(3)
+	statement() | LOOKAHEAD(3) expression()
 }
 
 void statement() #void : {}
@@ -525,13 +525,13 @@ void functionCallExpression() #functionCall : {printCallerMethodName();}
 }  
 
 void expression() #void : {}{
-	  LOOKAHEAD(2) simpleExpression()
-	| basicMathExpression()
-	| LOOKAHEAD(2) booleanExpression()
-	| stringConcatenationExpression()
-	| LOOKAHEAD(2) typeCastExpression()
-	| unaryExpression()
-	| functionCallExpression()}
+	  LOOKAHEAD(3) booleanExpression()
+	| LOOKAHEAD(3) simpleExpression()
+	| LOOKAHEAD(3) basicMathExpression()
+	| LOOKAHEAD(3) stringConcatenationExpression()
+	| LOOKAHEAD(3) typeCastExpression()
+	| LOOKAHEAD(3) unaryExpression()
+	| LOOKAHEAD(3) functionCallExpression()}
 
 void basicMathExpression() #void : {}
 {
@@ -555,8 +555,8 @@ void booleanExpression() #void : {}
 	| logicalOrListExpression()
 	| equalsExpression()
 	| notEqualsExpression()
-	| LOOKAHEAD(2) greaterThanExpression()
-	| LOOKAHEAD(2) lessThanExpression()
+	| LOOKAHEAD(3) greaterThanExpression()
+	| LOOKAHEAD(3) lessThanExpression()
 }
 
 void constantExpression() #void : {}

@@ -165,6 +165,16 @@ public class Util
 		return new BooleanVariant(cmpVariant(a, b) != 0);
 	}
 	
+	public static Variant greaterThan(Variant a, Variant b)
+	{
+		return new BooleanVariant(cmpVariant(a, b) > 0);
+	}
+	
+	public static Variant lessThan(Variant a, Variant b)
+	{
+		return new BooleanVariant(cmpVariant(a, b) < 0);
+	}
+	
 	public static Variant negate(Variant a)
 	{
 		return new BooleanVariant(!a.boolVal());
