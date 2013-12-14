@@ -93,7 +93,7 @@ public class CodeGenerator extends Backend
        CodeGenerator.objectFile  = new PrintWriter(objectFilePath);
 
        // Make the program and method names.
-       int start = objectFilePath.lastIndexOf("/") + 1;
+       int start = objectFilePath.replace('\\', '/').lastIndexOf("/") + 1;
        programName = objectFilePath.substring(start);
        int end = programName.indexOf(".");
        if (end > -1) {
