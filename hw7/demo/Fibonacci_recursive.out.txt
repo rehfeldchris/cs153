@@ -1,0 +1,29 @@
+>run-prog.bat Fibonacci_recursive
+
+>cd src/jbin
+
+>java -cp .;../../lib/runtime.jar Fibonacci_recursive
+1,
+1,
+2,
+3,
+5,
+8,
+13,
+21,
+34,
+55,
+89,
+144,
+233,
+377,
+610,
+987,
+...
+
+>cd ../../
+
+>pause
+Press any key to continue . . .
+
+>
