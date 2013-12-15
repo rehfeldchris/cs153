@@ -508,6 +508,7 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 			}
 		}
 
+		pln("pop");
 		// put the switch value on the stack
 		pln("invokestatic Util/getMostRecentExpression()LVariant;");
 
