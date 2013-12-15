@@ -481,7 +481,6 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 	}
 
 	public Object visit(ASTswitchStatement node, Object data) {
-		pln("pop");
 		// think of this label as the next line of code after the entire switch
 		// statement
 		String labelAfterEntireSwitchStructure = jumpLabel("after_switch");
