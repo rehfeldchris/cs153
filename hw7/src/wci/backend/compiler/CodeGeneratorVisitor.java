@@ -370,6 +370,7 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 			pln("astore " + slot);
 		}
 		pln("aload " + slot);
+		pln(setMostRecentExpression());
 		flush();
 
 		return data;
