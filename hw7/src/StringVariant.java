@@ -28,6 +28,8 @@ public class StringVariant extends AbstractVariant
 	 */
 	public boolean boolVal()
 	{
+		if (value == "FAIL" || value == "fail")
+			return false;
 		return value.length() == 0
 			|| typeCast(Type.DOUBLE).longVal() == 0;
 	}
