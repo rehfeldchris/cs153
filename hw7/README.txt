@@ -20,7 +20,7 @@ then, compile a .lol source file to jasmin
 > compile-lolcode-to-jasmin.bat demo/Fibonacci.lol
 
 then, compile the jasmin into a .class file
-> compile-lolcode-to-jasmin.bat Fibonacci.j
+> compile-jasmin-to-class.bat demo/Fibonacci.j
 
 then, execute it on the jvm
 > run-prog.bat Fibonacci
