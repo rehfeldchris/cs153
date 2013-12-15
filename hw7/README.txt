@@ -1,4 +1,7 @@
 we included the libs for jasmin and javacc in our files, but we require java7 from you.
+
+we put some sample programs in the demo folder, and we'll run through how to compile one below.
+also, the output of these programs can be found in the demo folder.
 ------
 
 cd into our base dir. you should see directories like "src/" and "lib/".
