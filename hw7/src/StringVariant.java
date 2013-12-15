@@ -1,4 +1,3 @@
-
 import java.util.Collections;
 import java.util.List;
 
@@ -28,7 +27,7 @@ public class StringVariant extends AbstractVariant
 	 */
 	public boolean boolVal()
 	{
-		return value.length() > 0
+		return value.length() != 0
 			|| typeCast(Type.DOUBLE).longVal() != 0;
 	}
 
