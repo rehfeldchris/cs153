@@ -11,10 +11,10 @@ IM IN YR LOOP UPPIN YR VAR WILE DIFFRINT CHOICE AN "q"
 	WTF?
 		OMG "b"
 			IM IN YR LOOP UPPIN YR VAR WILE DIFFRINT CHOICE AN "e"
-			    VISIBLE "Enter first operand (WIN or FAIL):"
+			    VISIBLE "Enter first operand (WIN or hit return for FAIL):"
 			    GIMMEH OP1
 			    MAEK OP1 A TROOF
-			    VISIBLE "Enter second operand (WIN or FAIL):"
+			    VISIBLE "Enter second operand (WIN or hit return for FAIL):"
 			    GIMMEH OP2
 			    MAEK OP2 A TROOF
 				VISIBLE "Please enter choice: (a)nd, (o)r, or (x)or, (e) to exit:"
