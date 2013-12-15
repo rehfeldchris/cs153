@@ -1,0 +1,111 @@
+
+>run-prog.bat Switchdemo
+
+>cd src/jbin
+
+>java -cp .;../../lib/runtime.jar Switchdemo
+
+Please enter choice: (b)oolean mode or (c)omparison mode, (q) to quit:
+b
+Enter first operand (WIN or hit return for FAIL):
+WIN
+Enter second operand (WIN or hit return for FAIL):
+
+Please enter choice: (a)nd, (o)r, or (x)or, (e) to exit:
+a
+AND:
+FAIL
+Enter first operand (WIN or hit return for FAIL):
+
+Enter second operand (WIN or hit return for FAIL):
+WIN
+Please enter choice: (a)nd, (o)r, or (x)or, (e) to exit:
+o
+OR:
+WIN
+Enter first operand (WIN or hit return for FAIL):
+WIN
+Enter second operand (WIN or hit return for FAIL):
+
+Please enter choice: (a)nd, (o)r, or (x)or, (e) to exit:
+x
+XOR:
+WIN
+Enter first operand (WIN or hit return for FAIL):
+WIN
+Enter second operand (WIN or hit return for FAIL):
+WIN
+Please enter choice: (a)nd, (o)r, or (x)or, (e) to exit:
+e
+Please enter choice: (b)oolean mode or (c)omparison mode, (q) to quit:
+c
+Enter first number:
+1
+Enter second number:
+-2
+Please enter choice: (g)reater than, (l)ess than, (ge)greater than or equal
+(le)less than or equal, e(q)uals, or (n)ot equals, (e) to exit:
+g
+GREATER THAN:
+WIN
+Enter first number:
+1.2
+Enter second number:
+3.4
+Please enter choice: (g)reater than, (l)ess than, (ge)greater than or equal
+(le)less than or equal, e(q)uals, or (n)ot equals, (e) to exit:
+l
+LESS THAN:
+WIN
+Enter first number:
+5
+Enter second number:
+-5
+Please enter choice: (g)reater than, (l)ess than, (ge)greater than or equal
+(le)less than or equal, e(q)uals, or (n)ot equals, (e) to exit:
+ge
+GREATER THAN OR EQUAL:
+WIN
+Enter first number:
+-5
+Enter second number:
+5
+Please enter choice: (g)reater than, (l)ess than, (ge)greater than or equal
+(le)less than or equal, e(q)uals, or (n)ot equals, (e) to exit:
+le
+LESS THAN OR EQUAL:
+WIN
+Enter first number:
+2.34
+Enter second number:
+2.34
+Please enter choice: (g)reater than, (l)ess than, (ge)greater than or equal
+(le)less than or equal, e(q)uals, or (n)ot equals, (e) to exit:
+q
+EQUALS:
+WIN
+Enter first number:
+35
+Enter second number:
+-54
+Please enter choice: (g)reater than, (l)ess than, (ge)greater than or equal
+(le)less than or equal, e(q)uals, or (n)ot equals, (e) to exit:
+n
+NOT EQUALS:
+WIN
+Enter first number:
+2
+Enter second number:
+2
+Please enter choice: (g)reater than, (l)ess than, (ge)greater than or equal
+(le)less than or equal, e(q)uals, or (n)ot equals, (e) to exit:
+e
+Please enter choice: (b)oolean mode or (c)omparison mode, (q) to quit:
+q
+
+>cd ../../
+
+>pause
+Press any key to continue . . .
+
+>
