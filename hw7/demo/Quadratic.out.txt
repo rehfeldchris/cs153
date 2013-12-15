@@ -1,0 +1,58 @@
+
+>run-prog.bat Quadratic
+
+>cd src/jbin
+
+>java -cp .;../../lib/runtime.jar Quadratic
+Enter a
+1
+Enter b
+2
+Enter c
+3
+x1 = (-1, -1.414213562373095)
+x2 = (-1, 1.414213562373095)
+
+>cd ../../
+
+>pause
+Press any key to continue . . .
+
+>run-prog.bat Quadratic
+
+>cd src/jbin
+
+>java -cp .;../../lib/runtime.jar Quadratic
+Enter a
+-2
+Enter b
+-3
+Enter c
+5
+x1 = 1.0
+x2 = -2.5
+
+>cd ../../
+
+>pause
+Press any key to continue . . .
+
+>run-prog.bat Quadratic
+
+>cd src/jbin
+
+>java -cp .;../../lib/runtime.jar Quadratic
+Enter a
+1
+Enter b
+8
+Enter c
+16
+x = -4
+
+>cd ../../
+
+>pause
+Press any key to continue . . .
+
+>
