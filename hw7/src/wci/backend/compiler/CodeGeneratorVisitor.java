@@ -481,6 +481,8 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 	}
 
 	public Object visit(ASTswitchStatement node, Object data) {
+		pln(";start");
+		pln("pop");
 		// think of this label as the next line of code after the entire switch
 		// statement
 		String labelAfterEntireSwitchStructure = jumpLabel("after_switch");
@@ -509,6 +511,7 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 		}
 
 		// put the switch value on the stack
+		pln(";");
 		pln("invokestatic Util/getMostRecentExpression()LVariant;");
 
 		for (int i = 0; i < caseComparisonValueNodes.size(); i++) {
@@ -516,25 +519,33 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 			String labelLocationOfCode = caseJumpLabels.get(i);
 			// each case statement comparison will eat up the orig switch val,
 			// so we need to dup it
+			pln(";");
 			pln("dup");
 			caseValNode.jjtAccept(this, data);
 
 			// do the comparison
+			pln(";");
 			pln("invokestatic Util/equal(LVariant;LVariant;)LVariant;");
+			pln(";");
 			pln(setMostRecentExpression());
 			// we dont want the variant that results because we will get it from
 			// the runtime lib, so clean up our stack by popping it off
+			pln(";");
 			pln("pop");
 			// get the bool value of the comparison
+			pln(";");
 			pln("invokestatic Util/getMostRecentExpressionAsBoolean()Z");
 			// test the cmp result, and maybe jump
+			pln(";");
 			pln("ifne " + labelLocationOfCode);
 		}
 
 		if (defaultCase != null) {
+			pln(";");
 			pln("goto " + defaultCodeLocationLabel);
 		}
 
+		pln(";");
 		pln("goto " + labelAfterEntireSwitchStructure);
 
 		for (int i = 0; i < caseCodeBlockNodes.size(); i++) {
@@ -543,19 +554,25 @@ public class CodeGeneratorVisitor extends LOLCodeParserVisitorAdapter implements
 			pln(labelLocationOfCode + ":");
 			caseCodeBlockNode.jjtAccept(this, data);
 			if (hasBreakStatement.get(i) == true) {
+				pln(";");
 				pln("goto " + labelAfterEntireSwitchStructure);
 			}
 		}
 
 		if (defaultCase != null) {
+			pln(";");
 			pln(defaultCodeLocationLabel + ":");
 			SimpleNode caseCodeBlockNode = (SimpleNode) defaultCase
 					.jjtGetChild(0);
 			caseCodeBlockNode.jjtAccept(this, data);
 		}
 
+		pln(";");
 		pln(labelAfterEntireSwitchStructure + ":");
+		pln(";");
 		pln("pop");
+		
+		pln(";end");
 
 		flush();
 
