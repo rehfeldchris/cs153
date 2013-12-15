@@ -28,7 +28,6 @@ import wci.frontend.ASTincrement;
 import wci.frontend.ASTintegerConstant;
 import wci.frontend.ASTless_than;
 import wci.frontend.ASTloop;
-import wci.frontend.ASTloopAction;
 import wci.frontend.ASTloopTest;
 import wci.frontend.ASTmax;
 import wci.frontend.ASTmin;
@@ -88,11 +87,6 @@ public class LOLCodeParserVisitorAdapter implements LOLCodeParserVisitor
    }
 
    public Object visit(ASTloop node, Object data)
-   {
-      return node.childrenAccept(this, data);
-   }
-
-   public Object visit(ASTloopAction node, Object data)
    {
       return node.childrenAccept(this, data);
    }
