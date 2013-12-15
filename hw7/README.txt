@@ -14,10 +14,10 @@ then, compile all our java files
 > compile-java.bat
 
 then, compile a .lol source file to jasmin
-> compile-lolcode-to-jasmin.bat demo/fibonacci.lol
+> compile-lolcode-to-jasmin.bat demo/Fibonacci.lol
 
 then, compile the jasmin into a .class file
-> compile-lolcode-to-jasmin.bat fibonacci.j
+> compile-lolcode-to-jasmin.bat Fibonacci.j
 
-then, execute it on the jvm (please uppercase the first letter)
+then, execute it on the jvm
 > run-prog.bat Fibonacci
